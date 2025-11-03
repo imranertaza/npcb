@@ -69,6 +69,7 @@
   const router = useRouter();
   
   const login = async () => {
+    await axios.get('/sanctum/csrf-cookie');
     const { data } = await axios.post('/api/admin/login', { email: email.value, password: password.value });
     localStorage.setItem('token', data.token);
     localStorage.setItem('role', 'admin');

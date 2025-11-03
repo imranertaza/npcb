@@ -9,6 +9,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable {
     use HasApiTokens,HasRoles;
+    protected $table = 'admin';
     protected $guard_name = 'admin';
     protected $guarded=['id'];
     protected $hidden = [
