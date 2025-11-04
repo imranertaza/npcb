@@ -2,55 +2,56 @@
 
 use App\Http\Controllers\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
-use App\Http\Controllers\Api\Auth\UserAuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('user')->group(function () {
-    Route::post('login', [UserAuthController::class, 'login']);
-    Route::post('register', [UserAuthController::class, 'register']); // optional
-    Route::middleware('auth:user')->group(function () {
-        Route::get('profile', [UserAuthController::class, 'profile']);
-        Route::post('logout', [UserAuthController::class, 'logout']);
+
+Route::prefix('admin')->controller(AdminAuthController::class)->group(function () {
+    // 🔹 Public route (no auth required)
+    Route::post('login', 'login')->name('admin.login');
+
+    // 🔹 Protected routes (auth:admin required)
+    Route::middleware('auth:admin')->group(function () {
+
+        Route::get('me', 'me')->name('admin.me');
+        Route::get('profile', 'profile')->name('admin.profile');
+        Route::post('logout', 'logout')->name('admin.logout');
+
+        Route::get('admins', 'index');                       // List all admins with roles
+        Route::put('admins/{admin}/role', 'update');         // Update admin role
+        Route::post('admins', 'store')->middleware('role:super-admin'); // Add new admin (super-admin only)
+        Route::delete('admins/{admin}', 'destroy')->middleware('role:super-admin'); // Delete admin (super-admin only)
+
+        // 📋 Role Listing
+        Route::get('roles', 'roles');                        // List all roles
+
+        // 🔐 Role Permission Management
+        Route::get('roles-with-permissions', 'rolesWithPermissions'); // List roles + permissions
+        Route::put('roles/{role}/permissions', 'updatePermissions');  // Update role permissions
+
+        // ✅ Permission Listing (for frontend rendering)
+        Route::get('permissions', 'permissions');             // List all permissions
     });
 });
 
 
-Route::prefix('admin')->group(function () {
-    Route::post('login', [AdminAuthController::class, 'login']);
-    Route::get('me', [AdminAuthController::class, 'me'])->middleware('auth:admin');
-    Route::middleware(['auth:admin', 'role:super-admin'])->group(function () {
-        Route::get('profile', [AdminAuthController::class, 'profile']);
-        Route::post('logout', [AdminAuthController::class, 'logout']);
-    });
-});
+// ==========================
+// 🔹 Role & Permission Management (Protected)
+// ==========================
+Route::middleware(['auth:admin'])->controller(AdminRoleController::class)->group(function () {
 
-Route::middleware(['auth:admin'])->get('/admin/check-access', function (Request $request) {
-    $admin = $request->user();
-    $permission = $request->query('permission');
+    // 👤 Admin Role Management
+    Route::get('admins', 'index');                       // List all admins with roles
+    Route::put('admins/{admin}/role', 'update');         // Update admin role
+    Route::post('admins', 'store')->middleware('role:super-admin'); // Add new admin (super-admin only)
+    Route::delete('admins/{admin}', 'destroy')->middleware('role:super-admin'); // Delete admin (super-admin only)
 
-    if (!$permission || !$admin->can($permission)) {
-        return response()->json(['allowed' => false], 403);
-    }
-
-    return response()->json(['allowed' => true]);
-});
-
-
-Route::middleware(['auth:admin'])->group(function () {
-
-    // 🔍 Admin Role Management
-    Route::get('/admins', [AdminRoleController::class, 'index']); // List all admins with roles
-    Route::put('/admins/{admin}/role', [AdminRoleController::class, 'update']); // Update admin role
-    Route::post('/admins', [AdminRoleController::class, 'store'])->middleware(['auth:admin', 'role:super-admin']);
-    Route::delete('/admins/{admin}', [AdminRoleController::class, 'destroy'])->middleware(['auth:admin', 'role:super-admin']);
     // 📋 Role Listing
-    Route::get('/roles', [AdminRoleController::class, 'roles']); // List all roles
+    Route::get('roles', 'roles');                        // List all roles
 
-    // 🔍 Role Permission Management
-    Route::get('/roles-with-permissions', [AdminRoleController::class, 'rolesWithPermissions']); // List roles + permissions
-    Route::put('/roles/{role}/permissions', [AdminRoleController::class, 'updatePermissions']); // Update permissions for role
+    // 🔐 Role Permission Management
+    Route::get('roles-with-permissions', 'rolesWithPermissions'); // List roles + permissions
+    Route::put('roles/{role}/permissions', 'updatePermissions');  // Update role permissions
 
-    // 📋 Permission Listing (optional for frontend checkbox rendering)
-    Route::get('/permissions', [AdminRoleController::class, 'permissions']); // List all permissions
+    // ✅ Permission Listing (for frontend rendering)
+    Route::get('permissions', 'permissions');             // List all permissions
 });

@@ -17,5 +17,6 @@
 </template>
 
 <script setup>
+
 // any logic for the dashboard
 </script>
