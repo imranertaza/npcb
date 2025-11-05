@@ -1,19 +1,12 @@
-<!-- src/views/RolePermissionManager.vue -->
 <template>
-    <div class="container py-4">
-        <h2 class="mb-4 text-center fw-bold text-primary">🔐 Role Permission Manager</h2>
-
+        <DashboardHeader title="🔐 Manage Permission"/>
         <div v-for="role in roles" :key="role.name" class="card shadow-sm mb-4 border-0">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-  <h5 class="mb-0 text-capitalize flex-grow-1">{{ role.name }}</h5>
-  <button
-    class="btn btn-dark btn-sm ms-3"
-    @click="save(role)"
-    :disabled="role.name === 'super-admin'"
-  >
-    Save Permissions
-  </button>
-</div>
+                <h5 class="mb-0 text-capitalize flex-grow-1">{{ role.name }}</h5>
+                <button class="btn btn-dark btn-sm ms-3" @click="save(role)" :disabled="role.name === 'super-admin'">
+                    Save Permissions
+                </button>
+            </div>
 
 
             <div class="card-body">
@@ -33,16 +26,18 @@
                 </div>
             </div>
         </div>
-    </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import '../../assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css'
+import { useToast } from '../../composables/useToast'
+import DashboardHeader from '../../components/DashboardHeader.vue'
 const roles = ref([])
 const allPermissions = ref([])
 
+const toast = useToast();
 const fetchRoles = async () => {
     const res = await axios.get('/api/roles-with-permissions')
     roles.value = res.data.data
@@ -55,9 +50,12 @@ const fetchAllPermissions = async () => {
 
 const save = async (role) => {
     if (role.name === 'super-admin') return
-    await axios.put(`/api/roles/${role.name}/permissions`, {
+    const isSave = await axios.put(`/api/roles/${role.name}/permissions`, {
         permissions: role.permissions
     })
+    if (isSave.data.success) {
+        toast.success('Permissions updated successfully!')
+    }
 }
 
 onMounted(() => {

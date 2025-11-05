@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
+use App\Http\Controllers\Api\PostController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -10,26 +11,11 @@ Route::prefix('admin')->controller(AdminAuthController::class)->group(function (
     Route::post('login', 'login')->name('admin.login');
 
     // 🔹 Protected routes (auth:admin required)
-    Route::middleware('auth:admin')->group(function () {
+    Route::middleware('auth:user')->group(function () {
 
         Route::get('me', 'me')->name('admin.me');
         Route::get('profile', 'profile')->name('admin.profile');
         Route::post('logout', 'logout')->name('admin.logout');
-
-        Route::get('admins', 'index');                       // List all admins with roles
-        Route::put('admins/{admin}/role', 'update');         // Update admin role
-        Route::post('admins', 'store')->middleware('role:super-admin'); // Add new admin (super-admin only)
-        Route::delete('admins/{admin}', 'destroy')->middleware('role:super-admin'); // Delete admin (super-admin only)
-
-        // 📋 Role Listing
-        Route::get('roles', 'roles');                        // List all roles
-
-        // 🔐 Role Permission Management
-        Route::get('roles-with-permissions', 'rolesWithPermissions'); // List roles + permissions
-        Route::put('roles/{role}/permissions', 'updatePermissions');  // Update role permissions
-
-        // ✅ Permission Listing (for frontend rendering)
-        Route::get('permissions', 'permissions');             // List all permissions
     });
 });
 
@@ -37,21 +23,25 @@ Route::prefix('admin')->controller(AdminAuthController::class)->group(function (
 // ==========================
 // 🔹 Role & Permission Management (Protected)
 // ==========================
-Route::middleware(['auth:admin'])->controller(AdminRoleController::class)->group(function () {
+Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(function () {
 
-    // 👤 Admin Role Management
-    Route::get('admins', 'index');                       // List all admins with roles
-    Route::put('admins/{admin}/role', 'update');         // Update admin role
-    Route::post('admins', 'store')->middleware('role:super-admin'); // Add new admin (super-admin only)
-    Route::delete('admins/{admin}', 'destroy')->middleware('role:super-admin'); // Delete admin (super-admin only)
+    Route::get('admins', 'index');
+    Route::put('admins/{admin}/role', 'update');
+    Route::post('admins', 'store')->middleware('role:super-admin');
+    Route::delete('admins/{admin}', 'destroy')->middleware('role:super-admin');
 
-    // 📋 Role Listing
-    Route::get('roles', 'roles');                        // List all roles
+    Route::get('roles', 'roles');
 
-    // 🔐 Role Permission Management
-    Route::get('roles-with-permissions', 'rolesWithPermissions'); // List roles + permissions
-    Route::put('roles/{role}/permissions', 'updatePermissions');  // Update role permissions
+    Route::get('roles-with-permissions', 'rolesWithPermissions');
+    Route::put('roles/{role}/permissions', 'updatePermissions');
 
-    // ✅ Permission Listing (for frontend rendering)
-    Route::get('permissions', 'permissions');             // List all permissions
+    Route::get('permissions', 'permissions');
+});
+Route::prefix('posts')->controller(PostController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store');
+    Route::get('{slug}', 'show');
+    Route::put('{slug}', 'update');
+    Route::delete('{slug}', 'destroy');
+    Route::patch('{slug}/status', 'toggleStatus');
 });

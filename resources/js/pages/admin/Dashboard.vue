@@ -1,22 +1,15 @@
 <!-- src/views/Dashboard.vue -->
 <template>
-  <section class="content-header">
-    <div class="container-fluid">
-      <h1>Dashboard</h1>
-    </div>
-  </section>
-
-  <section class="content">
-    <div class="container-fluid">
-      <!-- Your dashboard widgets -->
-      <div class="row">
-        <div class="col-md-12">Welcome to the admin panel!</div>
-      </div>
-    </div>
+  <DashboardHeader title="Admin Dashboard" />
+  <section class="">
+    <!-- Your dashboard widgets -->
+    <p>Welcome to the admin panel!</p>
   </section>
 </template>
 
 <script setup>
+import DashboardHeader from '../../components/DashboardHeader.vue';
+
 
 // any logic for the dashboard
 </script>

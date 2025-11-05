@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -17,11 +17,11 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
           // Create admin user
-          $admin = Admin::firstOrCreate(
-            ['email' => 'admin@example.com'],
+          $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Super Admin',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('12345678'),
             ]
         );
 
@@ -34,11 +34,11 @@ class AdminSeeder extends Seeder
         ];
 
         foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'admin']);
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'user']);
         }
 
         // Create super-admin role
-        $role = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'admin']);
+        $role = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'user']);
 
         // Assign all permissions to role
         $role->syncPermissions($permissions);

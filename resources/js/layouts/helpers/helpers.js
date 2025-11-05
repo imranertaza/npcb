@@ -1,0 +1,16 @@
+import { computed } from "vue";
+
+export function truncateText(text = '', maxLength = 100, suffix = '...') {
+    if (typeof text !== 'string') return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + suffix : text;
+  }
+
+ export function getImageUrl(path) {
+    if (!path) {
+      return '/images/default.png'; // fallback image
+    }
+  
+    return path.startsWith('http://') || path.startsWith('https://')
+      ? path
+      : `/storage/${path.replace(/^\/+/, '')}`;
+  }
