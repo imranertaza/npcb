@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -12,7 +12,7 @@ class AdminRoleController extends Controller
 {
     public function index()
     {
-        $admins = Admin::with('roles')->get()->map(function ($admin) {
+        $admins = User::with('roles')->get()->map(function ($admin) {
             return [
                 'id' => $admin->id,
                 'name' => $admin->name,
@@ -21,25 +21,25 @@ class AdminRoleController extends Controller
             ];
         });
 
-        return ApiResponse::success($admins, 'Admin list retrieved');
+        return ApiResponse::success($admins, 'User list retrieved');
     }
 
     // 📋 List all available roles
     public function roles()
     {
-        $roles = Role::where('guard_name', 'admin')->pluck('name');
+        $roles = Role::where('guard_name', 'user')->pluck('name');
         return ApiResponse::success($roles, 'Available roles retrieved');
     }
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:admins,email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role' => 'required|string|exists:roles,name',
         ]);
 
-        $admin = Admin::create([
+        $admin = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -52,11 +52,11 @@ class AdminRoleController extends Controller
             'name' => $admin->name,
             'email' => $admin->email,
             'role' => $request->role,
-        ], 'Admin created successfully');
+        ], 'User created successfully');
     }
 
     // 🔄 Update an admin’s role
-    public function update(Request $request, Admin $admin)
+    public function update(Request $request, User $admin)
     {
         $request->validate([
             'role' => 'required|string|exists:roles,name',
@@ -69,7 +69,7 @@ class AdminRoleController extends Controller
         return ApiResponse::success([
             'id' => $admin->id,
             'role' => $request->role,
-        ], 'Admin role updated');
+        ], 'User role updated');
     }
 
     // 🔍 List all roles with their permissions
@@ -87,7 +87,7 @@ class AdminRoleController extends Controller
 
     public function updatePermissions(Request $request, $role)
     {
-        $role = Role::where('name', $role)->where('guard_name', 'admin')->firstOrFail();
+        $role = Role::where('name', $role)->where('guard_name', 'user')->firstOrFail();
 
         if ($role->name === 'super-admin') {
             return ApiResponse::error('Cannot update permissions for super-admin', 403);
@@ -110,10 +110,10 @@ class AdminRoleController extends Controller
     // 📋 List all available permissions
     public function permissions()
     {
-        $permissions = Permission::where('guard_name', 'admin')->pluck('name');
+        $permissions = Permission::where('guard_name', 'user')->pluck('name');
         return ApiResponse::success($permissions, 'Available permissions retrieved');
     }
-    public function destroy(Admin $admin)
+    public function destroy(User $admin)
     {
         if ($admin->hasRole('super-admin')) {
             return ApiResponse::error('Cannot delete a super-admin', 403);
@@ -121,6 +121,6 @@ class AdminRoleController extends Controller
 
         $admin->delete();
 
-        return ApiResponse::success(['id' => $admin->id], 'Admin deleted successfully');
+        return ApiResponse::success(['id' => $admin->id], 'User deleted successfully');
     }
 }

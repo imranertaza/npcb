@@ -14,7 +14,7 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $guard = 'admin';
+        $guard = 'user';
 
         // 🧩 Define roles
         $roles = ['super-admin', 'admin', 'editor', 'viewer'];
@@ -23,11 +23,14 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             'view-dashboard',
             'manage-users',
-            'edit-content',
+            'view-content',
             'publish-content',
+            'edit-content',
             'delete-content',
-            'view-dashboard3',
-            'view-dashboard2'
+            'view-pages',
+            'publish-pages',
+            'edit-pages',
+            'delete-pages',
         ];
 
         // ✅ Create permissions
@@ -44,13 +47,13 @@ class RolePermissionSeeder extends Seeder
                     $role->syncPermissions(Permission::where('guard_name', $guard)->pluck('name'));
                     break;
                 case 'admin':
-                    $role->syncPermissions(['view-dashboard', 'manage-users']);
+                    $role->syncPermissions(['view-dashboard', 'manage-users','delete-content','view-content','delete-pages','view-pages']);
                     break;
                 case 'editor':
-                    $role->syncPermissions(['view-dashboard', 'edit-content', 'publish-content']);
+                    $role->syncPermissions(['view-dashboard','view-content','edit-content', 'publish-content']);
                     break;
                 case 'viewer':
-                    $role->syncPermissions(['view-dashboard']);
+                    $role->syncPermissions(['view-dashboard','view-content','view-pages']);
                     break;
             }
         }

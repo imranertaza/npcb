@@ -71,9 +71,10 @@
   const login = async () => {
     await axios.get('/sanctum/csrf-cookie');
     const { data } = await axios.post('/api/admin/login', { email: email.value, password: password.value });
-    localStorage.setItem('token', data.token);
+    
+    localStorage.setItem('token', data.data.token);
     localStorage.setItem('role', 'admin');
-        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
         router.push({ name: 'Dashboard' })
     };
   </script>
