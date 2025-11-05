@@ -1,68 +1,60 @@
 <!-- src/views/AdminRoleManager.vue -->
 <template>
-  <div class="container pt-4">
-    <div class="d-flex justify-content-between align-items-center">
-      <h3>Admin Manager</h3>
-      <div class="d-flex gap-3">
-        <div>
-          <!-- Trigger Button -->
-          <button class="btn btn-success" data-toggle="modal" data-target="#createAdminModal">
-            ➕ Add New Admin
-          </button>
+    <DashboardHeader title="Manage User">
+      <!-- Trigger Button -->
+      <button class="btn btn-success" data-toggle="modal" data-target="#createAdminModal">
+        ➕ Add New User
+      </button>
 
-          <!-- Modal -->
-          <div class="modal fade" id="createAdminModal" tabindex="-1" role="dialog"
-            aria-labelledby="createAdminModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content shadow-sm">
-                <div class="modal-header bg-light">
-                  <h5 class="modal-title" id="createAdminModalLabel">Create New Admin</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+      <!-- Modal -->
+      <div class="modal fade" id="createAdminModal" tabindex="-1" role="dialog" aria-labelledby="createAdminModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content shadow-sm">
+            <div class="modal-header bg-light">
+              <h5 class="modal-title" id="createAdminModalLabel">Create New Admin</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <form @submit.prevent="createAdmin">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input v-model="form.name" type="text" class="form-control" required />
                 </div>
 
-                <div class="modal-body">
-                  <form @submit.prevent="createAdmin">
-                    <div class="form-group">
-                      <label>Name</label>
-                      <input v-model="form.name" type="text" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                      <label>Email</label>
-                      <input v-model="form.email" type="email" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                      <label>Password</label>
-                      <input v-model="form.password" type="password" class="form-control" required />
-                    </div>
-
-                    <div class="form-group">
-                      <label>Role</label>
-                      <select v-model="form.role" class="form-control" required>
-                        <option disabled value="">Select role</option>
-                        <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
-                      </select>
-                    </div>
-
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary">Create Admin</button>
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
-                  </form>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input v-model="form.email" type="email" class="form-control" required />
                 </div>
-              </div>
+
+                <div class="form-group">
+                  <label>Password</label>
+                  <input v-model="form.password" type="password" class="form-control" required />
+                </div>
+
+                <div class="form-group">
+                  <label>Role</label>
+                  <select v-model="form.role" class="form-control" required>
+                    <option disabled value="">Select role</option>
+                    <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'">{{
+                      role }}</option>
+                  </select>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Create Admin</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-        <div class="ml-3">
-          <router-link :to="{ name: 'RolePermissionManager' }" class="btn btn-dark rounded-sm"><span><i
-            class="fa fa-gear"></i> </span> Manage Permissions</router-link>
-          </div>
       </div>
-    </div>
+    </DashboardHeader>
+
     <table class="table table-bordered mt-3">
       <thead class="thead-light">
         <tr>
@@ -79,24 +71,33 @@
           <td>{{ admin.email }}</td>
           <td>{{ admin.role }}</td>
           <td>
-            <select v-model="admin.newRole" @change="updateRole(admin)" :disabled="admin.role === 'super-admin'" class="form-control">
-              <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'" >{{ role }}</option>
+            <select v-model="admin.newRole" @change="updateRole(admin)" :disabled="admin.role === 'super-admin'"
+              class="form-control">
+              <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'">{{ role }}
+              </option>
             </select>
           </td>
           <td class=" text-center">
-          <button class="btn btn-sm btn-danger" @click="deleteAdmin(admin)" :disabled="admin.role === 'super-admin'">    Delete
+            <button class="btn btn-sm btn-danger" @click="deleteAdmin(admin)" :disabled="admin.role === 'super-admin'">
+              Delete
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useToast } from '../../composables/useToast'
+import { useRouter } from 'vue-router'
+import VueSweetalert2 from 'vue-sweetalert2'
+const toast = useToast()
+import { inject } from 'vue';
+import DashboardHeader from '../../components/DashboardHeader.vue'
 
+const $swal = inject('$swal');
 const admins = ref([])
 const roles = ref([])
 
@@ -114,18 +115,45 @@ const fetchRoles = async () => {
 }
 
 const updateRole = async (admin) => {
-  await axios.put(`/api/admins/${admin.id}/role`, { role: admin.newRole })
+  const isUpdate = await axios.put(`/api/admins/${admin.id}/role`, { role: admin.newRole })
+  if (isUpdate.data.success) {
+    toast.success('Role updated successfully!')
+  } else {
+    toast.error('Failed to update role.')
+  }
   admin.role = admin.newRole
 }
 
 const deleteAdmin = async (admin) => {
-  if (admin.role === 'super-admin') return
+  if (admin.role === 'super-admin') return;
 
-  if (confirm(`Are you sure you want to delete ${admin.name}?`)) {
-    await axios.delete(`/api/admins/${admin.id}`)
-    admins.value = admins.value.filter(a => a.id !== admin.id)
+  const result = await $swal({
+    title: `Delete ${admin.name}?`,
+    text: 'This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'Cancel',
+    reverseButtons: true
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const response = await axios.delete(`/api/admins/${admin.id}`);
+      if (response.data.success) {
+        toast.success('User deleted successfully!');
+        admins.value = admins.value.filter(a => a.id !== admin.id);
+      } else {
+        toast.error('Failed to delete user.');
+      }
+    } catch (error) {
+      toast.error('Something went wrong.');
+    }
+  } else {
+    toast.info('Deletion cancelled.');
   }
-}
+};
+
 const form = ref({
   name: '',
   email: '',
@@ -133,12 +161,20 @@ const form = ref({
   role: ''
 })
 
-
+const route = useRouter()
 const createAdmin = async () => {
-  await axios.post('/api/admins', form.value)
+  const isCreated = await axios.post('/api/admins', form.value)
+  if (isCreated.data.success) {
+    toast.success('User created successfully!')
+    document.getElementById('createAdminModal').classList.remove('show')
+    document.body.classList.remove('modal-open')
+    document.getElementsByClassName('modal-backdrop')[0].remove()
+    // admins.value = admins.value.push(isCreated.data)
+    admins.value = [...admins.value, isCreated.data.data]
+  } else {
+    toast.error('Failed to create user.')
+  }
   form.value = { name: '', email: '', password: '', role: '' }
-  const modal = bootstrap.Modal.getInstance(document.getElementById('createAdminModal'))
-  modal.hide()
   // Optionally refresh admin list
 }
 

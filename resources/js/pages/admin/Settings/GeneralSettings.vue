@@ -1,0 +1,16 @@
+<!-- src/views/Dashboard.vue -->
+<template>
+    <DashboardHeader title="General Settings" />
+    <section class="">
+        <!-- Your dashboard widgets -->
+        <p>Welcome to the GeneralSettings</p>
+    </section>
+</template>
+
+<script setup>
+import DashboardHeader from '../../../components/DashboardHeader.vue';
+
+
+
+// any logic for the dashboard
+</script>
