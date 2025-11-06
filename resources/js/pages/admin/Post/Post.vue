@@ -63,7 +63,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DashboardHeader from '../../../components/DashboardHeader.vue';
 import { toast } from 'vue3-toastify';
-
+const route = useRoute();
 const posts = ref([]);
 
 onMounted(async () => {
@@ -73,6 +73,9 @@ onMounted(async () => {
     console.log(posts.value)
   } catch (error) {
     console.error('Error fetching posts:', error);
+  }
+  if (route.query.toast) {
+    toast.success(route.query.toast);
   }
 });
 
@@ -94,6 +97,7 @@ const updateStatus = async (post) => {
 };
 import { inject } from 'vue';
 import { getImageUrl, truncateText } from '../../../layouts/helpers/helpers';
+import { useRoute } from 'vue-router';
 const $swal = inject('$swal');
 
 const confirmDelete = async (post) => {

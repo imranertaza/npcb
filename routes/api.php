@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
+use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -37,11 +39,25 @@ Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(
 
     Route::get('permissions', 'permissions');
 });
-Route::prefix('posts')->controller(PostController::class)->group(function () {
+Route::middleware('auth:user')->prefix('posts')->controller(PostController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
     Route::get('{slug}', 'show');
     Route::put('{slug}', 'update');
     Route::delete('{slug}', 'destroy');
     Route::patch('{slug}/status', 'toggleStatus');
+});
+
+Route::middleware('auth:user')->prefix('pages')->controller(PageController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store');
+    Route::get('{slug}', 'show');
+    Route::put('{slug}', 'update');
+    Route::delete('{slug}', 'destroy');
+    Route::patch('{slug}/status', 'toggleStatus');
+});
+
+Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::put('{label}', 'update');
 });

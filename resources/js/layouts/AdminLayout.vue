@@ -4,7 +4,7 @@
     <Sidebar />
     <div class="content-wrapper">
       <!-- All child routes render here -->
-      <div class="container py-4">
+      <div class="container-fluid py-4">
       <router-view />
       </div>
     </div>

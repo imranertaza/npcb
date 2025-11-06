@@ -38,9 +38,8 @@
               <!-- Image Upload -->
               <div class="form-group">
                 <label>Upload Image</label>
-                <input type="file" class="form-control" @change="handleImageUpload" accept="image/*" />
-                <img v-if="form.image" :src="getImageUrl(form.image)" alt="Post Image" height="50"
-                  class="mt-2 rounded" />
+                <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
+                  :allowSelectOnPreview="true" />
               </div>
 
               <!-- Alt Name -->
@@ -99,13 +98,18 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
+import '@jaxtheprime/vue3-dropzone/dist/style.css';
+
 import axios from 'axios';
 import DashboardHeader from '../../../components/DashboardHeader.vue';
-import { toast } from 'vue3-toastify';
+const toast = useToast()
+
 
 const route = useRoute();
 const router = useRouter();
 const postSlug = route.params.slug;
+const previews = ref();
 
 const form = reactive({
   post_title: '',
@@ -134,14 +138,13 @@ const generateSlug = () => {
     .replace(/^-+|-+$/g, '');
 };
 
-const handleImageUpload = (e) => {
-  imageFile.value = e.target.files[0];
-};
 
 const fetchPost = async () => {
   try {
     const res = await axios.get(`/api/posts/${postSlug}`);
     Object.assign(form, res.data.data);
+    previews.value = [getImageUrl(form.image)];
+
   } catch (err) {
     toast.error('Failed to load post');
     console.error(err);
@@ -152,22 +155,19 @@ const updatePost = async () => {
   const payload = new FormData();
 
   for (const key in form) {
-    // ✅ Skip 'image' if it's just a string path
-    if (key === 'image' && !(imageFile.value instanceof File)) continue;
-    payload.append(key, form[key]);
+    if (key !== 'image') {
+      payload.append(key, form[key]);
+    }
   }
-
-  // ✅ Append new image file if selected
-  if (imageFile.value instanceof File) {
-    payload.append('image', imageFile.value);
+  if (imageFile.value && imageFile.value[0]) {
+    payload.append('image', imageFile.value[0].file);
   }
 
   try {
     await axios.post(`/api/posts/${postSlug}?_method=PUT`, payload, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    toast.success('Post updated successfully!');
-    router.push({ name: 'Posts' });
+    router.push({ name: 'Posts', query: { toast: 'Post updated successfully' } });
   } catch (err) {
     toast.error('Failed to update post');
     console.error(err);
@@ -177,6 +177,7 @@ const updatePost = async () => {
 import { computed } from 'vue';
 import SummernoteEditorVue from 'vue3-summernote-editor';
 import { getImageUrl } from '../../../layouts/helpers/helpers';
+import { useToast } from '../../../composables/useToast';
 
 const formattedDate = computed({
   get: () => form.publish_date?.slice(0, 10) || '',

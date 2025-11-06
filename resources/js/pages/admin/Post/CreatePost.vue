@@ -29,13 +29,15 @@
               <!-- Description (Summernote) -->
               <div class="form-group">
                 <label>Description</label>
-                <SummernoteEditorVue v-model="form.description"/>
+                <SummernoteEditorVue v-model="form.description" />
               </div>
 
               <!-- Image & Alt -->
               <div class="form-group">
                 <label>Upload Image</label>
-                <input type="file" class="form-control" @change="handleImageUpload" accept="image/*" required />
+                <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+
+                <!-- <input type="file" class="form-control" @change="handleImageUpload" accept="image/*" required /> -->
               </div>
               <div class="form-group">
                 <label>Alt Name</label>
@@ -95,6 +97,8 @@ import axios from 'axios';
 import DashboardHeader from '../../../components/DashboardHeader.vue';
 import { toast } from 'vue3-toastify';
 import SummernoteEditorVue from 'vue3-summernote-editor';
+import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
+import '@jaxtheprime/vue3-dropzone/dist/style.css'
 
 const imageFile = ref(null);
 
@@ -104,7 +108,6 @@ const form = reactive({
   slug: '',
   short_des: '',
   description: '',
-  image: '',
   alt_name: '',
   video_id: '',
   publish_date: '',
@@ -112,14 +115,12 @@ const form = reactive({
   meta_title: '',
   meta_keyword: '',
   meta_description: '',
-  image: null,
-  createdBy: 1,
-  updatedBy: null
+  image: null
 });
-const handleImageUpload = (e) => {
-  imageFile.value = e.target.files[0];
-  form.image = imageFile.value;
-}
+// const handleImageUpload = (e) => {
+//   imageFile.value = e.target.files[0];
+//   form.image = imageFile.value;
+// }
 const generateSlug = () => {
   form.slug = form.post_title
     .toLowerCase()
@@ -129,8 +130,20 @@ const generateSlug = () => {
 };
 
 const submitPost = async () => {
+  const payload = new FormData();
+
+  // Append form fields
+  for (const key in form) {
+    if (key !== 'image') {
+      payload.append(key, form[key]);
+    }
+  }
+  // Append image file from Dropzone
+  if (imageFile.value && imageFile.value[0]) {
+    payload.append('image', imageFile.value[0].file);
+  }
   try {
-    const response = await axios.post('/api/posts', form, {
+    const response = await axios.post('/api/posts', payload, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     toast.success('Post created successfully!');

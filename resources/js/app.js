@@ -6,7 +6,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import "ionicons/css/ionicons.min.css";
 import 'vue3-toastify/dist/index.css'
-
 import './assets/dist/css/adminlte.min.css';
 import './assets/plugins/bootstrap/js/bootstrap.bundle.min.js';
 

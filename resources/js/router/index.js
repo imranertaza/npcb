@@ -17,6 +17,7 @@ import CreatePost from "../pages/admin/Post/CreatePost.vue";
 import CreatePage from "../pages/admin/Pages/CreatePage.vue";
 import ShowPost from "../pages/admin/Post/ShowPost.vue";
 import GeneralSettings from "../pages/admin/Settings/GeneralSettings.vue";
+import ShowPage from "../pages/admin/Pages/ShowPage.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -59,13 +60,19 @@ const routes = [
                         component: Pages,
                     },
                     {
-                        path: "edit-pages/:id",
+                        path: '/pages/:slug',
+                        name: 'ShowPage',
+                        component: ShowPage,
+                        props: true
+                      },
+                    {
+                        path: "edit-pages/:slug",
                         name: "UpdatePages",
                         component: UpdatePages,
                         props: true,
                     },
                     {
-                        path: "edit-pages",
+                        path: "create-pages",
                         name: "CreatePage",
                         component: CreatePage,
                     },
