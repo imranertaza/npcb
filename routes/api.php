@@ -59,5 +59,5 @@ Route::middleware('auth:user')->prefix('pages')->controller(PageController::clas
 
 Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
     Route::get('/', 'index');
-    Route::put('{label}', 'update');
+    Route::post('/update', 'update');
 });
