@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -24,12 +25,25 @@ class AdminRoleController extends Controller
         return ApiResponse::success($admins, 'User list retrieved');
     }
 
+    public function show(User $admin)
+    {
+        $admin->load('roles');
+
+        return ApiResponse::success([
+            'id' => $admin->id,
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'role' => $admin->roles->pluck('name')->first() ?? 'none',
+        ], 'User fetched successfully');
+    }
+
     // 📋 List all available roles
     public function roles()
     {
         $roles = Role::where('guard_name', 'user')->pluck('name');
         return ApiResponse::success($roles, 'Available roles retrieved');
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -55,8 +69,42 @@ class AdminRoleController extends Controller
         ], 'User created successfully');
     }
 
+
+    public function updateUser(Request $request, User $admin)
+    {
+        // ✅ Validate input
+        $validated = $request->validate([
+            'name'     => 'required|string|max:155',
+            'email'    => 'required|email|max:155|unique:users,email,' . $admin->id,
+            'password' => 'nullable|string|min:6',
+            'role'     => 'required|string|exists:roles,name',
+        ]);
+
+        // ✅ Update basic fields
+        $admin->name  = $validated['name'];
+        $admin->email = $validated['email'];
+
+        // ✅ Update password only if provided
+        if (!empty($validated['password'])) {
+            $admin->password = Hash::make($validated['password']);
+            $admin->tokens()->delete();
+        }
+
+        $admin->save();
+
+        // ✅ Sync role (Spatie Permission)
+        if (!empty($validated['role'])) {
+            $admin->syncRoles([$validated['role']]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
+            'data'    => $admin->load('roles'),
+        ]);
+    }
     // 🔄 Update an admin’s role
-    public function update(Request $request, User $admin)
+    public function updateUserRole(Request $request, User $admin)
     {
         $request->validate([
             'role' => 'required|string|exists:roles,name',

@@ -14,7 +14,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Image</th>
-                <th>Status</th>
+                <th v-if="authStore.hasPermission('publish-posts')">Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -24,9 +24,9 @@
                 <td class="align-middle">{{ truncateText(post.post_title, 20) }}</td>
                 <td class="align-middle">{{ truncateText(post.short_des, 50) }}</td>
                 <td class="align-middle">
-                  <img v-if="post.image" :src="getImageUrl(post.image)" alt="Post Image" height="50" class="rounded" />
+                  <img v-if="post.image" draggable="false" :src="getImageUrl(post.image)" alt="Post Image" height="50" class="rounded" />
                 </td>
-                <td class="align-middle">
+                <td v-if="authStore.hasPermission('publish-posts')" class="align-middle">
                   <select v-model="post.status" @change="updateStatus(post)" class=" form-control"
                     :class="post.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
                     <option :value="1">Published</option>
@@ -35,14 +35,14 @@
                 </td>
                 <td class="align-middle">
                   <div class="d-flex ">
-                  <router-link :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-dark">
+                  <router-link v-if="authStore.hasPermission('view-posts')" :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-dark">
                     <i class="fas fa-eye"></i>
                   </router-link>
-                  <router-link :to="{ name: 'UpdatePost', params: { slug: post.slug } }" class="ml-2 
+                  <router-link v-if="authStore.hasPermission('edit-posts')" :to="{ name: 'UpdatePost', params: { slug: post.slug } }" class="ml-2 
                   btn btn-sm btn-dark">
                     <i class="fas fa-pencil-alt"></i>
                   </router-link>
-                  <button class="ml-2 btn btn-sm btn-danger" @click="confirmDelete(post)">
+                  <button v-if="authStore.hasPermission('delete-posts')" class="ml-2 btn btn-sm btn-danger" @click="confirmDelete(post)">
                     <i class="fas fa-trash-alt"></i>
                   </button>
                 </div>
@@ -65,6 +65,7 @@ import DashboardHeader from '../../../components/DashboardHeader.vue';
 import { toast } from 'vue3-toastify';
 const route = useRoute();
 const posts = ref([]);
+const authStore =useAuthStore()
 
 onMounted(async () => {
   try {
@@ -98,6 +99,7 @@ const updateStatus = async (post) => {
 import { inject } from 'vue';
 import { getImageUrl, truncateText } from '../../../layouts/helpers/helpers';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '../../../store/auth';
 const $swal = inject('$swal');
 
 const confirmDelete = async (post) => {

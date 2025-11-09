@@ -8,7 +8,7 @@
     <div v-if="user">
       <h2>Welcome, {{ user?.name }}</h2>
       <p>Email: {{ user?.email }}</p>
-      <button @click="logout">Logout</button>
+      <button class="btn btn-danger" @click="logout">Logout</button>
     </div>
   </section>
   </template>

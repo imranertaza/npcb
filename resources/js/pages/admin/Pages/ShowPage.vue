@@ -28,7 +28,6 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import { getImageUrl } from '../../../layouts/helpers/helpers';
-
 const route = useRoute();
 const page = ref(null);
 

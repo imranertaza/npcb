@@ -14,7 +14,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Image</th>
-                <th>Status</th>
+                <th v-if="authStore.hasPermission(publish-pages)">Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -27,7 +27,7 @@
                   <img v-if="page.f_image" :src="getImageUrl(page.f_image)" alt="Page Image" height="50"
                     class="rounded" />
                 </td>
-                <td class="align-middle">
+                <td v-if="authStore.hasPermission(publish-pages)" class="align-middle">
                   <select v-model="page.status" @change="updateStatus(page)" class="form-control"
                     :class="page.status === 'Active' ? 'bg-success text-white' : 'bg-transparent text-dark'">
                     <option value="Active">Active</option>
@@ -36,14 +36,15 @@
                 </td>
                 <td class="align-middle">
                   <div class="d-flex">
-                    <router-link :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
+                    <router-link v-if="authStore.hasPermission('view-pages')" :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
                       <i class="fas fa-eye"></i>
                     </router-link>
-                    <router-link :to="{ name: 'UpdatePages', params: { slug: page.slug } }"
+                    <router-link v-if="authStore.hasPermission('edit-pages')" :to="{ name: 'UpdatePages', params: { slug: page.slug } }"
                       class="ml-2 btn btn-sm btn-dark">
                       <i class="fas fa-pencil-alt"></i>
                     </router-link>
-                    <button class="ml-2 btn btn-sm btn-danger" @click="confirmDelete(page)">
+
+                    <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-danger" @click="confirmDelete(page)">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </div>
@@ -62,11 +63,13 @@
 import { ref, onMounted, inject } from 'vue';
 import axios from 'axios';
 import DashboardHeader from '../../../components/DashboardHeader.vue';
-const toast = useToast()
-
 import { getImageUrl, truncateText } from '../../../layouts/helpers/helpers';
 import { useRoute } from 'vue-router';
 import { useToast } from '../../../composables/useToast';
+import { useAuthStore } from '../../../store/auth';
+
+const toast = useToast()
+const authStore =useAuthStore()
 const route = useRoute();
 const pages = ref([]);
 const $swal = inject('$swal');

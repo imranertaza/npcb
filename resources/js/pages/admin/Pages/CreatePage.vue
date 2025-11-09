@@ -35,7 +35,7 @@
               <!-- Image-->
               <div class="form-group">
                 <label>Upload Image</label>
-                <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" accept="image/*" />
+                <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
               </div>
 
               <!-- Page Type -->
