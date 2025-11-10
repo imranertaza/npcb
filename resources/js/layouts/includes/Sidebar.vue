@@ -34,117 +34,132 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-<!-- Dashboard -->
-<li class="nav-item" v-if="authStore.hasPermission('view-dashboard')">
-  <router-link :to="{ name: 'Dashboard' }" class="nav-link"
-    :class="{ active: isRouteActive({ name: 'Dashboard' }) }">
-    <i class="fas fa-tachometer-alt nav-icon"></i>
-    <p>Dashboard</p>
-  </router-link>
-</li>
+          <!-- Dashboard -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-dashboard')">
+            <router-link :to="{ name: 'Dashboard' }" class="nav-link"
+              :class="{ active: isRouteActive({ name: 'Dashboard' }) }">
+              <i class="fas fa-tachometer-alt nav-icon"></i>
+              <p>Dashboard</p>
+            </router-link>
+          </li>
 
-<!-- Pages -->
-<li class="nav-item" 
-    v-if="authStore.hasPermission('view-pages')" 
-    :class="{ 'menu-is-opening menu-open': isActiveMenu(['Pages','CreatePage']) }">
-  <a href="#" class="nav-link">
-    <i class="nav-icon fas fa-book"></i>
-    <p>Page<i class="fas fa-angle-left right"></i></p>
-  </a>
-  <ul class="nav nav-treeview">
-    <li class="nav-item">
-      <router-link :to="{ name: 'Pages' }" 
-        :class="{ active: isRouteActive({ name: 'Pages' }) }"
-        class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>Page List</p>
-      </router-link>
-    </li>
-    <li class="nav-item" v-if="authStore.hasPermission('create-pages')">
-      <router-link :to="{ name: 'CreatePage' }" 
-        :class="{ active: isRouteActive({ name: 'CreatePage' }) }"
-        class="nav-link">
-        <i class="nav-icon far fa-circle"></i>
-        <p>Create Page</p>
-      </router-link>
-    </li>
-  </ul>
-</li>
+          <!-- Pages -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-pages')"
+            :class="{ 'menu-is-opening menu-open': isActiveMenu(['Pages', 'CreatePage']) }">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>Page<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <router-link :to="{ name: 'Pages' }" :class="{ active: isRouteActive({ name: 'Pages' }) }"
+                  class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Page List</p>
+                </router-link>
+              </li>
+              <li class="nav-item" v-if="authStore.hasPermission('create-pages')">
+                <router-link :to="{ name: 'CreatePage' }" :class="{ active: isRouteActive({ name: 'CreatePage' }) }"
+                  class="nav-link">
+                  <i class="nav-icon far fa-circle"></i>
+                  <p>Create Page</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
 
-<!-- Posts -->
-<li class="nav-item" 
-    v-if="authStore.hasPermission('view-posts')" 
-    :class="{ 'menu-is-opening menu-open': isActiveMenu(['Posts','CreatePost']) }">
-  <a href="#" class="nav-link">
-    <i class="nav-icon fas fa-blog"></i>
-    <p>Post<i class="fas fa-angle-left right"></i></p>
-  </a>
-  <ul class="nav nav-treeview">
-    <li class="nav-item">
-      <router-link :to="{ name: 'Posts' }" 
-        :class="{ active: isRouteActive({ name: 'Posts' }) }"
-        class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>Post List</p>
-      </router-link>
-    </li>
-    <li class="nav-item" v-if="authStore.hasPermission('create-posts')">
-      <router-link :to="{ name: 'CreatePost' }" 
-        :class="{ active: isRouteActive({ name: 'CreatePost' }) }"
-        class="nav-link">
-        <i class="nav-icon far fa-circle"></i>
-        <p>Create Post</p>
-      </router-link>
-    </li>
-  </ul>
-</li>
+          <!-- Posts -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-posts')"
+            :class="{ 'menu-is-opening menu-open': isActiveMenu(['Posts', 'CreatePost']) }">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-blog"></i>
+              <p>Post<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <router-link :to="{ name: 'Posts' }" :class="{ active: isRouteActive({ name: 'Posts' }) }"
+                  class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Post List</p>
+                </router-link>
+              </li>
+              <li class="nav-item" v-if="authStore.hasPermission('create-posts')">
+                <router-link :to="{ name: 'CreatePost' }" :class="{ active: isRouteActive({ name: 'CreatePost' }) }"
+                  class="nav-link">
+                  <i class="nav-icon far fa-circle"></i>
+                  <p>Create Post</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
 
-<!-- Manage Users -->
-<li class="nav-item" 
-    v-if="authStore.hasPermission('view-users')" 
-    :class="{ 'menu-is-opening menu-open': isActiveMenu(['RolePermission','RolePermissionManager']) }">
-  <a href="javascript:void()" class="nav-link">
-    <i class="nav-icon fas fa-user-cog"></i>
-    <p>Manage User<i class="fas fa-angle-left right"></i></p>
-  </a>
-  <ul class="nav nav-treeview">
-    <li class="nav-item">
-      <router-link :to="{ name: 'RolePermission' }"
-        :class="{ active: isRouteActive({ name: 'RolePermission' }) }" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>User List</p>
-      </router-link>
-    </li>
-    <li class="nav-item" v-if="authStore.hasPermission('update-user-role')">
-      <router-link :to="{ name: 'RolePermissionManager' }"
-        :class="{ active: isRouteActive({ name: 'RolePermissionManager' }) }" class="nav-link">
-        <i class="nav-icon far fa-circle"></i>
-        <p>Role & Permission</p>
-      </router-link>
-    </li>
-  </ul>
-</li>
+          <!-- Manage Users -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-users')"
+            :class="{ 'menu-is-opening menu-open': isActiveMenu(['RolePermission', 'RolePermissionManager']) }">
+            <a href="javascript:void()" class="nav-link">
+              <i class="nav-icon fas fa-user-cog"></i>
+              <p>Manage User<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <router-link :to="{ name: 'RolePermission' }"
+                  :class="{ active: isRouteActive({ name: 'RolePermission' }) }" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>User List</p>
+                </router-link>
+              </li>
+              <li class="nav-item" v-if="authStore.hasPermission('update-user-role')">
+                <router-link :to="{ name: 'RolePermissionManager' }"
+                  :class="{ active: isRouteActive({ name: 'RolePermissionManager' }) }" class="nav-link">
+                  <i class="nav-icon far fa-circle"></i>
+                  <p>Role & Permission</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+          <!-- Manage Category -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-categories')"
+            :class="{ 'menu-is-opening menu-open': isActiveMenu(['CategoryIndex', 'CategoryCreate','UpdateCategory','CategoryShow']) }">
+            <a href="javascript:void()" class="nav-link">
+              <i class="nav-icon fas fa-layer-group"></i>
+              <p>Manage Category<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <router-link :to="{ name: 'CategoryIndex' }"
+                  :class="{ active: isRouteActive({ name: 'CategoryIndex' }) }" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Category List</p>
+                </router-link>
+              </li>
+              <li class="nav-item" v-if="authStore.hasPermission('create-categories')">
+                <router-link :to="{ name: 'CategoryCreate' }"
+                  :class="{ active: isRouteActive({ name: 'CategoryCreate' }) }" class="nav-link">
+                  <i class="nav-icon far fa-circle"></i>
+                  <p>Create Category</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+          <!-- Settings -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-settings')"
+            :class="{ 'menu-is-opening menu-open': isActiveMenu(['GeneralSettings']) }">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-cog"></i>
+              <p>Settings<i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item" v-if="authStore.hasPermission('update-settings')">
+                <router-link :to="{ name: 'GeneralSettings' }"
+                  :class="{ active: isRouteActive({ name: 'GeneralSettings' }) }" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>General Settings</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
 
-<!-- Settings -->
-<li class="nav-item" 
-    v-if="authStore.hasPermission('view-settings')" 
-    :class="{ 'menu-is-opening menu-open': isActiveMenu(['GeneralSettings']) }">
-  <a href="#" class="nav-link">
-    <i class="nav-icon fas fa-cog"></i>
-    <p>Settings<i class="fas fa-angle-left right"></i></p>
-  </a>
-  <ul class="nav nav-treeview">
-    <li class="nav-item" v-if="authStore.hasPermission('update-settings')">
-      <router-link :to="{ name: 'GeneralSettings' }"
-        :class="{ active: isRouteActive({ name: 'GeneralSettings' }) }" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>General Settings</p>
-      </router-link>
-    </li>
-  </ul>
-</li>
-
-</ul>
+        </ul>
 
       </nav>
       <button @click="logout" class="btn btn-block btn-danger text-left mt-3">

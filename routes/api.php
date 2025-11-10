@@ -1,13 +1,12 @@
 <?php
 
-use App\Http\Controllers\AdminRoleController;
+use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\SettingsController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::prefix('admin')->controller(AdminAuthController::class)->group(function () {
     // 🔹 Public route (no auth required)
@@ -20,7 +19,6 @@ Route::prefix('admin')->controller(AdminAuthController::class)->group(function (
         Route::post('logout', 'logout')->name('admin.logout');
     });
 });
-
 
 // ==========================
 // 🔹 Role & Permission Management (Protected)
@@ -41,6 +39,7 @@ Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(
 
     Route::get('permissions', 'permissions');
 });
+
 Route::middleware('auth:user')->prefix('posts')->controller(PostController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-posts');
     Route::post('/', 'store')->middleware('permission:create-posts');
@@ -64,11 +63,16 @@ Route::middleware('auth:user')->prefix('settings')->controller(SettingsControlle
     Route::post('/update', 'update');
 });
 
+Route::prefix('categories')
+    ->middleware(['auth:user'])
+    ->controller(CategoryController::class)
+    ->group(function () {
+        Route::get('/', 'index')->middleware('permission:view-categories');
+        Route::post('/', 'store')->middleware('permission:create-categories');
 
-Route::prefix('categories')->middleware('auth:user')->group(function () {
-    Route::get('/', [CategoryController::class, 'index'])->middleware('permission:view-categories');
-    Route::post('/', [CategoryController::class, 'store'])->middleware('permission:create-categories');
-    Route::get('{category}', [CategoryController::class, 'show'])->middleware('permission:view-categories');
-    Route::put('{category}', [CategoryController::class, 'update'])->middleware('permission:edit-categories');
-    Route::delete('{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete-categories');
-});
+        Route::prefix('{category}')->group(function () {
+            Route::get('/', 'show')->middleware('permission:view-categories');
+            Route::put('/', 'update')->middleware('permission:edit-categories');
+            Route::delete('/', 'destroy')->middleware('permission:delete-categories');
+        });
+    });

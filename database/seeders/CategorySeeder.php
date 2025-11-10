@@ -8,162 +8,94 @@ use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
-        // Root categories
-        $electronics = Category::firstOrCreate(
-            ['category_name' => 'Electronics'],
-            [
-                'description' => 'All electronic items and gadgets',
-                'meta_title' => 'Electronics',
-                'meta_description' => 'Shop for electronics, gadgets, and devices',
-                'meta_keyword' => 'electronics,gadgets,devices',
-                'header_menu' => '1',
-                'side_menu' => '1',
-                'sort_order' => 1,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === ROOT CATEGORIES ===
+        $electronics = $this->createCategory('Electronics', null, 1, 'electronics,gadgets,devices');
+        $fashion     = $this->createCategory('Fashion', null, 2, 'clothing,shoes,accessories');
+        $books       = $this->createCategory('Books', null, 3, 'books,novels,literature');
+        $home        = $this->createCategory('Home & Living', null, 4, 'furniture,decor,appliances');
+        $sports      = $this->createCategory('Sports', null, 5, 'sports,gear,equipment');
+        $toys        = $this->createCategory('Toys', null, 6, 'toys,games,kids');
 
-        $fashion = Category::firstOrCreate(
-            ['category_name' => 'Fashion'],
-            [
-                'description' => 'Clothing, shoes, and accessories',
-                'meta_title' => 'Fashion',
-                'meta_description' => 'Latest fashion trends and styles',
-                'meta_keyword' => 'clothing,shoes,accessories',
-                'header_menu' => '1',
-                'side_menu' => '1',
-                'sort_order' => 2,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === ELECTRONICS SUBCATEGORIES (6) ===
+        $mobiles   = $this->createCategory('Mobile Phones', $electronics->id, 1, 'smartphones,mobile,phones');
+        $laptops   = $this->createCategory('Laptops', $electronics->id, 2, 'laptops,notebooks,computers');
+        $this->createCategory('Tablets', $electronics->id, 3, 'tablets,ipad,android');
+        $this->createCategory('TVs', $electronics->id, 4, 'televisions,smart tv,oled');
+        $this->createCategory('Cameras', $electronics->id, 5, 'dslr,mirrorless,camera');
+        $this->createCategory('Headphones', $electronics->id, 6, 'earphones,wireless,bluetooth');
 
-        $books = Category::firstOrCreate(
-            ['category_name' => 'Books'],
-            [
-                'description' => 'Books and literature',
-                'meta_title' => 'Books',
-                'meta_description' => 'Wide range of books and novels',
-                'meta_keyword' => 'books,novels,literature',
-                'header_menu' => '0',
-                'side_menu' => '1',
-                'sort_order' => 3,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // Sub-sub under Mobile Phones
+        $this->createCategory('Android Phones', $mobiles->id, 1, 'samsung,google,oneplus');
+        $this->createCategory('iPhones', $mobiles->id, 2, 'apple,iphone 15,iphone 16');
 
-        // Subcategories under Electronics
-        $mobiles = Category::firstOrCreate(
-            ['category_name' => 'Mobile Phones', 'parent_id' => $electronics->id],
-            [
-                'description' => 'Smartphones and mobile devices',
-                'meta_title' => 'Mobile Phones',
-                'meta_description' => 'Latest smartphones and mobile devices',
-                'meta_keyword' => 'smartphones,mobile,phones',
-                'sort_order' => 1,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === FASHION SUBCATEGORIES (8) ===
+        $men   = $this->createCategory('Men', $fashion->id, 1, 'men clothing,shirts,jeans');
+        $women = $this->createCategory('Women', $fashion->id, 2, 'women dresses,kurti,saree');
+        $this->createCategory('Kids', $fashion->id, 3, 'kids wear,baby clothes');
+        $this->createCategory('Shoes', $fashion->id, 4, 'sneakers,boots,formal');
+        $this->createCategory('Bags', $fashion->id, 5, 'handbags,backpacks,laptop bags');
+        $this->createCategory('Watches', $fashion->id, 6, 'smartwatch,analog,digital');
+        $this->createCategory('Jewelry', $fashion->id, 7, 'gold,silver,earrings');
+        $this->createCategory('Sunglasses', $fashion->id, 8, 'rayban,polarized,aviator');
 
-        $laptops = Category::firstOrCreate(
-            ['category_name' => 'Laptops', 'parent_id' => $electronics->id],
-            [
-                'description' => 'Personal and business laptops',
-                'meta_title' => 'Laptops',
-                'meta_description' => 'Wide range of laptops',
-                'meta_keyword' => 'laptops,computers,notebooks',
-                'sort_order' => 2,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // Sub-sub under Men
+        $this->createCategory('Shirts', $men->id, 1, 'formal,casual,linen');
+        $this->createCategory('T-Shirts', $men->id, 2, 'polo,graphic,oversized');
 
-        // Sub-subcategories under Mobile Phones
-        Category::firstOrCreate(
-            ['category_name' => 'Android Phones', 'parent_id' => $mobiles->id],
-            [
-                'description' => 'Phones running Android OS',
-                'meta_title' => 'Android Phones',
-                'meta_description' => 'Latest Android smartphones',
-                'meta_keyword' => 'android,smartphones',
-                'sort_order' => 1,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === BOOKS SUBCATEGORIES (4) ===
+        $this->createCategory('Fiction', $books->id, 1, 'novels,thriller,romance');
+        $this->createCategory('Non-Fiction', $books->id, 2, 'biography,self-help,business');
+        $this->createCategory('Academic', $books->id, 3, 'textbooks,engineering,medical');
+        $this->createCategory('Comics', $books->id, 4, 'manga,graphic novels,dc');
 
-        Category::firstOrCreate(
-            ['category_name' => 'iPhones', 'parent_id' => $mobiles->id],
-            [
-                'description' => 'Apple iPhones',
-                'meta_title' => 'iPhones',
-                'meta_description' => 'Latest Apple iPhones',
-                'meta_keyword' => 'apple,iphone',
-                'sort_order' => 2,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === HOME & LIVING SUBCATEGORIES (6) ===
+        $this->createCategory('Furniture', $home->id, 1, 'sofa,bed,table');
+        $this->createCategory('Kitchen', $home->id, 2, 'cookware,appliances,utensils');
+        $this->createCategory('Bedding', $home->id, 3, 'sheets,pillows,comforters');
+        $this->createCategory('Decor', $home->id, 4, 'wall art,lamps,vases');
+        $this->createCategory('Bath', $home->id, 5, 'towels,shower,accessories');
+        $this->createCategory('Lighting', $home->id, 6, 'ceiling,table,led');
 
-        // Subcategories under Fashion
-        $men = Category::firstOrCreate(
-            ['category_name' => 'Men', 'parent_id' => $fashion->id],
-            [
-                'description' => 'Men clothing and accessories',
-                'meta_title' => 'Men Fashion',
-                'meta_description' => 'Latest men fashion trends',
-                'meta_keyword' => 'men,clothing,accessories',
-                'sort_order' => 1,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === SPORTS SUBCATEGORIES (4) ===
+        $this->createCategory('Fitness', $sports->id, 1, 'gym,weights,yoga');
+        $this->createCategory('Outdoor', $sports->id, 2, 'camping,hiking,cycling');
+        $this->createCategory('Team Sports', $sports->id, 3, 'football,cricket,basketball');
+        $this->createCategory('Swimming', $sports->id, 4, 'goggles,swimsuit,gear');
 
-        $women = Category::firstOrCreate(
-            ['category_name' => 'Women', 'parent_id' => $fashion->id],
-            [
-                'description' => 'Women clothing and accessories',
-                'meta_title' => 'Women Fashion',
-                'meta_description' => 'Latest women fashion trends',
-                'meta_keyword' => 'women,clothing,accessories',
-                'sort_order' => 2,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === TOYS SUBCATEGORIES (4) ===
+        $this->createCategory('Action Figures', $toys->id, 1, 'marvel,dc,star wars');
+        $this->createCategory('Educational', $toys->id, 2, 'stem,puzzles,blocks');
+        $this->createCategory('Dolls', $toys->id, 3, 'barbie,disney,fashion');
+        $this->createCategory('Remote Control', $toys->id, 4, 'cars,drones,helicopters');
 
-        // Sub-subcategories under Women
-        Category::firstOrCreate(
-            ['category_name' => 'Dresses', 'parent_id' => $women->id],
-            [
-                'description' => 'Women dresses and gowns',
-                'meta_title' => 'Dresses',
-                'meta_description' => 'Latest dresses for women',
-                'meta_keyword' => 'dresses,gowns,women',
-                'sort_order' => 1,
-                'status' => '1',
-                'createdBy' => 1,
-            ]
-        );
+        // === TOTAL: 6 Root + 24 Sub + 4 Sub-sub = 34+ Categories ===
+    }
 
-        Category::firstOrCreate(
-            ['category_name' => 'Shoes', 'parent_id' => $women->id],
+    /**
+     * Create or get existing category with default values
+     */
+    private function createCategory($name, $parentId, $sortOrder, $keywords = '')
+    {
+
+        return Category::firstOrCreate(
+            ['category_name' => $name, 'parent_id' => $parentId],
             [
-                'description' => 'Women shoes and footwear',
-                'meta_title' => 'Shoes',
-                'meta_description' => 'Latest shoes for women',
-                'meta_keyword' => 'shoes,footwear,women',
-                'sort_order' => 2,
-                'status' => '1',
-                'createdBy' => 1,
+                'description'      => "$name and related products",
+                'meta_title'       => $name,
+                'meta_description' => "Shop for $name online at best prices",
+                'meta_keyword'     => $keywords,
+                'icon_id'          => 0,
+                'image'            => "https://placehold.co/600x400?text=" . urlencode($name),
+                'alt_name'         => "$name Alt",
+                'header_menu'      => $parentId === null ? '1' : '0',
+                'side_menu'        => '1',
+                'sort_order'       => $sortOrder,
+                'status'           => '1',
+                'createdBy'        => 1,
+                'updatedBy'        => 1,
             ]
         );
     }

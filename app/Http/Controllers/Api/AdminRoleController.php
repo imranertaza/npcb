@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
@@ -102,6 +103,9 @@ class AdminRoleController extends Controller
             'message' => 'User updated successfully',
             'data'    => $admin->load('roles'),
         ]);
+        return ApiResponse::success([
+            $admin->load('roles')
+        ], 'User updated successfully');
     }
     // 🔄 Update an admin’s role
     public function updateUserRole(Request $request, User $admin)

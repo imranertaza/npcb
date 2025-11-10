@@ -96,16 +96,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import DashboardHeader from '@/components/DashboardHeader.vue';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
-
 import axios from 'axios';
-import DashboardHeader from '../../../components/DashboardHeader.vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
 const toast = useToast()
-
-
 const route = useRoute();
 const router = useRouter();
 const postSlug = route.params.slug;
@@ -169,15 +167,14 @@ const updatePost = async () => {
     });
     router.push({ name: 'Posts', query: { toast: 'Post updated successfully' } });
   } catch (err) {
-    toast.error('Failed to update post');
-    console.error(err);
+    toast.validationError(err);
   }
 };
 
+import { useToast } from '@/composables/useToast';
+import { getImageUrl } from '@/layouts/helpers/helpers';
 import { computed } from 'vue';
 import SummernoteEditorVue from 'vue3-summernote-editor';
-import { getImageUrl } from '../../../layouts/helpers/helpers';
-import { useToast } from '../../../composables/useToast';
 
 const formattedDate = computed({
   get: () => form.publish_date?.slice(0, 10) || '',

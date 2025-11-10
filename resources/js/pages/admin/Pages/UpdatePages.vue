@@ -36,7 +36,8 @@
               <!-- Image Upload -->
               <div class="form-group">
                 <label>Upload Image</label>
-                <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit" :allowSelectOnPreview="true" />
+                <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
+                  :allowSelectOnPreview="true" />
               </div>
 
               <!-- Page Type -->
@@ -89,13 +90,14 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import DashboardHeader from '../../../components/DashboardHeader.vue';
-import { toast } from 'vue3-toastify';
+import DashboardHeader from '@/components/DashboardHeader.vue';
 import SummernoteEditorVue from 'vue3-summernote-editor';
-import { getImageUrl } from '../../../layouts/helpers/helpers';
+import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
+import { useToast } from '@/composables/useToast';
 
+const toast = useToast();
 const previews = ref();
 const route = useRoute();
 const router = useRouter();
@@ -134,7 +136,6 @@ const fetchPage = async () => {
     Object.assign(form, res.data.data);
     previews.value = [getImageUrl(form.f_image)];
   } catch (err) {
-    toast.error('Failed to load page');
     console.error(err);
   }
 };
@@ -157,12 +158,9 @@ const updatePage = async () => {
     await axios.post(`/api/pages/${form.slug}?_method=PUT`, payload, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-
     router.push({ name: 'Pages', query: { toast: 'Page updated successfully!' } });
-
   } catch (err) {
-    toast.error('Failed to update page');
-    console.error(err);
+    toast.validationError(err);
   }
 };
 

@@ -4,7 +4,7 @@
   <section class="">
     <div class="row">
       <div class="col-md-12">
-        <div v-if="pages.length === 0" class="alert alert-info">No pages found.</div>
+        <div v-if="pages?.data?.length === 0" class="alert alert-info">No pages found.</div>
 
         <div v-else>
           <table class="table table-bordered table-hover">
@@ -14,12 +14,12 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Image</th>
-                <th v-if="authStore.hasPermission(publish-pages)">Status</th>
+                <th v-if="authStore.hasPermission(publish - pages)">Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(page, index) in pages" :key="page.id">
+              <tr v-for="(page, index) in pages?.data" :key="page.id">
                 <td class="align-middle">{{ index + 1 }}</td>
                 <td class="align-middle">{{ truncateText(page.page_title, 20) }}</td>
                 <td class="align-middle">{{ truncateText(page.short_des, 50) }}</td>
@@ -27,7 +27,7 @@
                   <img v-if="page.f_image" :src="getImageUrl(page.f_image)" alt="Page Image" height="50"
                     class="rounded" />
                 </td>
-                <td v-if="authStore.hasPermission(publish-pages)" class="align-middle">
+                <td v-if="authStore.hasPermission(publish - pages)" class="align-middle">
                   <select v-model="page.status" @change="updateStatus(page)" class="form-control"
                     :class="page.status === 'Active' ? 'bg-success text-white' : 'bg-transparent text-dark'">
                     <option value="Active">Active</option>
@@ -36,15 +36,17 @@
                 </td>
                 <td class="align-middle">
                   <div class="d-flex">
-                    <router-link v-if="authStore.hasPermission('view-pages')" :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
+                    <router-link v-if="authStore.hasPermission('view-pages')"
+                      :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
                       <i class="fas fa-eye"></i>
                     </router-link>
-                    <router-link v-if="authStore.hasPermission('edit-pages')" :to="{ name: 'UpdatePages', params: { slug: page.slug } }"
-                      class="ml-2 btn btn-sm btn-dark">
+                    <router-link v-if="authStore.hasPermission('edit-pages')"
+                      :to="{ name: 'UpdatePages', params: { slug: page.slug } }" class="ml-2 btn btn-sm btn-dark">
                       <i class="fas fa-pencil-alt"></i>
                     </router-link>
 
-                    <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-danger" @click="confirmDelete(page)">
+                    <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-danger"
+                      @click="confirmDelete(page)">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </div>
@@ -52,6 +54,7 @@
               </tr>
             </tbody>
           </table>
+          <Pagination :pData="pages" @page-change="fetchPages" />
         </div>
 
       </div>
@@ -60,28 +63,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from 'vue';
+import DashboardHeader from '@/components/DashboardHeader.vue';
+import Pagination from '@/components/Paginations/Pagination.vue';
+import { useToast } from '@/composables/useToast';
+import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
+import { useAuthStore } from '@/store/auth';
 import axios from 'axios';
-import DashboardHeader from '../../../components/DashboardHeader.vue';
-import { getImageUrl, truncateText } from '../../../layouts/helpers/helpers';
+import { inject, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { useToast } from '../../../composables/useToast';
-import { useAuthStore } from '../../../store/auth';
 
 const toast = useToast()
-const authStore =useAuthStore()
+const authStore = useAuthStore()
 const route = useRoute();
 const pages = ref([]);
 const $swal = inject('$swal');
 
+
+const fetchPages = async (page = 1) => {
+  try {
+    const res = await axios.get(`/api/pages?page=${page}`);
+    pages.value = res.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 onMounted(async () => {
 
-  try {
-    const response = await axios.get('/api/pages');
-    pages.value = response.data.data.data;
-  } catch (error) {
-    console.error('Error fetching pages:', error);
-  }
+  fetchPages()
 
   if (route.query.toast) {
     toast.success(route.query.toast);
@@ -100,8 +108,7 @@ const updateStatus = async (page) => {
       toast.info('Page deactivated');
     }
   } catch (error) {
-    toast.error('Failed to update status');
-    console.error(error);
+    toast.validationError(error);
   }
 };
 
@@ -118,16 +125,11 @@ const confirmDelete = async (page) => {
 
   if (result.isConfirmed) {
     try {
-      const response = await axios.delete(`/api/pages/${page.slug}`);
-      if (response.data.success) {
-        toast.success('Page deleted successfully!');
-        pages.value = pages.value.filter(p => p.id !== page.id);
-      } else {
-        toast.error('Failed to delete page.');
-      }
+      await axios.delete(`/api/pages/${page.slug}`);
+      toast.success('Page deleted successfully!');
+      pages.value = pages.value.filter(p => p.id !== page.id);
     } catch (error) {
-      toast.error('Something went wrong.');
-      console.error(error);
+      toast.validationError(error);
     }
   } else {
     toast.info('Deletion cancelled.');

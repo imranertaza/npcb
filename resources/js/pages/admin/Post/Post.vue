@@ -4,7 +4,7 @@
   <section class="">
     <div class="row">
       <div class="col-md-12">
-        <div v-if="posts.length === 0" class="alert alert-info">No posts found.</div>
+        <div v-if="posts?.data?.length === 0" class="alert alert-info">No posts found.</div>
 
         <div v-else>
           <table class="table table-bordered table-hover">
@@ -19,12 +19,13 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(post, index) in posts" :key="post.id">
+              <tr v-for="(post, index) in posts?.data" :key="post.id">
                 <td class="align-middle">{{ index + 1 }}</td>
                 <td class="align-middle">{{ truncateText(post.post_title, 20) }}</td>
                 <td class="align-middle">{{ truncateText(post.short_des, 50) }}</td>
                 <td class="align-middle">
-                  <img v-if="post.image" draggable="false" :src="getImageUrl(post.image)" alt="Post Image" height="50" class="rounded" />
+                  <img v-if="post.image" draggable="false" :src="getImageUrl(post.image)" alt="Post Image" height="50"
+                    class="rounded" />
                 </td>
                 <td v-if="authStore.hasPermission('publish-posts')" class="align-middle">
                   <select v-model="post.status" @change="updateStatus(post)" class=" form-control"
@@ -35,22 +36,26 @@
                 </td>
                 <td class="align-middle">
                   <div class="d-flex ">
-                  <router-link v-if="authStore.hasPermission('view-posts')" :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-dark">
-                    <i class="fas fa-eye"></i>
-                  </router-link>
-                  <router-link v-if="authStore.hasPermission('edit-posts')" :to="{ name: 'UpdatePost', params: { slug: post.slug } }" class="ml-2 
+                    <router-link v-if="authStore.hasPermission('view-posts')"
+                      :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-dark">
+                      <i class="fas fa-eye"></i>
+                    </router-link>
+                    <router-link v-if="authStore.hasPermission('edit-posts')"
+                      :to="{ name: 'UpdatePost', params: { slug: post.slug } }" class="ml-2 
                   btn btn-sm btn-dark">
-                    <i class="fas fa-pencil-alt"></i>
-                  </router-link>
-                  <button v-if="authStore.hasPermission('delete-posts')" class="ml-2 btn btn-sm btn-danger" @click="confirmDelete(post)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </div>
+                      <i class="fas fa-pencil-alt"></i>
+                    </router-link>
+                    <button v-if="authStore.hasPermission('delete-posts')" class="ml-2 btn btn-sm btn-danger"
+                      @click="confirmDelete(post)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
                 </td>
 
               </tr>
             </tbody>
           </table>
+          <Pagination :pData="posts" @page-change="fetchPage" />
         </div>
 
       </div>
@@ -59,19 +64,35 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import DashboardHeader from '../../../components/DashboardHeader.vue';
-import { toast } from 'vue3-toastify';
+import { onMounted, ref } from 'vue';
+import DashboardHeader from '@/components/DashboardHeader.vue';
+import { inject } from 'vue';
+import { useRoute } from 'vue-router';
+import Pagination from '@/components/Paginations/Pagination.vue';
+import { useToast } from '@/composables/useToast';
+import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
+import { useAuthStore } from '@/store/auth';
+
+
 const route = useRoute();
 const posts = ref([]);
-const authStore =useAuthStore()
+const authStore = useAuthStore();
+const toast = useToast();
+const $swal = inject('$swal');
+
+const fetchPage = async (page = 1) => {
+  try {
+    const res = await axios.get(`/api/posts?page=${page}`);
+    posts.value = res.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/posts');
-    posts.value = response.data.data.data;
-    console.log(posts.value)
+    fetchPage();
   } catch (error) {
     console.error('Error fetching posts:', error);
   }
@@ -96,11 +117,6 @@ const updateStatus = async (post) => {
     console.error(error);
   }
 };
-import { inject } from 'vue';
-import { getImageUrl, truncateText } from '../../../layouts/helpers/helpers';
-import { useRoute } from 'vue-router';
-import { useAuthStore } from '../../../store/auth';
-const $swal = inject('$swal');
 
 const confirmDelete = async (post) => {
   const result = await $swal({
@@ -115,16 +131,11 @@ const confirmDelete = async (post) => {
 
   if (result.isConfirmed) {
     try {
-      const response = await axios.delete(`/api/posts/${post.slug}`);
-      if (response.data.success) {
-        toast.success('Post deleted successfully!');
-        posts.value = posts.value.filter(p => p.id !== post.id);
-      } else {
-        toast.error('Failed to delete post.');
-      }
+      await axios.delete(`/api/posts/${post.slug}`);
+      toast.success('Post deleted successfully!');
+      posts.value = posts.value.filter(p => p.id !== post.id);
     } catch (error) {
-      toast.error('Something went wrong.');
-      console.error(error);
+      toast.validationError(error);
     }
   } else {
     toast.info('Deletion cancelled.');

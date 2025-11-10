@@ -1,9 +1,8 @@
-<!-- src/views/AdminRoleManager.vue -->
 <template>
   <DashboardHeader title="Manage User">
     <!-- Trigger Button -->
     <button class="btn btn-success" data-toggle="modal" data-target="#createAdminModal">
-      ➕ Add New User
+      <i class="fas fa-add"></i> Add New User
     </button>
 
     <!-- Modal -->
@@ -78,12 +77,13 @@
             </option>
           </select>
         </td>
-        <td v-if="authStore.hasPermission('update-users') || authStore.hasPermission('delete-users')" class="text-center">
+        <td v-if="authStore.hasPermission('update-users') || authStore.hasPermission('delete-users')"
+          class="text-center">
           <router-link v-if="authStore.hasPermission('update-users')"
             :to="{ name: 'AdminUserUpdate', params: { id: admin.id } }" class="btn btn-sm btn-info">
             <i class="fas fa-pencil-alt"></i>
           </router-link>
-          <button  v-if="authStore.hasPermission('delete-users')" class="btn btn-sm btn-danger ml-2"
+          <button v-if="authStore.hasPermission('delete-users')" class="btn btn-sm btn-danger ml-2"
             @click="deleteAdmin(admin)" :disabled="admin.role === 'super-admin'">
             <i class="fas fa-trash"></i>
           </button>
@@ -94,16 +94,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { useToast } from '../../composables/useToast'
+import { inject, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-const toast = useToast()
-import { inject } from 'vue';
 import DashboardHeader from '../../components/DashboardHeader.vue'
+import { useToast } from '../../composables/useToast'
 import { useAuthStore } from '../../store/auth'
-const authStore = useAuthStore()
 
+const toast = useToast()
+const authStore = useAuthStore()
 const $swal = inject('$swal');
 const admins = ref([])
 const roles = ref([])
@@ -122,13 +121,13 @@ const fetchRoles = async () => {
 }
 
 const updateRole = async (admin) => {
-  const isUpdate = await axios.put(`/api/admins/${admin.id}/role`, { role: admin.newRole })
-  if (isUpdate.data.success) {
+  try {
+    await axios.put(`/api/admins/${admin.id}/role`, { role: admin.newRole })
     toast.success('Role updated successfully!')
-  } else {
-    toast.error('Failed to update role.')
+    admin.role = admin.newRole
+  } catch (error) {
+    toast.validationError(error)
   }
-  admin.role = admin.newRole
 }
 
 const deleteAdmin = async (admin) => {
@@ -146,13 +145,9 @@ const deleteAdmin = async (admin) => {
 
   if (result.isConfirmed) {
     try {
-      const response = await axios.delete(`/api/admins/${admin.id}`);
-      if (response.data.success) {
-        toast.success('User deleted successfully!');
-        admins.value = admins.value.filter(a => a.id !== admin.id);
-      } else {
-        toast.error('Failed to delete user.');
-      }
+      await axios.delete(`/api/admins/${admin.id}`);
+      toast.success('User deleted successfully!');
+      admins.value = admins.value.filter(a => a.id !== admin.id);
     } catch (error) {
       toast.error('Something went wrong.');
     }
@@ -168,22 +163,26 @@ const form = ref({
   role: ''
 })
 
-const route = useRouter()
 const createAdmin = async () => {
-  const isCreated = await axios.post('/api/admins', form.value)
-  if (isCreated.data.success) {
+  try {
+    const res = await axios.post('/api/admins', form.value)
+
     toast.success('User created successfully!')
+
     document.getElementById('createAdminModal').classList.remove('show')
     document.body.classList.remove('modal-open')
-    document.getElementsByClassName('modal-backdrop')[0].remove()
-    // admins.value = admins.value.push(isCreated.data)
-    admins.value = [...admins.value, isCreated.data.data]
-  } else {
-    toast.error('Failed to create user.')
+    document.getElementsByClassName('modal-backdrop')[0]?.remove()
+
+    // Update list
+    admins.value = [...admins.value, res.data.data]
+
+    // Reset form
+    form.value = { name: '', email: '', password: '', role: '' }
+  } catch (error) {
+    toast.validationError(error);
   }
-  form.value = { name: '', email: '', password: '', role: '' }
-  // Optionally refresh admin list
 }
+
 
 onMounted(() => {
   fetchAdmins()

@@ -92,14 +92,15 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
-import axios from 'axios';
-import DashboardHeader from '../../../components/DashboardHeader.vue';
-import { toast } from 'vue3-toastify';
-import SummernoteEditorVue from 'vue3-summernote-editor';
+import DashboardHeader from '@/components/DashboardHeader.vue';
 import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
-import '@jaxtheprime/vue3-dropzone/dist/style.css'
+import '@jaxtheprime/vue3-dropzone/dist/style.css';
+import axios from 'axios';
+import { reactive, ref } from 'vue';
+import SummernoteEditorVue from 'vue3-summernote-editor';
+import { useToast } from '@/composables/useToast';
 
+const toast = useToast();
 const imageFile = ref(null);
 
 
@@ -117,10 +118,7 @@ const form = reactive({
   meta_description: '',
   image: null
 });
-// const handleImageUpload = (e) => {
-//   imageFile.value = e.target.files[0];
-//   form.image = imageFile.value;
-// }
+
 const generateSlug = () => {
   form.slug = form.post_title
     .toLowerCase()

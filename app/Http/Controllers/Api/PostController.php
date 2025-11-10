@@ -14,7 +14,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(10);
+        $posts = Post::latest()->paginate();
         return ApiResponse::success($posts, 'Posts retrieved successfully');
     }
     public function show($slug)

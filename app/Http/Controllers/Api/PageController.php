@@ -13,7 +13,7 @@ class PageController extends Controller
 {
     public function index(Request $request)
     {
-        $pages = Page::latest()->paginate(10);
+        $pages = Page::latest()->paginate();
         return ApiResponse::success($pages, 'Pages retrieved successfully');
     }
 

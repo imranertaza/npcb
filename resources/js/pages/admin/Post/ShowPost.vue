@@ -23,11 +23,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import { getImageUrl } from '../../../layouts/helpers/helpers';
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { getImageUrl } from '@/layouts/helpers/helpers';
 
 const route = useRoute();
 const post = ref(null);
@@ -37,7 +37,7 @@ onMounted(async () => {
     const response = await axios.get(`/api/posts/${route.params.slug}`);
     post.value = response.data.data;
   } catch (error) {
-    console.error('Error loading post:', error);
+    console.error('Error fetching post:', error);
   }
 });
 </script>

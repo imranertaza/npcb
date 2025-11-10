@@ -16,7 +16,7 @@ class PageSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $title = $faker->sentence(6);
 
             Page::create([

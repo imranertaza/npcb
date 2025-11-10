@@ -106,7 +106,7 @@
 
             <div class="col-md-6">
               <label class="form-label">Mail Protocol</label>
-              <select v-model="form.mail_protocol" class="form-select">
+              <select v-model="form.mail_protocol" class="custom-select rounded-0">
                 <option value="smtp">SMTP</option>
                 <option value="mail">Mail</option>
                 <option value="sendmail">Sendmail</option>
@@ -145,7 +145,7 @@
 
             <div class="col-md-6">
               <label class="form-label">SMTP Crypto</label>
-              <select v-model="form.smtp_crypto" class="form-select">
+              <select v-model="form.smtp_crypto" class="custom-select rounded-0">
                 <option value="ssl">SSL</option>
                 <option value="tls">TLS</option>
                 <option value="">None</option>
@@ -246,14 +246,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import DashboardHeader from '../../../components/DashboardHeader.vue';
-import axios from 'axios';
-import { toast } from 'vue3-toastify';
+import DashboardHeader from '@/components/DashboardHeader.vue';
+import { useToast } from '@/composables/useToast';
+import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
-import { getImageUrl } from '../../../layouts/helpers/helpers';
-
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+const toast = useToast();
 // ---------- Reactive form ----------
 const form = ref({
   // General
@@ -332,8 +332,7 @@ const fetchSettings = async () => {
       }
     });
   } catch (e) {
-    toast.error('Failed to load settings');
-    console.error(e);
+    toast.validationError(e);
   }
 };
 
@@ -349,7 +348,6 @@ const submitSettings = async () => {
       payload.append(key, value ?? '');
     }
   });
-  // === 2. Append image files ONLY if a new file is selected ===
   // Append image files ONLY if a new file is selected
   if (logoFile.value[0]?.file) {
     payload.append('store_logo', logoFile.value[0].file);
@@ -367,13 +365,7 @@ const submitSettings = async () => {
     });
     toast.success('Settings saved successfully');
   } catch (error) {
-    const errors = error.response?.data?.errors;
-    if (errors) {
-      Object.values(errors).flat().forEach(msg => toast.error(msg));
-    } else {
-      toast.error('Failed to save settings');
-    }
-    console.error(error);
+    toast.validationError(error);
   }
 };
 onMounted(fetchSettings);
