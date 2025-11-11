@@ -71,7 +71,7 @@
 <script setup>
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import { inject } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
