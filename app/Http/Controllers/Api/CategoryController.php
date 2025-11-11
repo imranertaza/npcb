@@ -15,11 +15,25 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $all = $request->query('all', false);
-        if ($all) {
-            $categories = Category::with(['children', 'parent'])->orderBy('sort_order')->get();
-        } else {
-            $categories = Category::with(['children', 'parent'])->orderBy('sort_order')->paginate();
+        $search = $request->query('search');
+
+        $query = Category::with(['children', 'parent'])->orderBy('sort_order');
+
+        // Apply search if provided
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('category_name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
         }
+
+        if ($all) {
+            $categories = $query->get();
+        } else {
+            $perPage = $request->query('per_page', 10); // default 10
+            $categories = $query->paginate($perPage)->onEachSide(1);
+        }
+
         return ApiResponse::success($categories, 'Categories fetched successfully');
     }
 

@@ -9,11 +9,27 @@ use App\Models\Page;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+
 class PageController extends Controller
 {
     public function index(Request $request)
     {
-        $pages = Page::latest()->paginate();
+        $query = Page::latest();
+
+        // Apply search if provided
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('page_title', 'like', "%{$search}%")
+                    ->orWhere('short_des', 'like', "%{$search}%")
+                    ->orWhere('meta_title', 'like', "%{$search}%")
+                    ->orWhere('meta_description', 'like', "%{$search}%")
+                    ->orWhere('meta_keyword', 'like', "%{$search}%");
+            });
+        }
+
+        $pages = $query->paginate(10); // you can set per_page here
+
         return ApiResponse::success($pages, 'Pages retrieved successfully');
     }
 
@@ -40,8 +56,8 @@ class PageController extends Controller
             'createdBy' => 'nullable|integer',
             'updatedBy' => 'nullable|integer',
         ]);
-        $validated['createdBy']=Auth::user()->id;
-        $validated['updatedBy']=Auth::user()->id;
+        $validated['createdBy'] = Auth::user()->id;
+        $validated['updatedBy'] = Auth::user()->id;
         if ($request->hasFile('f_image')) {
             $validated['f_image'] = $request->file('f_image')->store('pages', 'public');
         }

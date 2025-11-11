@@ -63,7 +63,7 @@
               <!-- Status -->
               <div class="form-group">
                 <label>Status</label>
-                <select v-model="form.status" class="form-control">
+                <select v-model="form.status" class="custom-select">
                   <option value="1">Published</option>
                   <option value="0">Draft</option>
                 </select>
@@ -96,12 +96,15 @@
 </template>
 
 <script setup>
+import axios from 'axios';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import SummernoteEditorVue from 'vue3-summernote-editor';
 import DashboardHeader from '@/components/DashboardHeader.vue';
+import { useToast } from '@/composables/useToast';
+import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
-import axios from 'axios';
-import { onMounted, reactive, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 
 const toast = useToast()
 const route = useRoute();
@@ -170,11 +173,6 @@ const updatePost = async () => {
     toast.validationError(err);
   }
 };
-
-import { useToast } from '@/composables/useToast';
-import { getImageUrl } from '@/layouts/helpers/helpers';
-import { computed } from 'vue';
-import SummernoteEditorVue from 'vue3-summernote-editor';
 
 const formattedDate = computed({
   get: () => form.publish_date?.slice(0, 10) || '',

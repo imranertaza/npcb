@@ -43,7 +43,7 @@
               <!-- Page Type -->
               <div class="form-group">
                 <label>Page Type</label>
-                <select v-model="form.page_type" class="form-control" required>
+                <select v-model="form.page_type" class="custom-select" required>
                   <option value="page">Page</option>
                   <option value="post">Post</option>
                   <option value="video">Video</option>
@@ -54,7 +54,7 @@
               <!-- Status -->
               <div class="form-group">
                 <label>Status</label>
-                <select v-model="form.status" class="form-control">
+                <select v-model="form.status" class="custom-select">
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>

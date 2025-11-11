@@ -23,7 +23,7 @@
 
           <div v-if="form.role != 'super-admin'" class="form-group mb-3">
             <label>Role</label>
-            <select v-model="form.role" class="form-control" required>
+            <select v-model="form.role" class="custom-select" required>
               <option disabled value="">Select role</option>
               <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'">
                 {{ role }}

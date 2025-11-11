@@ -36,7 +36,7 @@
 
               <div class="form-group">
                 <label>Role</label>
-                <select v-model="form.role" class="form-control" required>
+                <select v-model="form.role" class="custom-select" required>
                   <option disabled value="">Select role</option>
                   <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'">{{
                     role }}</option>
@@ -54,43 +54,57 @@
     </div>
   </DashboardHeader>
 
-  <table class="table table-bordered mt-3">
-    <thead class="thead-light">
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Current Role</th>
+  <section class="">
+    <div class="row">
+      <div class="col-md-12">
+        <div v-if="admins?.data?.length === 0" class="alert alert-info">No pages found.</div>
+        <div v-else>
+          <div class="table-responsive">
+          <table class="table table-bordered mt-3">
+            <thead class="thead-light">
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Current Role</th>
 
-        <th v-if="authStore.hasPermission('update-users')">Change Role</th>
-        <th v-if="authStore.hasPermission('update-users') || authStore.hasPermission('delete-users')">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="admin in admins" :key="admin.id">
-        <td>{{ admin.name }}</td>
-        <td>{{ admin.email }}</td>
-        <td>{{ admin.role }}</td>
-        <td v-if="authStore.hasPermission('update-users')">
-          <select v-model="admin.newRole" @change="updateRole(admin)" :disabled="admin.role === 'super-admin'"
-            class="form-control">
-            <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'">{{ role }}
-            </option>
-          </select>
-        </td>
-        <td v-if="authStore.hasPermission('update-users') || authStore.hasPermission('delete-users')"
-          class="text-center">
-          <router-link v-if="authStore.hasPermission('update-users')"
-            :to="{ name: 'AdminUserUpdate', params: { id: admin.id } }" class="btn btn-sm btn-info">
-            <i class="fas fa-pencil-alt"></i>
-          </router-link>
-          <button v-if="authStore.hasPermission('delete-users')" class="btn btn-sm btn-danger ml-2"
-            @click="deleteAdmin(admin)" :disabled="admin.role === 'super-admin'">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+                <th v-if="authStore.hasPermission('update-users')">Change Role</th>
+                <th v-if="authStore.hasPermission('update-users') || authStore.hasPermission('delete-users')">Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="admin in admins" :key="admin.id">
+                <td>{{ admin.name }}</td>
+                <td>{{ admin.email }}</td>
+                <td>{{ admin.role }}</td>
+                <td v-if="authStore.hasPermission('update-users')">
+                  <select v-model="admin.newRole" @change="updateRole(admin)" :disabled="admin.role === 'super-admin'"
+                    class="custom-select">
+                    <option v-for="role in roles" :key="role" :value="role" :disabled="role === 'super-admin'">{{ role
+                      }}
+                    </option>
+                  </select>
+                </td>
+                <td v-if="authStore.hasPermission('update-users') || authStore.hasPermission('delete-users')"
+                  class="text-center">
+                  <router-link v-if="authStore.hasPermission('update-users')"
+                    :to="{ name: 'AdminUserUpdate', params: { id: admin.id } }" class="btn btn-sm btn-info">
+                    <i class="fas fa-pencil-alt"></i>
+                  </router-link>
+                  <button v-if="authStore.hasPermission('delete-users')" class="btn btn-sm btn-danger ml-2"
+                    @click="deleteAdmin(admin)" :disabled="admin.role === 'super-admin'">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </template>
 
 <script setup>

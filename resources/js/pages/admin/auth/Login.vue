@@ -35,7 +35,7 @@
                 </div>
               </div>
             </div>
-            <div class="">
+            <div>
               <button type="submit" class="btn btn-primary btn-block">Sign In</button>
             </div>
           </form>
@@ -47,27 +47,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useToast } from '@/composables/useToast';
+import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+import { useToast } from '@/composables/useToast'
 
-const toast = useToast();
-const email = ref('');
-const password = ref('');
-const router = useRouter();
+const toast = useToast()
+const email = ref('')
+const password = ref('')
+const remember = ref(false)   // ✅ define remember so v-model works
+const router = useRouter()
 
 const login = async () => {
   try {
-    await axios.get('/sanctum/csrf-cookie');
-    const { data } = await axios.post('/api/admin/login', { email: email.value, password: password.value });
-    localStorage.setItem('token', data.data.token);
-    localStorage.setItem('role', 'admin');
-    axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
+    await axios.get('/sanctum/csrf-cookie')
+    const { data } = await axios.post('/api/admin/login', {
+      email: email.value,
+      password: password.value,
+      remember: remember.value   // ✅ send remember flag if backend supports it
+    })
+
+    localStorage.setItem('token', data.data.token)
+    localStorage.setItem('role', 'admin')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`
     router.push({ name: 'Dashboard' })
   } catch (error) {
-    toast.validationError(error);
+    console.error(error)
+    toast.validationError(error)
   }
-
-};
+}
 </script>

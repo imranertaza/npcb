@@ -43,7 +43,7 @@ const routes = [
                         meta: { permission: "view-dashboard" },
                     },
                     {
-                        path: "adminProfile",
+                        path: "admin-profile",
                         name: "adminProfile",
                         component: AdminDashboard,
                         meta: { permission: "view-dashboard" },

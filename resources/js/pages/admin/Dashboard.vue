@@ -8,7 +8,4 @@
 
 <script setup>
 import DashboardHeader from '@/components/DashboardHeader.vue';
-
-
-// any logic for the dashboard
 </script>

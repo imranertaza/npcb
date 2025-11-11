@@ -7,7 +7,10 @@ export function useToast() {
         info: (msg) => toast.info(msg),
         warn: (msg) => toast.warn(msg),
         validationError: (error) => {
-            if (
+            if(error.response.data?.message) {
+                toast.error(error.response.data.message);
+            }
+            else if (
                 error?.response?.status === 422 &&
                 error.response.data?.errors
             ) {
