@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\MenuController;
+use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\SettingsController;
@@ -75,4 +77,26 @@ Route::prefix('categories')
             Route::put('/', 'update')->middleware('permission:edit-categories');
             Route::delete('/', 'destroy')->middleware('permission:delete-categories');
         });
+    });
+
+
+Route::prefix('menus')->middleware(['auth:user', 'permission:manage-menus'])
+    ->controller(MenuController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::prefix('{menu}')->group(function () {
+            Route::get('/', 'show');
+            Route::put('/', 'update');
+            Route::delete('/', 'destroy');
+        });
+    });
+
+Route::prefix('menu-items')->middleware(['auth:user', 'permission:manage-menus'])
+    ->controller(MenuItemController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{menuItem}', 'show');
+        Route::put('{menuItem}', 'update');
+        Route::delete('{menuItem}', 'destroy');
+        Route::post('reorder', 'reorder');
     });

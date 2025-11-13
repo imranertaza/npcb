@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('post_title', 155)->charset('latin1')->collation('latin1_swedish_ci');
+            $table->string('post_title', 255)->charset('latin1')->collation('latin1_swedish_ci');
             $table->text('slug')->charset('latin1')->collation('latin1_swedish_ci');
-            $table->string('short_des', 155)->charset('utf8mb3')->collation('utf8mb3_unicode_ci');
+            $table->string('short_des', 255)->charset('utf8mb3')->collation('utf8mb3_unicode_ci');
             $table->longText('description')->charset('utf8mb3')->collation('utf8mb3_unicode_ci');
             $table->text('meta_title')->nullable()->charset('latin1')->collation('latin1_swedish_ci');
             $table->text('meta_keyword')->nullable()->charset('latin1')->collation('latin1_swedish_ci');
