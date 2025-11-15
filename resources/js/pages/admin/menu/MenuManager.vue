@@ -113,10 +113,12 @@ import axios from 'axios';
 import { computed, inject, onMounted, ref } from 'vue'
 import draggable from 'vuedraggable'
 import DashboardHeader from '@/components/DashboardHeader.vue';
-let uid = 0;
-const uniqueId = () => `client-${++uid}`;
-const newMenuName = ref('')
-const categories = ref()
+import { useToast } from '@/composables/useToast';
+
+const newMenuName = ref('');
+const categories = ref();
+
+const toast = useToast()
 
 const pages = ref([])
 const $swal = inject('$swal');
@@ -138,8 +140,6 @@ const fetchMenuItems = async (menuId = 1) => {
       params: { menu_id: menuId }
     })
     console.log({ data });
-    // apiResponse::success returns { success, data, message }
-    // data.data will already be shaped with "elements"
     return data.data
   } catch (err) {
     console.error('Error fetching menu items', err)
@@ -172,19 +172,14 @@ const updateName = async (item) => {
     }
 
     const { data } = await axios.put(`/api/menu-items/${item.id}`, payload)
-
-    // Sync local state with backend response
     Object.assign(item, data.data)
-
-    console.log(`Menu item ${item.id} updated successfully`)
+    toast.success(`Menu item "${item.name}" updated successfully!`)
   } catch (err) {
-    console.error('Error updating menu item', err)
-    // Rollback if needed
-    // Optionally show a toast/alert here
+    toast.error(`Failed to update menu item "${item.name}".`)
   }
 }
 const toggleStatus = async (menuId) => {
-  const item = findItemById(menuItems.value, menuId) // ✅ works for nested children too
+  const item = findItemById(menuItems.value, menuId)
   if (!item) return
 
   // Flip locally first
@@ -194,10 +189,10 @@ const toggleStatus = async (menuId) => {
     const { data } = await axios.put(`/api/menu-items/${menuId}`, {
       enabled: item.enabled
     })
-    // Sync with API response (in case backend modifies other fields)
     Object.assign(item, data.data)
+    toast.success(`Menu item "${item.name}" is now ${item.enabled ? 'enabled' : 'disabled'}.`)
   } catch (err) {
-    console.error('Error toggling status', err)
+    toast.error(`Failed to update status for "${item.name}".`)
     // Rollback if API fails
     item.enabled = !item.enabled
   }
@@ -224,10 +219,9 @@ const onReorder = async () => {
       menu_id: menuId,
       items
     })
-
-    console.log('Full tree reorder synced successfully', items)
+    toast.success('Menu order updated successfully!')
   } catch (err) {
-    console.error('Error syncing full tree reorder', err)
+    toast.error('Failed to update menu order.')
   }
 }
 
@@ -239,7 +233,6 @@ const fetchCategories = async () => {
     toast.error('Failed to load categories');
   }
 };
-
 
 const categoriesOptions = computed(() => {
   return [
@@ -260,7 +253,6 @@ const fetchPages = async (page = 1, searchTerm = "") => {
   }
 };
 
-
 const pagesOptions = computed(() => {
   return [
     { label: '-- None --', value: '' },
@@ -270,13 +262,12 @@ const pagesOptions = computed(() => {
     }))
   ];
 });
-// Usage in your component
+
 onMounted(async () => {
   menuItems.value = await fetchMenuItems(menuId)
   fetchCategories()
   fetchPages()
 })
-
 
 const editModal = ref({ open: false, target: null })
 const editForm = ref({
@@ -294,32 +285,27 @@ const addMenu = async () => {
   if (!name) return
 
   try {
-    // Build payload for backend
     const payload = {
-      menu_id: menuId,       // current menu context
-      parent_id: null,       // root menu
+      menu_id: menuId,
+      parent_id: null,
       name,
       icon: '',
-      link_type: 'url',      // default type
-      url: '/',              // default link
+      link_type: 'url',
+      url: '/',
       enabled: true
     }
 
-    // Call API
     const { data } = await axios.post('/api/menu-items', payload)
 
-    // Push normalized response into menuItems
     menuItems.value.unshift({
-      ...data.data,          // backend fields (id, etc.)
-      _newChildName: '',     // Vue helper field
-      elements: []           // ensure nested array exists
+      ...data.data,
+      _newChildName: '',
+      elements: []
     })
-
-    // Reset input
     newMenuName.value = ''
+    toast.success(`Menu "${name}" added successfully!`)
   } catch (err) {
-    console.error('Error adding menu', err)
-    // Optionally show a toast/alert here
+    toast.error('Failed to add menu.')
   }
 }
 
@@ -331,29 +317,29 @@ const addSubmenu = async (parent) => {
   try {
     // Build payload for backend
     const payload = {
-      menu_id: parent.menu_id || 1,   // or pass dynamic menu id
-      parent_id: parent.id,           // attach to parent
+      menu_id: parent.menu_id || 1,
+      parent_id: parent.id,
       name,
       icon: '',
-      link_type: 'url',               // default type
-      url: '/',                       // default link
+      link_type: 'url',
+      url: '/',
       enabled: true
     }
 
     // Call API
     const { data } = await axios.post('/api/menu-items', payload)
 
-    // Push the normalized response into parent's children
     parent.elements.push({
-      ...data.data,                   // backend fields
-      _newChildName: '',              // keep Vue helper field
-      elements: []                    // ensure nested array exists
+      ...data.data,
+      _newChildName: '',
+      elements: []
     })
 
     // Reset input
     parent._newChildName = ''
+    toast.success(`Submenu "${name}" added successfully!`)
   } catch (err) {
-    console.error('Error adding submenu', err)
+    toast.error('Failed to add submenu.')
   }
 }
 
@@ -370,10 +356,8 @@ const deleteItem = async (id, name = 'this item') => {
 
   if (result.isConfirmed) {
     try {
-      // Call backend
       await axios.delete(`/api/menu-items/${id}`);
 
-      // ✅ Remove locally only if backend succeeds
       const removeNode = (nodes) => {
         const idx = nodes.findIndex(n => n.id === id);
         if (idx !== -1) {
@@ -425,7 +409,6 @@ const applyEdit = async () => {
   if (!target) return
 
   try {
-    // Build payload from editForm
     const payload = {
       name: editForm.value.name,
       icon: editForm.value.icon,
@@ -435,18 +418,15 @@ const applyEdit = async () => {
       url: editForm.value.url || null,
       enabled: editForm.value.enabled
     }
-
-    // Call backend to update
     const { data } = await axios.put(`/api/menu-items/${target.id}`, payload)
 
-    // Sync local state with backend response
     Object.assign(target, data.data)
 
     // Close modal
+    toast.success('Menu item updated successfully!')
     closeEditPanel()
   } catch (err) {
-    console.error('Error updating menu item', err)
-    // Optionally show a toast/alert here
+    toast.validationError(err)
   }
 }
 
@@ -459,8 +439,6 @@ const applyEdit = async () => {
   padding: 1rem;
   margin-bottom: 1rem;
 }
-
-
 
 .name-input {
   flex-grow: 1;

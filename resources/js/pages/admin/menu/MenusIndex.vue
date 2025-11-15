@@ -144,7 +144,9 @@
 import { ref, onMounted, inject } from 'vue'
 import axios from 'axios'
 import DashboardHeader from '@/components/DashboardHeader.vue'
-import SearchBox from '@/components/SearchBox.vue'
+import { useToast } from '@/composables/useToast';
+
+const toast = useToast()
 const $swal = inject('$swal');
 
 const menus = ref([])
@@ -152,82 +154,83 @@ const menus = ref([])
 // Add modal state
 const addModal = ref(false)
 const newMenu = ref({
-  name: '',
-  position: 'Header',
-  enabled: true
+    name: '',
+    position: 'Header',
+    enabled: true
 })
 
 // Edit modal state
 const editModal = ref({ open: false, target: null })
 const editForm = ref({
-  name: '',
-  position: 'Header',
-  enabled: true
+    name: '',
+    position: 'Header',
+    enabled: true,
 })
 
 // ✅ Fetch menus from API
 const fetchMenus = async () => {
-  try {
-    const { data } = await axios.get('/api/menus')
-    console.log({data})
-    menus.value = data.data.data
-  } catch (err) {
-    console.error('Error fetching menus', err)
-  }
+    try {
+        const { data } = await axios.get('/api/menus')
+        console.log({ data })
+        menus.value = data.data.data
+    } catch (err) {
+        console.error('Error fetching menus', err)
+    }
 }
 
 // ✅ Add menu via API
 const addMenu = async () => {
-  if (!newMenu.value.name.trim()) return
-  try {
-    const { data } = await axios.post('/api/menus', newMenu.value)
-    menus.value.push(data.data)
-    newMenu.value = { name: '', position: 'Header', enabled: true }
-    closeAddModal()
-  } catch (err) {
-    console.error('Error adding menu', err)
-  }
+    if (!newMenu.value.name.trim()) return
+    try {
+        const { data } = await axios.post('/api/menus', newMenu.value)
+        menus.value.push(data.data)
+        newMenu.value = { name: '', position: 'Header', enabled: true }
+        closeAddModal()
+        toast.success('Menu added successfully!')
+    } catch (err) {
+        toast.validationError(err)
+    }
 }
 
 // ✅ Edit menu via API
 const applyEdit = async () => {
-  const target = editModal.value.target
-  if (!target) return
-  try {
-    const { data } = await axios.put(`/api/menus/${target.id}`, editForm.value)
-    Object.assign(target, data.data)
-    closeEditModal()
-  } catch (err) {
-    console.error('Error updating menu', err)
-  }
+    const target = editModal.value.target
+    if (!target) return
+    try {
+        const { data } = await axios.put(`/api/menus/${target.id}`, editForm.value)
+        Object.assign(target, data.data)
+        closeEditModal()
+        toast.success('Menu updated successfully!')
+    } catch (err) {
+        toast.validationError(err)
+    }
 }
 
 const confirmDelete = async (menu) => {
-  const result = await $swal({
-    title: `Delete "${menu.name}"?`,
-    text: 'This action cannot be undone.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete',
-    cancelButtonText: 'Cancel',
-    reverseButtons: true
-  });
+    const result = await $swal({
+        title: `Delete "${menu.name}"?`,
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    });
 
-  if (result.isConfirmed) {
-    try {
-      await axios.delete(`/api/menus/${menu.id}`);
+    if (result.isConfirmed) {
+        try {
+            await axios.delete(`/api/menus/${menu.id}`);
 
-      // ✅ Remove locally only if backend succeeds
-      menus.value = menus.value.filter(m => m.id !== menu.id);
+            menus.value = menus.value.filter(m => m.id !== menu.id);
 
-      toast.success('Menu deleted successfully!');
-    } catch (err) {
-      console.error('Error deleting menu', err);
-      toast.validationError(err);
+            toast.success('Menu deleted successfully!');
+        } catch (err) {
+            console.error('Error deleting menu', err);
+            toast.validationError(err);
+        }
+    } else {
+        toast.info('Deletion cancelled.');
     }
-  } else {
-    toast.info('Deletion cancelled.');
-  }
 };
 
 
@@ -236,22 +239,14 @@ const openAddModal = () => { addModal.value = true }
 const closeAddModal = () => { addModal.value = false }
 
 const openEditModal = (menu) => {
-  editModal.value.open = true
-  editModal.value.target = menu
-  editForm.value = { ...menu }
+    editModal.value.open = true
+    editModal.value.target = menu
+    editForm.value = { ...menu,enabled: !!menu.enabled }
+    console.log({ menu }, { editForm });
 }
 const closeEditModal = () => {
-  editModal.value.open = false
-  editModal.value.target = null
-}
-
-const onSearch = async (term) => {
-  try {
-    const { data } = await axios.get('/api/menus', { params: { search: term } })
-    menus.value = data.data
-  } catch (err) {
-    console.error('Error searching menus', err)
-  }
+    editModal.value.open = false
+    editModal.value.target = null
 }
 
 // Load menus on mount

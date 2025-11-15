@@ -29,7 +29,6 @@
 </template>
 
 <script setup>
-import '@/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css'
 import DashboardHeader from '@/components/DashboardHeader.vue'
 import { useToast } from '@/composables/useToast'
 import axios from 'axios'
