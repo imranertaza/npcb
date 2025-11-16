@@ -1,5 +1,5 @@
 <template>
-    <DashboardHeader title="🔐 Manage Permission" />
+    <DashboardHeader title="🔐Manage Permission" />
     <div v-for="role in roles" :key="role.name" class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
             <h5 class="mb-0 text-capitalize flex-grow-1">{{ role.name }}</h5>

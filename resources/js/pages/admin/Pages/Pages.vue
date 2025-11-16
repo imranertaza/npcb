@@ -1,12 +1,16 @@
 <template>
-  <DashboardHeader title="Manage Pages" />
+  <DashboardHeader title="Manage Pages">
+    <div class="d-flex justify-content-end">
+      <SearchBox @search="onSearch" />
+    </div>
+  </DashboardHeader>
 
   <section class="">
     <div class="row">
       <div class="col-md-12">
         <div v-if="pages?.data?.length === 0" class="alert alert-info">No pages found.</div>
-
         <div v-else>
+          <div class="table-responsive">
           <table class="table table-bordered table-hover">
             <thead class="thead-light">
               <tr class="align-middle">
@@ -28,7 +32,7 @@
                     class="rounded" />
                 </td>
                 <td v-if="authStore.hasPermission(publish - pages)" class="align-middle">
-                  <select v-model="page.status" @change="updateStatus(page)" class="form-control"
+                  <select v-model="page.status" @change="updateStatus(page)" class="custom-select"
                     :class="page.status === 'Active' ? 'bg-success text-white' : 'bg-transparent text-dark'">
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -54,9 +58,9 @@
               </tr>
             </tbody>
           </table>
+          </div>
           <Pagination :pData="pages" @page-change="fetchPages" />
         </div>
-
       </div>
     </div>
   </section>
@@ -71,6 +75,7 @@ import { useAuthStore } from '@/store/auth';
 import axios from 'axios';
 import { inject, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import SearchBox from '@/components/SearchBox.vue';
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -79,16 +84,20 @@ const pages = ref([]);
 const $swal = inject('$swal');
 
 
-const fetchPages = async (page = 1) => {
+const fetchPages = async (page = 1, searchTerm = "") => {
   try {
-    const res = await axios.get(`/api/pages?page=${page}`);
+    const res = await axios.get(`/api/pages?page=${page}&search=${searchTerm}`);
     pages.value = res.data.data;
   } catch (error) {
     console.error(error);
   }
 };
-onMounted(async () => {
 
+const onSearch = (term) => {
+  fetchPages(1, term)
+}
+
+onMounted(async () => {
   fetchPages()
 
   if (route.query.toast) {

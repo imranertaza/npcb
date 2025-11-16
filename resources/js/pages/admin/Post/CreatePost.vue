@@ -59,7 +59,7 @@
               <!-- Status -->
               <div class="form-group">
                 <label>Status</label>
-                <select v-model="form.status" class="form-control">
+                <select v-model="form.status" class="custom-select">
                   <option value="1">Published</option>
                   <option value="0">Draft</option>
                 </select>

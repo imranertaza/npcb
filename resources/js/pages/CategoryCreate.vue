@@ -63,7 +63,7 @@
           <!-- Header Menu -->
           <div class="mb-3">
             <label class="form-label">Show in Header Menu</label>
-            <select v-model="form.header_menu" class="form-control">
+            <select v-model="form.header_menu" class="custom-select">
               <option :value="1">Yes</option>
               <option :value="0">No</option>
             </select>
@@ -87,7 +87,7 @@
           <!-- Status -->
           <div class="mb-3">
             <label class="form-label">Status</label>
-            <select v-model="form.status" class="form-control">
+            <select v-model="form.status" class="custom-select">
               <option :value="1">Active</option>
               <option :value="0">Inactive</option>
             </select>

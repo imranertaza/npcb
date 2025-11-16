@@ -20,7 +20,7 @@
           <!-- Parent Category -->
           <div class="mb-3">
             <label class="form-label">Parent Category</label>
-            <select v-model="form.parent_id" class="form-control">
+            <select v-model="form.parent_id" class="custom-select">
               <option value="">-- None --</option>
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                 {{ cat.category_name }}
@@ -71,7 +71,7 @@
           <!-- Header Menu -->
           <div class="mb-3">
             <label class="form-label">Show in Header Menu</label>
-            <select v-model="form.header_menu" class="form-control">
+            <select v-model="form.header_menu" class="custom-select">
               <option :value="1">Yes</option>
               <option :value="0">No</option>
             </select>
@@ -80,7 +80,7 @@
           <!-- Side Menu -->
           <div class="mb-3">
             <label class="form-label">Show in Side Menu</label>
-            <select v-model="form.side_menu" class="form-control">
+            <select v-model="form.side_menu" class="custom-select">
               <option :value="1">Yes</option>
               <option :value="0">No</option>
             </select>
@@ -95,7 +95,7 @@
           <!-- Status -->
           <div class="mb-3">
             <label class="form-label">Status</label>
-            <select v-model="form.status" class="form-control">
+            <select v-model="form.status" class="custom-select">
               <option :value="1">Active</option>
               <option :value="0">Inactive</option>
             </select>

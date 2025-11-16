@@ -60,6 +60,7 @@
 
         <div v-else>
           <h4 class="mt-3 mb-1">Subcategories List</h4>
+          <div class="table-responsive">
           <table class="table table-bordered table-hover">
             <thead class="thead-light">
               <tr class="align-middle">
@@ -82,7 +83,7 @@
 
                 <!-- Status dropdown -->
                 <td v-if="authStore.hasPermission('update-categories')" class="align-middle">
-                  <select v-model="cat.status" @change="updateStatus(cat)" class="form-control"
+                  <select v-model="cat.status" @change="updateStatus(cat)" class="custom-select"
                     :class="cat.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
                     <option :value="1">Active</option>
                     <option :value="0">Inactive</option>
@@ -112,6 +113,7 @@
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </div>
   </section>

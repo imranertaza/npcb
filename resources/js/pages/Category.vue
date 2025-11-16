@@ -1,5 +1,9 @@
 <template>
-  <DashboardHeader title="Manage Categories" />
+  <DashboardHeader title="Manage Categories">
+    <div class="d-flex justify-content-end">
+      <SearchBox @search="onSearch" />
+    </div>
+  </DashboardHeader>
 
   <section>
     <div class="row">
@@ -9,57 +13,58 @@
         </div>
 
         <div v-else>
-          <table class="table table-bordered table-hover">
-            <thead class="thead-light">
-              <tr class="align-middle">
-                <th style="width: 10px">#</th>
-                <th>Name</th>
-                <th>Parent</th>
-                <th>Description</th>
-                <th v-if="authStore.hasPermission('update-categories')">Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(cat, index) in categories?.data" :key="cat.id">
-                <td class="align-middle">{{ index + 1 }}</td>
-                <td class="align-middle">{{ truncateText(cat.category_name, 25) }}</td>
-                <td class="align-middle">
-                  {{ cat.parent ? cat.parent.category_name : '-' }}
-                </td>
-                <td class="align-middle">{{ truncateText(cat.description, 50) }}</td>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr class="align-middle">
+                  <th style="width: 10px">#</th>
+                  <th>Name</th>
+                  <th>Parent</th>
+                  <th>Description</th>
+                  <th v-if="authStore.hasPermission('update-categories')">Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(cat, index) in categories?.data" :key="cat.id">
+                  <td class="align-middle">{{ index + 1 }}</td>
+                  <td class="align-middle">{{ truncateText(cat.category_name, 25) }}</td>
+                  <td class="align-middle">
+                    {{ cat.parent ? cat.parent.category_name : '-' }}
+                  </td>
+                  <td class="align-middle">{{ truncateText(cat.description, 50) }}</td>
 
-                <!-- Status dropdown -->
-                <td v-if="authStore.hasPermission('update-categories')" class="align-middle">
-                  <select v-model="cat.status" @change="updateStatus(cat)" class="form-control"
-                    :class="cat.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
-                    <option :value="1">Active</option>
-                    <option :value="0">Inactive</option>
-                  </select>
-                </td>
+                  <!-- Status dropdown -->
+                  <td v-if="authStore.hasPermission('update-categories')" class="align-middle">
+                    <select v-model="cat.status" @change="updateStatus(cat)" class="custom-select" :class="cat.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
+                      <option :value="1">Active</option>
+                      <option :value="0">Inactive</option>
+                    </select>
+                  </td>
 
-                <!-- Actions -->
-                <td class="align-middle">
-                  <div class="d-flex">
-                    <router-link v-if="authStore.hasPermission('view-categories')"
-                      :to="{ name: 'CategoryShow', params: { id: cat.id } }" class="btn btn-sm btn-dark">
-                      <i class="fas fa-eye"></i>
-                    </router-link>
+                  <!-- Actions -->
+                  <td class="align-middle">
+                    <div class="d-flex">
+                      <router-link v-if="authStore.hasPermission('view-categories')"
+                        :to="{ name: 'CategoryShow', params: { id: cat.id } }" class="btn btn-sm btn-dark">
+                        <i class="fas fa-eye"></i>
+                      </router-link>
 
-                    <router-link v-if="authStore.hasPermission('edit-categories')"
-                      :to="{ name: 'UpdateCategory', params: { id: cat.id } }" class="ml-2 btn btn-sm btn-dark">
-                      <i class="fas fa-pencil-alt"></i>
-                    </router-link>
+                      <router-link v-if="authStore.hasPermission('edit-categories')"
+                        :to="{ name: 'UpdateCategory', params: { id: cat.id } }" class="ml-2 btn btn-sm btn-dark">
+                        <i class="fas fa-pencil-alt"></i>
+                      </router-link>
 
-                    <button v-if="authStore.hasPermission('delete-categories')" class="ml-2 btn btn-sm btn-danger"
-                      @click="confirmDelete(cat)">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      <button v-if="authStore.hasPermission('delete-categories')" class="ml-2 btn btn-sm btn-danger"
+                        @click="confirmDelete(cat)">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <Pagination :pData="categories" @page-change="fetchCategory" />
         </div>
       </div>
@@ -75,19 +80,23 @@ import Pagination from '@/components/Paginations/Pagination.vue';
 import { truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import { useToast } from '@/composables/useToast';
+import SearchBox from '@/components/SearchBox.vue';
 
 const toast = useToast();
 const categories = ref([]);
 const authStore = useAuthStore();
 const $swal = inject('$swal');
 
-const fetchCategory = async (page = 1) => {
+const fetchCategory = async (page = 1, searchTerm = "") => {
   try {
-    const res = await axios.get(`/api/categories?page=${page}`);
+    const res = await axios.get(`/api/categories?page=${page}&search=${searchTerm}`);
     categories.value = res.data.data;
   } catch (error) {
     console.error(error);
   }
+};
+const onSearch = (term) => {
+  fetchCategory(1, term);
 };
 // Fetch categories
 onMounted(async () => {
