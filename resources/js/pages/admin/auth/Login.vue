@@ -10,13 +10,7 @@
 
           <form @submit.prevent="login">
             <div class="input-group mb-3">
-              <input
-                v-model="email"
-                type="email"
-                class="form-control"
-                placeholder="Email"
-                required
-              />
+              <input v-model="email" type="email" class="form-control" placeholder="Email" required />
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-envelope"></span>
@@ -24,13 +18,7 @@
               </div>
             </div>
             <div class="input-group mb-3">
-              <input
-                v-model="password"
-                type="password"
-                class="form-control"
-                placeholder="Password"
-                required
-              />
+              <input v-model="password" type="password" class="form-control" placeholder="Password" required />
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-lock"></span>
@@ -51,31 +39,35 @@
               <button type="submit" class="btn btn-primary btn-block">Sign In</button>
             </div>
           </form>
-         
+
         </div>
       </div>
     </div>
   </div>
 </template>
 
-  
-  <script setup>
-  import { ref } from 'vue';
-  import axios from 'axios';
-  import { useRouter } from 'vue-router';
-  
-  const email = ref('');
-  const password = ref('');
-  const router = useRouter();
-  
-  const login = async () => {
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { useToast } from '@/composables/useToast';
+
+const toast = useToast();
+const email = ref('');
+const password = ref('');
+const router = useRouter();
+
+const login = async () => {
+  try {
     await axios.get('/sanctum/csrf-cookie');
     const { data } = await axios.post('/api/admin/login', { email: email.value, password: password.value });
-    
     localStorage.setItem('token', data.data.token);
     localStorage.setItem('role', 'admin');
-        axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
-        router.push({ name: 'Dashboard' })
-    };
-  </script>
-  
+    axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
+    router.push({ name: 'Dashboard' })
+  } catch (error) {
+    toast.validationError(error);
+  }
+
+};
+</script>

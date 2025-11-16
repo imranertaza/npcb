@@ -19,18 +19,44 @@ class RolePermissionSeeder extends Seeder
         // 🧩 Define roles
         $roles = ['super-admin', 'admin', 'editor', 'viewer'];
 
-        // 🧩 Define permissions
+        // 🧩 Define permissions (expanded)
         $permissions = [
+            // Dashboard
             'view-dashboard',
-            'manage-users',
-            'view-content',
-            'publish-content',
-            'edit-content',
-            'delete-content',
+
+            // User management
+            'view-users',
+            'create-users',
+            'update-users',
+            'delete-users',
+            'update-user-role',
+
+            // Posts CRUD
+            'view-posts',
+            'create-posts',
+            'edit-posts',
+            'delete-posts',
+            'publish-posts',
+
+            // Pages CRUD
             'view-pages',
-            'publish-pages',
+            'create-pages',
             'edit-pages',
             'delete-pages',
+            'publish-pages',
+
+            // Categories CRUD
+            'view-categories',
+            'create-categories',
+            'edit-categories',
+            'delete-categories',
+
+            // Settings
+            'view-settings',
+            'update-settings',
+
+            // Permissions management
+            'update-permissions',
         ];
 
         // ✅ Create permissions
@@ -44,16 +70,82 @@ class RolePermissionSeeder extends Seeder
 
             switch ($roleName) {
                 case 'super-admin':
+                    // Full access
                     $role->syncPermissions(Permission::where('guard_name', $guard)->pluck('name'));
                     break;
+
                 case 'admin':
-                    $role->syncPermissions(['view-dashboard', 'manage-users','delete-content','view-content','delete-pages','view-pages']);
+                    $role->syncPermissions([
+                        'view-dashboard',
+
+                        // User management
+                        'view-users',
+                        'create-users',
+                        'update-users',
+                        'delete-users',
+                        'update-user-role',
+
+                        // Posts
+                        'view-posts',
+                        'create-posts',
+                        'edit-posts',
+                        'delete-posts',
+                        'publish-posts',
+
+                        // Pages
+                        'view-pages',
+                        'create-pages',
+                        'edit-pages',
+                        'delete-pages',
+                        'publish-pages',
+
+                        // Categories
+                        'view-categories',
+                        'create-categories',
+                        'edit-categories',
+                        'delete-categories',
+
+                        // Settings
+                        'view-settings',
+                        'update-settings',
+                        'update-permissions',
+                    ]);
                     break;
+
                 case 'editor':
-                    $role->syncPermissions(['view-dashboard','view-content','edit-content', 'publish-content']);
+                    $role->syncPermissions([
+                        'view-dashboard',
+
+                        // Posts
+                        'view-posts',
+                        'create-posts',
+                        'edit-posts',
+                        'publish-posts',
+
+                        // Pages
+                        'view-pages',
+                        'create-pages',
+                        'edit-pages',
+                        'publish-pages',
+
+                        // Categories
+                        'view-categories',
+                        'create-categories',
+                        'edit-categories',
+                    ]);
                     break;
+
                 case 'viewer':
-                    $role->syncPermissions(['view-dashboard','view-content','view-pages']);
+                    $role->syncPermissions([
+                        'view-dashboard',
+
+                        // Read-only access
+                        'view-users',
+                        'view-posts',
+                        'view-pages',
+                        'view-categories',
+                        'view-settings',
+                    ]);
                     break;
             }
         }

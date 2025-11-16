@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(10);
+        $posts = Post::latest()->paginate();
         return ApiResponse::success($posts, 'Posts retrieved successfully');
     }
     public function show($slug)
@@ -37,10 +38,9 @@ class PostController extends Controller
             'video_id' => 'nullable|string|max:255',
             'publish_date' => 'nullable|date',
             'status' => ['required', Rule::in(['0', '1'])],
-            'createdBy' => 'required|integer',
-            'updatedBy' => 'nullable|integer',
         ]);
-    
+        $validated['createdBy']=Auth::user()->id;
+        $validated['updatedBy']=Auth::user()->id;
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('posts', 'public');
         }
@@ -71,7 +71,8 @@ class PostController extends Controller
             'publish_date' => 'nullable|date',
             'status' => ['required', Rule::in(['0', '1'])],
         ]);
-    
+        $validated['createdBy']=Auth::user()->id;
+        $validated['updatedBy']=Auth::user()->id;
         // Handle image replacement
         if ($request->hasFile('image')) {
             // Delete old image if exists
