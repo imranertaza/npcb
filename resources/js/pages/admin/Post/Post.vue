@@ -33,7 +33,8 @@
                       class="rounded" />
                   </td>
                   <td v-if="authStore.hasPermission('publish-posts')" class="align-middle">
-                    <select v-model="post.status" @change="updateStatus(post)" class="custom-select" :class="post.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
+                    <select v-model="post.status" @change="updateStatus(post)" class="custom-select"
+                      :class="post.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
                       <option :value="1">Published</option>
                       <option :value="0">Draft</option>
                     </select>

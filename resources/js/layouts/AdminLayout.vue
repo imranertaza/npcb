@@ -19,6 +19,8 @@ import Navbar from '@/layouts/includes/Navbar.vue'
 import Sidebar from '@/layouts/includes/Sidebar.vue'
 import "@/assets/dist/css/adminlte.min.css";
 import SidebarVue from './includes/SidebarVue.vue';
+import 'icheck-bootstrap/icheck-bootstrap.css'
+
 
 </script>
 

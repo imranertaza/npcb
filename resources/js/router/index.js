@@ -23,6 +23,8 @@ import NotFound from "@/pages/NotFound.vue";
 import Unauthorized from "@/pages/Unauthorized.vue";
 import { useAuthStore } from "@/store/auth";
 import { createRouter, createWebHistory } from "vue-router";
+import MenuManager from "../pages/admin/menu/MenuManager.vue";
+import MenusIndex from "../pages/admin/menu/MenusIndex.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -165,6 +167,23 @@ const routes = [
                         meta: {
                             permission: "view-categories",
                         },
+                    },
+                    {
+                        path: "menus",
+                        name: "MenuManager",
+                        component: MenusIndex,
+                        meta: {
+                            permission: "manage-menus",
+                        },
+                    },
+                    {
+                        path: "menu/:id/view",
+                        name: "ShowMenu",
+                        component: MenuManager,
+                        meta: {
+                            permission: "manage-menus",
+                        },
+                        props: true,
                     },
                 ],
             },

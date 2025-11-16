@@ -55,6 +55,8 @@ class RolePermissionSeeder extends Seeder
             'view-settings',
             'update-settings',
 
+            'manage-menus',
+
             // Permissions management
             'update-permissions',
         ];
@@ -109,6 +111,7 @@ class RolePermissionSeeder extends Seeder
                         'view-settings',
                         'update-settings',
                         'update-permissions',
+                        'manage-menus',
                     ]);
                     break;
 

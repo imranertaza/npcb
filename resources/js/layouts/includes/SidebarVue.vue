@@ -144,6 +144,12 @@
                   <p>General Settings</p>
                 </router-link>
               </li>
+              <li class="nav-item" v-if="authStore.hasPermission('update-settings')">
+                <router-link :to="{ name: 'MenuManager' }" class="nav-link" :class="{ active: isRouteActive({ name: 'MenuManager' }) }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Menu Settings</p>
+                </router-link>
+              </li>
             </ul>
           </li>
         </ul>

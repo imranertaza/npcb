@@ -27,8 +27,12 @@ class PageController extends Controller
                     ->orWhere('meta_keyword', 'like', "%{$search}%");
             });
         }
+        if ($request->filled('all')) {
+            $pages = $query->select(['id','page_title'])->get(); // you can set per_page here
+        }else{
 
-        $pages = $query->paginate(10); // you can set per_page here
+            $pages = $query->paginate(10); // you can set per_page here
+        }
 
         return ApiResponse::success($pages, 'Pages retrieved successfully');
     }
