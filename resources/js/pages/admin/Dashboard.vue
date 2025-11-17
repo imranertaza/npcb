@@ -1,4 +1,3 @@
-<!-- src/views/Dashboard.vue -->
 <template>
   <DashboardHeader title="Admin Dashboard" />
   <section class="">
@@ -8,8 +7,5 @@
 </template>
 
 <script setup>
-import DashboardHeader from '../../components/DashboardHeader.vue';
-
-
-// any logic for the dashboard
+import DashboardHeader from '@/components/DashboardHeader.vue';
 </script>

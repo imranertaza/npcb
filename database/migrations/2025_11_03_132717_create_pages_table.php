@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
+            $table->string('temp', 255)->nullable()->default('default.php');
+            $table->string('page_title', 255);
+            $table->string('slug', 300);
+            $table->string('short_des', 255);
+            $table->longText('page_description');
+            $table->string('f_image', 255);
+            $table->enum('page_type', ['page', 'post', 'video', 'analyses']);
+            $table->string('meta_title', 255);
+            $table->string('meta_description', 255);
+            $table->string('meta_keyword', 255);
+            $table->enum('status', ['Active', 'Inactive']);
+            $table->foreignId('createdBy')->constrained('users');
+            $table->foreignId('updatedBy')->constrained('users');
             $table->timestamps();
         });
     }

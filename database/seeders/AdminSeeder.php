@@ -16,34 +16,91 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-          // Create admin user
-          $admin = User::firstOrCreate(
-            ['email' => 'admin@gmail.com'],
-            [
-                'name' => 'Super Admin',
-                'password' => Hash::make('12345678'),
-            ]
-        );
+        $guard = 'user';
 
-        // Create permissions
+        // 🧩 Define roles
+        $roles = ['super-admin', 'admin', 'editor', 'viewer'];
+
+        // 🧩 Define permissions
         $permissions = [
-            'manage users',
-            'manage roles',
-            'view reports',
-            'edit settings',
+            'view-dashboard',
+            'view-users','create-users','update-users','delete-users','update-user-role',
+            'view-posts','create-posts','edit-posts','delete-posts','publish-posts',
+            'view-pages','create-pages','edit-pages','delete-pages','publish-pages',
+            'view-categories','create-categories','edit-categories','delete-categories',
+            'view-settings','update-settings',
         ];
 
+        // ✅ Create permissions
         foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'user']);
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => $guard]);
         }
 
-        // Create super-admin role
-        $role = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'user']);
+        // ✅ Create roles and assign permissions
+        foreach ($roles as $roleName) {
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guard]);
 
-        // Assign all permissions to role
-        $role->syncPermissions($permissions);
+            switch ($roleName) {
+                case 'super-admin':
+                    $role->syncPermissions(Permission::where('guard_name', $guard)->pluck('name'));
+                    break;
 
-        // Assign role to admin
-        $admin->assignRole($role);
+                case 'admin':
+                    $role->syncPermissions([
+                        'view-dashboard',
+                        'view-users','create-users','update-users','delete-users','update-user-role',
+                        'view-posts','create-posts','edit-posts','delete-posts','publish-posts',
+                        'view-pages','create-pages','edit-pages','delete-pages','publish-pages',
+                        'view-categories','create-categories','edit-categories','delete-categories',
+                        'view-settings','update-settings',
+                    ]);
+                    break;
+
+                case 'editor':
+                    $role->syncPermissions([
+                        'view-dashboard',
+                        'view-posts','create-posts','edit-posts','publish-posts',
+                        'view-pages','create-pages','edit-pages','publish-pages',
+                        'view-categories','create-categories','edit-categories',
+                    ]);
+                    break;
+
+                case 'viewer':
+                    $role->syncPermissions([
+                        'view-dashboard',
+                        'view-users',
+                        'view-posts',
+                        'view-pages',
+                        'view-categories',
+                        'view-settings',
+                    ]);
+                    break;
+            }
+        }
+
+        // ✅ Seed users with roles
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'super@gmail.com'],
+            ['name' => 'Super Admin', 'password' => Hash::make('12345678')]
+        );
+        $superAdmin->assignRole('super-admin');
+
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            ['name' => 'Admin', 'password' => Hash::make('12345678')]
+        );
+        $admin->assignRole('admin');
+
+        $editor = User::firstOrCreate(
+            ['email' => 'editor@gmail.com'],
+            ['name' => 'Editor', 'password' => Hash::make('12345678')]
+        );
+        $editor->assignRole('editor');
+
+        $viewer = User::firstOrCreate(
+            ['email' => 'viewer@gmail.com'],
+            ['name' => 'Viewer', 'password' => Hash::make('12345678')]
+        );
+        $viewer->assignRole('viewer');
     }
 }
