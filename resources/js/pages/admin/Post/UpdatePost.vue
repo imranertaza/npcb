@@ -30,9 +30,8 @@
               <!-- Description -->
               <div class="form-group">
                 <label>Description</label>
-
-                <SummernoteEditorVue v-model="form.description" />
-
+                <RichTextEditor v-model="form.description" placeholder="Write your amazing post here..." class="editor">
+                </RichTextEditor>
               </div>
 
               <!-- Image Upload -->
@@ -99,12 +98,12 @@
 import axios from 'axios';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import SummernoteEditorVue from 'vue3-summernote-editor';
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import { useToast } from '@/composables/useToast';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
+import RichTextEditor from '../../../components/RichTextEditor.vue';
 
 const toast = useToast()
 const route = useRoute();

@@ -106,6 +106,12 @@ onMounted(async () => {
   }
   if (route.query.toast) {
     toast.success(route.query.toast);
+    setTimeout(() => {
+      const q = { ...route.query };
+      delete q.toast;
+
+      router.replace({ query: q });
+    }, 2000);
   }
 });
 
@@ -149,4 +155,5 @@ const confirmDelete = async (post) => {
     toast.info('Deletion cancelled.');
   }
 };
+
 </script>

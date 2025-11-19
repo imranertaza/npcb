@@ -7,15 +7,15 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "ionicons/css/ionicons.min.css";
 import "vue3-toastify/dist/index.css";
 import "@/assets/dist/css/adminlte.min.css";
-import "@/assets/plugins/jquery/jquery.min.js";
-import "@/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js";
-import "@/assets/plugins/bootstrap/js/bootstrap.bundle.min.js";
-import "@/assets/dist/js/adminlte.js";
-import '@/assets/plugins/jquery-mousewheel/jquery.mousewheel.js'
-import '@/assets/plugins/raphael/raphael.min.js'
-import "@/assets/plugins/jquery-mapael/jquery.mapael.min.js"
-import "@/assets/plugins/jquery-mapael/maps/usa_states.min.js"
-import "@/assets/plugins/chart.js/Chart.min.js"
+// import "@/assets/plugins/jquery/jquery.min.js";
+// import "@/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js";
+// import "@/assets/plugins/bootstrap/js/bootstrap.bundle.min.js";
+// import "@/assets/dist/js/adminlte.js";
+// import '@/assets/plugins/jquery-mousewheel/jquery.mousewheel.js'
+// import '@/assets/plugins/raphael/raphael.min.js'
+// import "@/assets/plugins/jquery-mapael/jquery.mapael.min.js"
+// import "@/assets/plugins/jquery-mapael/maps/usa_states.min.js"
+// import "@/assets/plugins/chart.js/Chart.min.js"
 import App from "./App.vue";
 import axios from "axios";
 import Vue3Toastify from "vue3-toastify";
@@ -34,7 +34,7 @@ app.use(Vue3Toastify, {
     autoClose: 3000,
     position: "top-right",
     theme: "light",
-});     
+});
 const token = localStorage.getItem("token");
 
 axios.defaults.withCredentials = true;

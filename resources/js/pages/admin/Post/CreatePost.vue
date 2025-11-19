@@ -29,7 +29,8 @@
               <!-- Description (Summernote) -->
               <div class="form-group">
                 <label>Description</label>
-                <SummernoteEditorVue v-model="form.description" />
+                <RichTextEditor v-model="form.description" placeholder="Write your amazing post here..."
+                  class="editor"></RichTextEditor>
               </div>
 
               <!-- Image & Alt -->
@@ -97,8 +98,8 @@ import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import axios from 'axios';
 import { reactive, ref } from 'vue';
-import SummernoteEditorVue from 'vue3-summernote-editor';
 import { useToast } from '@/composables/useToast';
+import RichTextEditor from '../../../components/RichTextEditor.vue';
 
 const toast = useToast();
 const imageFile = ref(null);

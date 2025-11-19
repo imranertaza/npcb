@@ -11,53 +11,53 @@
         <div v-if="pages?.data?.length === 0" class="alert alert-info">No pages found.</div>
         <div v-else>
           <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead class="thead-light">
-              <tr class="align-middle">
-                <th style="width: 10px">#</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Image</th>
-                <th v-if="authStore.hasPermission(publish - pages)">Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(page, index) in pages?.data" :key="page.id">
-                <td class="align-middle">{{ index + 1 }}</td>
-                <td class="align-middle">{{ truncateText(page.page_title, 20) }}</td>
-                <td class="align-middle">{{ truncateText(page.short_des, 50) }}</td>
-                <td class="align-middle">
-                  <img v-if="page.f_image" :src="getImageUrl(page.f_image)" alt="Page Image" height="50"
-                    class="rounded" />
-                </td>
-                <td v-if="authStore.hasPermission(publish - pages)" class="align-middle">
-                  <select v-model="page.status" @change="updateStatus(page)" class="custom-select"
-                    :class="page.status === 'Active' ? 'bg-success text-white' : 'bg-transparent text-dark'">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </td>
-                <td class="align-middle">
-                  <div class="d-flex">
-                    <router-link v-if="authStore.hasPermission('view-pages')"
-                      :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
-                      <i class="fas fa-eye"></i>
-                    </router-link>
-                    <router-link v-if="authStore.hasPermission('edit-pages')"
-                      :to="{ name: 'UpdatePages', params: { slug: page.slug } }" class="ml-2 btn btn-sm btn-dark">
-                      <i class="fas fa-pencil-alt"></i>
-                    </router-link>
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr class="align-middle">
+                  <th style="width: 10px">#</th>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Image</th>
+                  <th v-if="authStore.hasPermission('publish-pages')">Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(page, index) in pages?.data" :key="page.id">
+                  <td class="align-middle">{{ index + 1 }}</td>
+                  <td class="align-middle">{{ truncateText(page.page_title, 20) }}</td>
+                  <td class="align-middle">{{ truncateText(page.short_des, 50) }}</td>
+                  <td class="align-middle">
+                    <img v-if="page.f_image" :src="getImageUrl(page.f_image)" alt="Page Image" height="50"
+                      class="rounded" />
+                  </td>
+                  <td v-if="authStore.hasPermission('publish-pages')" class="align-middle">
+                    <select v-model="page.status" @change="updateStatus(page)" class="custom-select"
+                      :class="page.status === 'Active' ? 'bg-success text-white' : 'bg-transparent text-dark'">
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </td>
+                  <td class="align-middle">
+                    <div class="d-flex">
+                      <router-link v-if="authStore.hasPermission('view-pages')"
+                        :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
+                        <i class="fas fa-eye"></i>
+                      </router-link>
+                      <router-link v-if="authStore.hasPermission('edit-pages')"
+                        :to="{ name: 'UpdatePages', params: { slug: page.slug } }" class="ml-2 btn btn-sm btn-dark">
+                        <i class="fas fa-pencil-alt"></i>
+                      </router-link>
 
-                    <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-danger"
-                      @click="confirmDelete(page)">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-danger"
+                        @click="confirmDelete(page)">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <Pagination :pData="pages" @page-change="fetchPages" />
         </div>
@@ -82,6 +82,7 @@ const authStore = useAuthStore()
 const route = useRoute();
 const pages = ref([]);
 const $swal = inject('$swal');
+const router = useRouter()
 
 
 const fetchPages = async (page = 1, searchTerm = "") => {
@@ -102,6 +103,12 @@ onMounted(async () => {
 
   if (route.query.toast) {
     toast.success(route.query.toast);
+    setTimeout(() => {
+    const q = { ...route.query };
+    delete q.toast;
+
+    router.replace({ query: q });
+  }, 2000);
   }
 });
 
@@ -144,4 +151,5 @@ const confirmDelete = async (page) => {
     toast.info('Deletion cancelled.');
   }
 };
+
 </script>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\PageController;
@@ -99,4 +100,15 @@ Route::prefix('menu-items')->middleware(['auth:user', 'permission:manage-menus']
         Route::put('{menuItem}', 'update');
         Route::delete('{menuItem}', 'destroy');
         Route::post('reorder', 'reorder');
+    });
+
+Route::middleware(['auth:user'])->prefix('media')
+    ->controller(MediaController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/folder', 'createFolder');
+        Route::put('/folder/rename', 'renameFolder');
+        Route::delete('/folder', 'deleteFolder');
+        Route::post('/upload', 'upload');
+        Route::delete('/file', 'deleteFile');
+        Route::put('/file/rename', 'renameFile');
     });
