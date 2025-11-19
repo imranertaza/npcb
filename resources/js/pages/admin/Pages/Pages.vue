@@ -74,7 +74,7 @@ import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import axios from 'axios';
 import { inject, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import SearchBox from '@/components/SearchBox.vue';
 
 const toast = useToast()

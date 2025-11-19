@@ -14,10 +14,7 @@ import ShowPost from "@/pages/admin/Post/ShowPost.vue";
 import UpdatePost from "@/pages/admin/Post/UpdatePost.vue";
 import RolePermissionManager from "@/pages/admin/RolePermissionManager.vue";
 import GeneralSettings from "@/pages/admin/Settings/GeneralSettings.vue";
-import Category from "@/pages/Category.vue";
-import CategoryCreate from "@/pages/CategoryCreate.vue";
-import CategoryEdit from "@/pages/CategoryEdit.vue";
-import CategoryShow from "@/pages/CategoryShow.vue";
+
 import Home from "@/pages/Home.vue";
 import NotFound from "@/pages/NotFound.vue";
 import Unauthorized from "@/pages/Unauthorized.vue";
@@ -25,6 +22,14 @@ import { useAuthStore } from "@/store/auth";
 import { createRouter, createWebHistory } from "vue-router";
 import MenuManager from "../pages/admin/menu/MenuManager.vue";
 import MenusIndex from "../pages/admin/menu/MenusIndex.vue";
+import NewsCategoryEdit from "../pages/admin/News/NewsCategory/NewsCategoryEdit.vue";
+import NewsCategory from "../pages/admin/News/NewsCategory/NewsCategory.vue";
+import NewsCategoryCreate from "../pages/admin/News/NewsCategory/NewsCategoryCreate.vue";
+import NewsCategoryShow from "../pages/admin/News/NewsCategory/NewsCategoryShow.vue";
+import CategoryEdit from "../pages/admin/Post/Category/CategoryEdit.vue";
+import CategoryCreate from "../pages/admin/Post/Category/CategoryCreate.vue";
+import Category from "../pages/admin/Post/Category/Category.vue";
+import CategoryShow from "../pages/admin/Post/Category/CategoryShow.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -166,6 +171,40 @@ const routes = [
                         props: true,
                         meta: {
                             permission: "view-categories",
+                        },
+                    },
+                    {
+                        path: "news-categories",
+                        name: "NewsCategoryIndex",
+                        component: NewsCategory,
+                        meta: {
+                            permission: "view-news-categories",
+                        },
+                    },
+                    {
+                        path: "news-categories/create",
+                        name: "NewsCategoryCreate",
+                        component: NewsCategoryCreate,
+                        meta: {
+                            permission: "create-news-categories",
+                        },
+                    },
+                    {
+                        path: "news-categories/:id/edit",
+                        name: "UpdateNewsCategory",
+                        component: NewsCategoryEdit,
+                        props: true,
+                        meta: {
+                            permission: "edit-news-categories",
+                        },
+                    },
+                    {
+                        path: "admin/news-categories/:id",
+                        name: "NewsCategoryShow",
+                        component: NewsCategoryShow,
+                        props: true,
+                        meta: {
+                            permission: "view-news-categories",
                         },
                     },
                     {

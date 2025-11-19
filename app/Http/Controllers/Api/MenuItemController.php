@@ -122,7 +122,7 @@ class MenuItemController extends Controller
             'items.*.order' => 'required|integer|min:1',
             'items.*.parent_id' => 'nullable|integer', // ✅ allow null
         ]);
-    
+
         DB::transaction(function () use ($validated) {
             foreach ($validated['items'] as $item) {
                 MenuItem::where('id', $item['id'])
@@ -133,10 +133,10 @@ class MenuItemController extends Controller
                     ]);
             }
         });
-    
+
         return apiResponse::success(null, 'Menu items reordered successfully');
     }
-    
+
 
     /**
      * Delete a menu item.

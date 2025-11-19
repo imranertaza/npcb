@@ -164,7 +164,7 @@ const updatePost = async () => {
   }
 
   try {
-    await axios.post(`/api/posts/${postSlug}?_method=PUT`, payload, {
+    await axios.post(`/api/posts/${form.id}?_method=PUT`, payload, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     router.push({ name: 'Posts', query: { toast: 'Post updated successfully' } });
