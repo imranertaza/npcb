@@ -28,8 +28,8 @@ class PageController extends Controller
             });
         }
         if ($request->filled('all')) {
-            $pages = $query->select(['id','page_title'])->get(); // you can set per_page here
-        }else{
+            $pages = $query->select(['id', 'page_title'])->get(); // you can set per_page here
+        } else {
 
             $pages = $query->paginate(10); // you can set per_page here
         }
@@ -70,9 +70,9 @@ class PageController extends Controller
         return response()->json(['message' => 'Page created successfully', 'data' => $page], 201);
     }
 
-    public function update(Request $request, $slug)
+    public function update(Request $request, $id)
     {
-        $page = Page::where('slug', $slug)->firstOrFail();
+        $page = Page::findOrFail($id);
 
         $validated = $request->validate([
             'page_title' => 'required|string|max:255',

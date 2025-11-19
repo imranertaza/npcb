@@ -73,12 +73,13 @@
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import { inject, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
 import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
+const router = useRouter()
 
 
 const route = useRoute();
@@ -106,6 +107,12 @@ onMounted(async () => {
   }
   if (route.query.toast) {
     toast.success(route.query.toast);
+    setTimeout(() => {
+      const q = { ...route.query };
+      delete q.toast;
+
+      router.replace({ query: q });
+    }, 2000);
   }
 });
 
@@ -149,4 +156,5 @@ const confirmDelete = async (post) => {
     toast.info('Deletion cancelled.');
   }
 };
+
 </script>

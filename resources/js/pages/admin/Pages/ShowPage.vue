@@ -34,4 +34,9 @@ onMounted(async () => {
     console.error('Error loading page:', error);
   }
 });
+ defineProps({
+  slug: {
+    type: [String, Number],   // or use: null to allow anything
+  }
+})
 </script>

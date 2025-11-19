@@ -6,6 +6,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-vue": "^7.3.0",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@jaxtheprime/vue3-dropzone": "^3.4.4",
     "@vitejs/plugin-vue": "^6.0.1",

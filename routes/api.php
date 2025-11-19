@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\MenuItemController;
+use App\Http\Controllers\Api\NewsCategoryController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\SettingsController;
@@ -46,7 +48,7 @@ Route::middleware('auth:user')->prefix('posts')->controller(PostController::clas
     Route::get('/', 'index')->middleware('permission:view-posts');
     Route::post('/', 'store')->middleware('permission:create-posts');
     Route::get('{slug}', 'show')->middleware('permission:view-posts');
-    Route::put('{slug}', 'update')->middleware('permission:edit-posts');
+    Route::put('{id}', 'update')->middleware('permission:edit-posts');
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-posts');
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-posts');
 });
@@ -55,7 +57,7 @@ Route::middleware('auth:user')->prefix('pages')->controller(PageController::clas
     Route::get('/', 'index')->middleware('permission:view-pages');
     Route::post('/', 'store')->middleware('permission:create-pages');
     Route::get('{slug}', 'show')->middleware('permission:view-pages');
-    Route::put('{slug}', 'update')->middleware('permission:edit-pages');
+    Route::put('{id}', 'update')->middleware('permission:edit-pages');
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-pages');
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish pages');
 });
@@ -65,20 +67,27 @@ Route::middleware('auth:user')->prefix('settings')->controller(SettingsControlle
     Route::post('/update', 'update');
 });
 
-Route::prefix('categories')
-    ->middleware(['auth:user'])
-    ->controller(CategoryController::class)
-    ->group(function () {
-        Route::get('/', 'index')->middleware('permission:view-categories');
-        Route::post('/', 'store')->middleware('permission:create-categories');
+Route::prefix('categories')->middleware(['auth:user'])->controller(CategoryController::class)->group(function () {
+    Route::get('/', 'index')->middleware('permission:view-categories');
+    Route::post('/', 'store')->middleware('permission:create-categories');
 
-        Route::prefix('{category}')->group(function () {
-            Route::get('/', 'show')->middleware('permission:view-categories');
-            Route::put('/', 'update')->middleware('permission:edit-categories');
-            Route::delete('/', 'destroy')->middleware('permission:delete-categories');
-        });
+    Route::prefix('{category}')->group(function () {
+        Route::get('/', 'show')->middleware('permission:view-categories');
+        Route::put('/', 'update')->middleware('permission:edit-categories');
+        Route::delete('/', 'destroy')->middleware('permission:delete-categories');
     });
+});
 
+Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCategoryController::class)->group(function () {
+    Route::get('/', 'index')->middleware('permission:view-news-categories');
+    Route::post('/', 'store')->middleware('permission:create-news-categories');
+
+    Route::prefix('{category}')->group(function () {
+        Route::get('/', 'show')->middleware('permission:view-news-categories');
+        Route::put('/', 'update')->middleware('permission:edit-news-categories');
+        Route::delete('/', 'destroy')->middleware('permission:delete-news-categories');
+    });
+});
 
 Route::prefix('menus')->middleware(['auth:user', 'permission:manage-menus'])
     ->controller(MenuController::class)->group(function () {
@@ -99,4 +108,15 @@ Route::prefix('menu-items')->middleware(['auth:user', 'permission:manage-menus']
         Route::put('{menuItem}', 'update');
         Route::delete('{menuItem}', 'destroy');
         Route::post('reorder', 'reorder');
+    });
+
+Route::middleware(['auth:user'])->prefix('media')
+    ->controller(MediaController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/folder', 'createFolder');
+        Route::put('/folder/rename', 'renameFolder');
+        Route::delete('/folder', 'deleteFolder');
+        Route::post('/upload', 'upload');
+        Route::delete('/file', 'deleteFile');
+        Route::put('/file/rename', 'renameFile');
     });

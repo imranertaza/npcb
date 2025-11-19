@@ -65,10 +65,9 @@ class PostController extends Controller
         return response()->json(['message' => 'Post created successfully', 'data' => $post], 201);
     }
     // Update an existing post
-    public function update(Request $request, $slug)
+    public function update(Request $request, $id)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
-
+        $post = Post::findOrFail($id);
         $validated = $request->validate([
             'post_title' => 'required|string|max:155',
             'slug' => [

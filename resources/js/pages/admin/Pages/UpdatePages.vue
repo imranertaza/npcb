@@ -30,7 +30,8 @@
               <!-- Description -->
               <div class="form-group">
                 <label>Description</label>
-                <SummernoteEditorVue v-model="form.page_description" />
+                <RichTextEditor v-model="form.page_description" placeholder="Write your amazing post here..."
+                  class="editor"></RichTextEditor>
               </div>
 
               <!-- Image Upload -->
@@ -91,11 +92,11 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import SummernoteEditorVue from 'vue3-summernote-editor';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { useToast } from '@/composables/useToast';
+import RichTextEditor from '../../../components/RichTextEditor.vue';
 
 const toast = useToast();
 const previews = ref();
@@ -155,7 +156,7 @@ const updatePage = async () => {
   }
 
   try {
-    await axios.post(`/api/pages/${form.slug}?_method=PUT`, payload, {
+    await axios.post(`/api/pages/${form.id}?_method=PUT`, payload, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     router.push({ name: 'Pages', query: { toast: 'Page updated successfully!' } });
