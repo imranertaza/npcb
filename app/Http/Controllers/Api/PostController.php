@@ -51,17 +51,18 @@ class PostController extends Controller
             'meta_description' => 'nullable|string',
             'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name' => 'nullable|string|max:255',
-            'video_id' => 'nullable|string|max:255',
             'publish_date' => 'nullable|date',
             'status' => ['required', Rule::in(['0', '1'])],
         ]);
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
+        $validated['publish_date'] = $request->input('publish_date', now());
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('posts', 'public');
         }
 
         $post = Post::create($validated);
+
         return response()->json(['message' => 'Post created successfully', 'data' => $post], 201);
     }
     // Update an existing post
@@ -82,8 +83,6 @@ class PostController extends Controller
             'meta_description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name' => 'nullable|string|max:255',
-            'video_id' => 'nullable|string|max:255',
-            'publish_date' => 'nullable|date',
             'status' => ['required', Rule::in(['0', '1'])],
         ]);
         $validated['createdBy'] = Auth::user()->id;
@@ -111,7 +110,7 @@ class PostController extends Controller
         $post->save();
 
         return response()->json([
-            'message' => $post->status === '1' ? 'Post published' : 'Post unpublished',
+            'message' => $post->status === '1' ? 'Post active' : 'Post inactive',
             'status' => $post->status
         ]);
     }

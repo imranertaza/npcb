@@ -68,7 +68,7 @@
                 <th>Name</th>
                 <th>Parent</th>
                 <th>Description</th>
-                <th v-if="authStore.hasPermission('update-categories')">Status</th>
+                <th v-if="authStore.hasPermission('edit-news-categories')">Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -82,7 +82,7 @@
                 <td class="align-middle">{{ truncateText(cat.description, 50) }}</td>
 
                 <!-- Status dropdown -->
-                <td v-if="authStore.hasPermission('update-categories')" class="align-middle">
+                <td v-if="authStore.hasPermission('edit-news-categories')" class="align-middle">
                   <select v-model="cat.status" @change="updateStatus(cat)" class="custom-select"
                     :class="cat.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
                     <option :value="1">Active</option>

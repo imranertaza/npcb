@@ -20,13 +20,12 @@ class PageSeeder extends Seeder
             $title = $faker->sentence(6);
 
             Page::create([
-                'temp'              => 'default.php',
+                'temp'              => 'default',
                 'page_title'        => $title,
                 'slug'              => Str::slug($title),
                 'short_des'         => $faker->sentence(12),
                 'page_description'  => collect($faker->paragraphs(3))->map(fn($p) => "<p>$p</p>")->implode("\n"),
                 'f_image'           => 'https://placehold.co/600x400?text=Page+' . $i,
-                'page_type'         => $faker->randomElement(['page', 'post', 'video', 'analyses']),
                 'meta_title'        => $faker->sentence(5),
                 'meta_description'  => $faker->sentence(20),
                 'meta_keyword'      => implode(', ', $faker->words(6)),

@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\SettingsController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 Route::prefix('admin')->controller(AdminAuthController::class)->group(function () {
     // 🔹 Public route (no auth required)
@@ -59,7 +61,7 @@ Route::middleware('auth:user')->prefix('pages')->controller(PageController::clas
     Route::get('{slug}', 'show')->middleware('permission:view-pages');
     Route::put('{id}', 'update')->middleware('permission:edit-pages');
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-pages');
-    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish pages');
+    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-pages');
 });
 
 Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
@@ -74,6 +76,7 @@ Route::prefix('categories')->middleware(['auth:user'])->controller(CategoryContr
     Route::prefix('{category}')->group(function () {
         Route::get('/', 'show')->middleware('permission:view-categories');
         Route::put('/', 'update')->middleware('permission:edit-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-news-categories');
         Route::delete('/', 'destroy')->middleware('permission:delete-categories');
     });
 });
@@ -85,6 +88,7 @@ Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCate
     Route::prefix('{category}')->group(function () {
         Route::get('/', 'show')->middleware('permission:view-news-categories');
         Route::put('/', 'update')->middleware('permission:edit-news-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-news-categories');
         Route::delete('/', 'destroy')->middleware('permission:delete-news-categories');
     });
 });
@@ -120,3 +124,24 @@ Route::middleware(['auth:user'])->prefix('media')
         Route::delete('/file', 'deleteFile');
         Route::put('/file/rename', 'renameFile');
     });
+
+
+Route::middleware(['auth:user'])->get('templates', function () {
+    $path = resource_path('views/layouts/frontend');
+
+    $files = [];
+    if (File::exists($path)) {
+        $files = collect(File::files($path))
+            ->filter(function ($file) {
+                return Str::endsWith($file->getFilename(), '.blade.php');
+            })
+            ->map(function ($file) {
+                $name = pathinfo($file->getFilename(), PATHINFO_FILENAME);
+                return Str::replaceLast('.blade', '', $name);
+            })
+            ->values()
+            ->toArray();
+    }
+
+    return response()->json($files);
+});

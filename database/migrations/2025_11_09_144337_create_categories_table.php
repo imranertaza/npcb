@@ -19,12 +19,8 @@ return new class extends Migration
             $table->string('meta_title', 255)->nullable();
             $table->string('meta_description', 255)->nullable();
             $table->string('meta_keyword', 255)->nullable();
-            $table->unsignedInteger('icon_id')->nullable();
             $table->string('image', 255)->nullable();
             $table->string('alt_name', 255)->nullable();
-
-            $table->enum('header_menu', ['1', '0'])->default('0');
-            $table->enum('side_menu', ['1', '0'])->default('0');
 
             $table->integer('sort_order')->default(0);
             $table->enum('status', ['1', '0'])->default('1');

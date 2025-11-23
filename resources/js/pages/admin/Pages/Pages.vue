@@ -19,6 +19,7 @@
                   <th>Description</th>
                   <th>Image</th>
                   <th v-if="authStore.hasPermission('publish-pages')">Status</th>
+                  <th>Template</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -38,18 +39,19 @@
                       <option value="Inactive">Inactive</option>
                     </select>
                   </td>
+                  <td class="align-middle">{{ page.temp }}</td>
                   <td class="align-middle">
                     <div class="d-flex">
                       <router-link v-if="authStore.hasPermission('view-pages')"
-                        :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-dark">
+                        :to="{ name: 'ShowPage', params: { slug: page.slug } }" class="btn btn-sm btn-outline-dark">
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-pages')"
-                        :to="{ name: 'UpdatePages', params: { slug: page.slug } }" class="ml-2 btn btn-sm btn-dark">
+                        :to="{ name: 'UpdatePages', params: { slug: page.slug } }" class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
 
-                      <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-danger"
+                      <button v-if="authStore.hasPermission('delete-pages')" class="ml-2 btn btn-sm btn-outline-danger"
                         @click="confirmDelete(page)">
                         <i class="fas fa-trash-alt"></i>
                       </button>

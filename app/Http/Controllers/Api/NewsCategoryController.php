@@ -48,17 +48,14 @@ class NewsCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'parent_id'        => 'nullable|exists:categories,id',
+            'parent_id'        => 'nullable|exists:news_categories,id',
             'category_name'    => 'required|string|max:255',
             'description'      => 'nullable|string',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'meta_keyword'     => 'nullable|string|max:255',
-            'icon_id'          => 'nullable|integer',
             'image'            => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'alt_name'         => 'nullable|string|max:255',
-            'header_menu'      => 'in:0,1',
-            'side_menu'        => 'in:0,1',
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
@@ -79,18 +76,16 @@ class NewsCategoryController extends Controller
     // 🟢 Update category
     public function update(Request $request, NewsCategory $category)
     {
+
         $validated = $request->validate([
-            'parent_id'        => 'nullable|exists:categories,id',
+            'parent_id'        => 'nullable|exists:news_categories,id',
             'category_name'    => 'required|string|max:255',
             'description'      => 'nullable|string',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'meta_keyword'     => 'nullable|string|max:255',
-            'icon_id'          => 'nullable|integer',
             'image'            => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'alt_name'         => 'nullable|string|max:255',
-            'header_menu'      => 'in:0,1',
-            'side_menu'        => 'in:0,1',
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
@@ -113,6 +108,17 @@ class NewsCategoryController extends Controller
         $category->update($validated);
 
         return ApiResponse::success($category, 'Category updated successfully');
+    }
+
+    public function updateStatus(Request $request, NewsCategory $category)
+    {
+        $request->validate([
+            'status' => 'required|in:0,1',
+        ]);
+        $category->status = (string)$request->input('status');
+        $category->save();
+
+        return ApiResponse::success($category, 'Category status updated successfully');
     }
 
     // 🟢 Delete category

@@ -21,7 +21,7 @@
                   <th>Name</th>
                   <th>Parent</th>
                   <th>Description</th>
-                  <th v-if="authStore.hasPermission('update-categories')">Status</th>
+                  <th v-if="authStore.hasPermission('edit-news-categories')">Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -35,7 +35,7 @@
                   <td class="align-middle">{{ truncateText(cat.description, 50) }}</td>
 
                   <!-- Status dropdown -->
-                  <td v-if="authStore.hasPermission('update-categories')" class="align-middle">
+                  <td v-if="authStore.hasPermission('edit-news-categories')" class="align-middle">
                     <select v-model="cat.status" @change="updateStatus(cat)" class="custom-select"
                       :class="cat.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
                       <option :value="1">Active</option>
@@ -46,17 +46,17 @@
                   <!-- Actions -->
                   <td class="align-middle">
                     <div class="d-flex">
-                      <router-link v-if="authStore.hasPermission('view-categories')"
-                        :to="{ name: 'CategoryShow', params: { id: cat.id } }" class="btn btn-sm btn-dark">
+                      <router-link v-if="authStore.hasPermission('view-news-categories')"
+                        :to="{ name: 'NewsCategoryShow', params: { id: cat.id } }" class="btn btn-sm btn-outline-dark">
                         <i class="fas fa-eye"></i>
                       </router-link>
 
-                      <router-link v-if="authStore.hasPermission('edit-categories')"
-                        :to="{ name: 'UpdateCategory', params: { id: cat.id } }" class="ml-2 btn btn-sm btn-dark">
+                      <router-link v-if="authStore.hasPermission('edit-news-categories')"
+                        :to="{ name: 'UpdateNewsCategory', params: { id: cat.id } }" class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
 
-                      <button v-if="authStore.hasPermission('delete-categories')" class="ml-2 btn btn-sm btn-danger"
+                      <button v-if="authStore.hasPermission('delete-news-categories')" class="ml-2 btn btn-sm btn-outline-danger"
                         @click="confirmDelete(cat)">
                         <i class="fas fa-trash-alt"></i>
                       </button>

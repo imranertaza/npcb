@@ -22,23 +22,12 @@ class SettingsController extends Controller
     {
         // === 1. VALIDATION ===
         $validated = $request->validate([
-            // General
-            'invoice_prefix'         => 'sometimes|string|max:155',
-            'currency_symbol'        => 'sometimes|string|max:10',
-            'currency'               => 'sometimes|string|max:10',
-            'theme'                  => 'sometimes|string|max:50',
-    
+
             // Store Info
-            'store_name'             => 'sometimes|string|max:155',
-            'store_owner'            => 'sometimes|string|max:155',
             'address'                => 'sometimes|string|max:255',
             'email'                  => 'sometimes|email|max:155',
             'phone'                  => 'sometimes|string|max:50',
-            'country'                => 'sometimes|string|max:50',
             'state'                  => 'sometimes|string|max:50',
-            'language'               => 'sometimes|string|max:50',
-            'length_class'           => 'sometimes|string|max:50',
-            'weight_class'           => 'sometimes|string|max:50',
     
             // File Uploads (only if sent)
             'store_logo'             => 'sometimes|file|mimes:png,jpg,jpeg,svg|max:4096',
@@ -52,20 +41,12 @@ class SettingsController extends Controller
             'smtp_port'              => 'sometimes|numeric|between:1,65535',
             'smtp_timeout'           => 'sometimes|numeric|between:1,300',
             'smtp_crypto'            => 'sometimes|in:ssl,tls,""',
-    
-            // Alerts
-            'new_account_alert_mail' => 'sometimes|in:0,1',
-            'new_order_alert_mail'   => 'sometimes|in:0,1',
-    
+
             // Social
             'fb_url'                 => 'sometimes|url|max:255',
             'twitter_url'            => 'sometimes|url|max:255',
             'tiktok_url'             => 'sometimes|url|max:255',
             'instagram_url'          => 'sometimes|url|max:255',
-    
-            // Catalog
-            'category_product_limit' => 'sometimes|numeric|min:1|max:100',
-    
             // SEO
             'meta_title'             => 'sometimes|string|max:155',
             'meta_keyword'           => 'sometimes|string|max:255',
