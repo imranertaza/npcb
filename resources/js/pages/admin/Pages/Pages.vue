@@ -153,5 +153,4 @@ const confirmDelete = async (page) => {
     toast.info('Deletion cancelled.');
   }
 };
-
 </script>

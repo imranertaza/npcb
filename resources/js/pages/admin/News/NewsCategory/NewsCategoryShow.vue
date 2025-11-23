@@ -141,6 +141,13 @@ const fetchCategory = async (id = route.params.id) => {
     console.error(error);
   }
 };
-
-onMounted(fetchCategory);
+defineProps({
+  id: {
+    type: [Number, String],
+    required: false
+  }
+});
+onMounted(() => {
+  fetchCategory();
+});
 </script>

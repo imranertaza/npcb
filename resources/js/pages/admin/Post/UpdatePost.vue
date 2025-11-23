@@ -175,6 +175,13 @@ const formattedDate = computed({
   set: (val) => form.publish_date = val
 });
 
+defineProps({
+  slug: {
+    type: [Number, String],
+    required: false
+  }
+});
+
 onMounted(() => {
   fetchPost();
 });

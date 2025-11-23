@@ -158,7 +158,12 @@ const updateCategory = async () => {
     toast.validationError(error);
   }
 };
-
+defineProps({
+  id: {
+    type: [Number, String],
+    required: false
+  }
+});
 onMounted(() => {
   fetchCategory();
   fetchCategories();

@@ -75,8 +75,9 @@
                       <option value="Inactive">Inactive</option>
                     </select>
                   </div>
-                    <button type="submit" class="btn btn-success btn-block">Update</button>
-                    <button type="button" class="btn btn-secondary btn-block" @click="router.push({ name: 'Pages' })">Cancel</button>
+                  <button type="submit" class="btn btn-success btn-block">Update</button>
+                  <button type="button" class="btn btn-secondary btn-block"
+                    @click="router.push({ name: 'Pages' })">Cancel</button>
                 </div>
               </div>
 
@@ -174,4 +175,10 @@ onMounted(async () => {
     toast.error('Failed to load templates.');
   }
 });
+
+defineProps({
+  slug: {
+    type: [String, Number],
+  }
+})
 </script>
