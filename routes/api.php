@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\MenuItemController;
@@ -15,10 +16,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 Route::prefix('admin')->controller(AdminAuthController::class)->group(function () {
-    // 🔹 Public route (no auth required)
     Route::post('login', 'login')->name('admin.login');
 
-    // 🔹 Protected routes (auth:admin required)
     Route::middleware('auth:user')->group(function () {
         Route::get('me', 'me')->name('admin.me');
         Route::get('profile', 'profile')->name('admin.profile');
@@ -26,9 +25,7 @@ Route::prefix('admin')->controller(AdminAuthController::class)->group(function (
     });
 });
 
-// ==========================
-// 🔹 Role & Permission Management (Protected)
-// ==========================
+
 Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(function () {
 
     Route::get('admins', 'index');
@@ -117,30 +114,34 @@ Route::prefix('menu-items')->middleware(['auth:user', 'permission:manage-menus']
 Route::middleware(['auth:user'])->prefix('media')
     ->controller(MediaController::class)->group(function () {
         Route::get('/', 'index');
-        Route::post('/folder', 'createFolder');
-        Route::put('/folder/rename', 'renameFolder');
-        Route::delete('/folder', 'deleteFolder');
         Route::post('/upload', 'upload');
         Route::delete('/file', 'deleteFile');
-        Route::put('/file/rename', 'renameFile');
     });
 
+Route::middleware(['auth:user'])->prefix('gallery')
+    ->controller(GalleryController::class)->group(function () {
+        Route::get('/', 'index')->name('gallery.index')->middleware('permission:view-galleries');
+        Route::post('/', 'store')->name('gallery.store')->middleware('permission:create-galleries');
+        Route::get('{gallery}', 'show')->name('gallery.show')->middleware('permission:view-galleries');
+        Route::put('{gallery}', 'update')->name('gallery.update')->middleware('permission:edit-galleries');
+        Route::delete('{gallery}', 'destroy')->name('gallery.destroy')->middleware('permission:delete-galleries');
+        // Gallery Details
+        Route::post('details', 'storeDetail')->name('gallery.details.store')->middleware('permission:edit-galleries');
+        Route::patch('details/{detail}', 'updateDetail')->name('gallery.details.update')->middleware('permission:edit-galleries');
+        Route::delete('details/{detail}', 'destroyGalleryDetail')->name('gallery.details.destroy')->middleware('permission:delete-galleries');
+    });
 
 Route::middleware(['auth:user'])->get('templates', function () {
     $path = resource_path('views/layouts/frontend');
-
     $files = [];
     if (File::exists($path)) {
         $files = collect(File::files($path))
             ->filter(function ($file) {
                 return Str::endsWith($file->getFilename(), '.blade.php');
-            })
-            ->map(function ($file) {
+            })->map(function ($file) {
                 $name = pathinfo($file->getFilename(), PATHINFO_FILENAME);
                 return Str::replaceLast('.blade', '', $name);
-            })
-            ->values()
-            ->toArray();
+            })->values()->toArray();
     }
 
     return response()->json($files);

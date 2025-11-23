@@ -107,7 +107,7 @@
                 v-if="authStore.hasPermission('view-categories')">
                 <a href="#" class="nav-link" @click.prevent="toggle('categories')">
                   <i class="nav-icon far fa-circle"></i>
-                  <p>Manage Category <i class="fas fa-angle-left right"></i></p>
+                  <p>Post Category <i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview" v-show="isOpen('categories')">
                   <li class="nav-item">
@@ -134,7 +134,7 @@
             :class="{ 'menu-open': isOpen('newsCategories') }">
             <a href="#" class="nav-link" @click.prevent="toggle('newsCategories')">
               <i class="nav-icon fas fa-newspaper"></i>
-              <p>Manage News Category <i class="fas fa-angle-left right"></i></p>
+              <p>News Category <i class="fas fa-angle-left right"></i></p>
             </a>
             <ul class="nav nav-treeview" v-show="isOpen('newsCategories')">
 
@@ -156,6 +156,29 @@
                 </router-link>
               </li>
 
+            </ul>
+          </li>
+          <!-- Galleries -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-galleries')"
+            :class="{ 'menu-open': isOpen('galleries') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('galleries')">
+              <i class="nav-icon fas fa-images"></i>
+              <p>Galleries <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('galleries')">
+              <li class="nav-item">
+                <router-link :to="{ name: 'Gallery' }" class="nav-link" :class="{ active: $route.name === 'Gallery' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Gallery List</p>
+                </router-link>
+              </li>
+              <li class="nav-item" v-if="authStore.hasPermission('create-galleries')">
+                <router-link :to="{ name: 'CreateGallery' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateGallery' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Gallery</p>
+                </router-link>
+              </li>
             </ul>
           </li>
 
@@ -247,14 +270,31 @@ const openParentMenus = () => {
   const map = {
     'Pages': ['pages'],
     'CreatePage': ['pages'],
+    'UpdatePages': ['pages'],
+    'ShowPage': ['pages'],
     'Posts': ['posts'],
     'CreatePost': ['posts'],
+    'ShowPost': ['posts'],
+    'UpdatePost': ['posts'],
     'CategoryIndex': ['posts', 'categories'],
+    'UpdateCategory': ['posts', 'categories'],
+    'CreateCategory': ['posts', 'categories'],
+    'CategoryShow': ['posts', 'categories'],
+    'NewsCategoryCreate': ['newsCategories'],
+    'NewsCategoryIndex': ['newsCategories'],
+    'UpdateNewsCategory': ['newsCategories'],
+    'NewsCategoryShow': ['newsCategories'],
     'CategoryCreate': ['posts', 'categories'],
     'RolePermission': ['users'],
     'RolePermissionManager': ['users'],
+    'AdminUserUpdate': ['users'],
     'GeneralSettings': ['settings'],
     'MenuManager': ['settings'],
+    'ShowMenu': ['settings'],
+    'Gallery': ['galleries'],
+    'CreateGallery': ['galleries'],
+    'ShowGallery': ['galleries'],
+
   }
 
   const current = route.name

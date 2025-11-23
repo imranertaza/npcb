@@ -145,7 +145,7 @@ const confirmDelete = async (page) => {
     try {
       await axios.delete(`/api/pages/${page.slug}`);
       toast.success('Page deleted successfully!');
-      pages.value = pages.value.filter(p => p.id !== page.id);
+      pages.value.data = pages.value.data.filter(p => p.id !== page.id);
     } catch (error) {
       toast.validationError(error);
     }
