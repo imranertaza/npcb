@@ -27,7 +27,6 @@ class PostController extends Controller
             });
         }
 
-        // Allow per_page override (default 10)
         $perPage = $request->input('per_page', 10);
         $posts = $query->paginate($perPage);
 
@@ -35,7 +34,7 @@ class PostController extends Controller
     }
     public function show($slug)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post = Post::where('slug', $slug)->with('categories.parent')->firstOrFail();
         return ApiResponse::success($post, 'Post retrieved successfully');
     }
     // Store a new post
@@ -53,6 +52,8 @@ class PostController extends Controller
             'alt_name' => 'nullable|string|max:255',
             'publish_date' => 'nullable|date',
             'status' => ['required', Rule::in(['0', '1'])],
+            'categories' => 'required|array',
+            'categories.*' => 'exists:news_categories,id',
         ]);
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
@@ -62,6 +63,10 @@ class PostController extends Controller
         }
 
         $post = Post::create($validated);
+
+        if (isset($validated['categories'])) {
+            $post->categories()->sync($validated['categories']);
+        }
 
         return response()->json(['message' => 'Post created successfully', 'data' => $post], 201);
     }
@@ -84,6 +89,8 @@ class PostController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name' => 'nullable|string|max:255',
             'status' => ['required', Rule::in(['0', '1'])],
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
         ]);
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
@@ -99,6 +106,10 @@ class PostController extends Controller
         }
 
         $post->update($validated);
+
+        if (isset($validated['categories'])) {
+            $post->categories()->sync($validated['categories']);
+        }
 
         return response()->json(['message' => 'Post updated successfully', 'data' => $post], 200);
     }

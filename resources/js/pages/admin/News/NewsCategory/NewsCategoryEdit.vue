@@ -1,5 +1,5 @@
 <template>
-  <DashboardHeader title="Edit Category" />
+  <DashboardHeader title="Edit News Category" />
 
   <section class="mt-3">
     <div class="card">
@@ -79,7 +79,7 @@
           <button type="submit" class="btn btn-primary btn-block">Update</button>
         </div>
         <div class="col-md-6">
-          <router-link :to="{ name: 'CategoryIndex' }" class="btn btn-secondary btn-block">Cancel</router-link>
+          <router-link :to="{ name: 'NewsCategoryIndex' }" class="btn btn-secondary btn-block">Cancel</router-link>
         </div>
       </div>
     </div>

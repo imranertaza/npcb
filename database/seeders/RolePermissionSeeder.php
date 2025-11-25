@@ -64,6 +64,31 @@ class RolePermissionSeeder extends Seeder
             'delete-galleries',
             'publish-galleries',
 
+            // ✅ Events CRUD
+            'view-events',
+            'create-events',
+            'edit-events',
+            'delete-events',
+
+            // ✅ Event Categories CRUD
+            'view-events-categories',
+            'create-events-categories',
+            'edit-events-categories',
+            'delete-events-categories',
+
+            // ✅ Notices CRUD
+            'view-notices',
+            'create-notices',
+            'edit-notices',
+            'delete-notices',
+
+            // ✅ News
+            'view-news',
+            'create-news',
+            'edit-news',
+            'delete-news',
+            'publish-news',
+
             // Settings
             'view-settings',
             'update-settings',
@@ -133,11 +158,37 @@ class RolePermissionSeeder extends Seeder
                         'delete-galleries',
                         'publish-galleries',
 
+                        // ✅ Events CRUD
+                        'view-events',
+                        'create-events',
+                        'edit-events',
+                        'delete-events',
+
+                        // ✅ Event Categories CRUD
+                        'view-events-categories',
+                        'create-events-categories',
+                        'edit-events-categories',
+                        'delete-events-categories',
+
+                        // ✅ Notices CRUD
+                        'view-notices',
+                        'create-notices',
+                        'edit-notices',
+                        'delete-notices',
+
+                        // ✅ News
+                        'view-news',
+                        'create-news',
+                        'edit-news',
+                        'delete-news',
+                        'publish-news',
+
                         // Settings
                         'view-settings',
                         'update-settings',
                         'update-permissions',
                         'manage-menus',
+
                     ]);
                     break;
 
@@ -172,6 +223,27 @@ class RolePermissionSeeder extends Seeder
                         'create-galleries',
                         'edit-galleries',
                         'publish-galleries',
+
+                        // ✅ Events CRUD
+                        'view-events',
+                        'create-events',
+                        'edit-events',
+
+                        // ✅ Event Categories CRUD
+                        'view-events-categories',
+                        'create-events-categories',
+                        'edit-events-categories',
+
+                        // ✅ Notices CRUD
+                        'view-notices',
+                        'create-notices',
+                        'edit-notices',
+
+                        // ✅ News
+                        'view-news',
+                        'create-news',
+                        'edit-news',
+                        'delete-news',
                     ]);
                     break;
 
@@ -188,6 +260,16 @@ class RolePermissionSeeder extends Seeder
                         'view-news-categories',
 
                         'view-galleries',
+
+                        // ✅ Events
+                        'view-events',
+                        'view-events-categories',
+
+                        // ✅ Notices CRUD
+                        'view-notices',
+
+                        // ✅ News
+                        'view-news'
                     ]);
                     break;
             }

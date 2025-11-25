@@ -316,4 +316,11 @@ const saveDetail = async () => {
 onMounted(() => {
   fetchGallery();
 });
+
+defineProps({
+  id: {
+    type: [ Number, String],
+    required: true
+  }
+});
 </script>

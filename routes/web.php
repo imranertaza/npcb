@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\FrontendController;
-
+use App\Models\Event;
+use App\Models\EventCategory;
 use Illuminate\Support\Facades\Route;
 
 

@@ -16,7 +16,7 @@
                   <!-- Title & Slug -->
                   <div class="form-group">
                     <label>Page Title</label>
-                    <input v-model="form.page_title" @input="generateSlug" type="text" class="form-control" required />
+                    <input v-model="form.page_title" @input="form.slug = generateSlug(form.page_title)" type="text" class="form-control" required />
                   </div>
                   <div class="form-group">
                     <label>Slug</label>
@@ -99,6 +99,7 @@ import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { useToast } from '@/composables/useToast';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
+import { generateSlug } from '../../../layouts/helpers/helpers';
 
 const toast = useToast();
 const previews = ref();
@@ -123,13 +124,6 @@ const form = reactive({
 
 const imageFile = ref(null);
 
-const generateSlug = () => {
-  form.slug = form.page_title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
 
 
 const fetchPage = async () => {

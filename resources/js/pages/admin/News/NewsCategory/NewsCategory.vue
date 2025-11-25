@@ -1,5 +1,5 @@
 <template>
-  <DashboardHeader title="Manage Categories">
+  <DashboardHeader title="Manage News Categories">
     <div class="d-flex justify-content-end">
       <SearchBox @search="onSearch" />
     </div>

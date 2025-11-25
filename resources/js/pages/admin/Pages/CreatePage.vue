@@ -15,7 +15,7 @@
                 <div class="col-md-8">
                   <div class="form-group">
                     <label>Page Title</label>
-                    <input v-model="form.page_title" @input="generateSlug" type="text" class="form-control" required />
+                    <input v-model="form.page_title" @input="form.slug = generateSlug(form.page_title)" type="text" class="form-control" required />
                   </div>
                   <div class="form-group">
                     <label>Slug</label>
@@ -97,6 +97,7 @@ import axios from 'axios';
 import { reactive, ref } from 'vue';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
 import { onMounted } from 'vue';
+import { generateSlug } from '../../../layouts/helpers/helpers';
 
 const toast = useToast();
 const imageFile = ref(null);
@@ -113,14 +114,6 @@ const form = reactive({
   meta_description: '',
   temp: 'default'
 });
-
-const generateSlug = () => {
-  form.slug = form.page_title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
 
 const submitPage = async () => {
 
