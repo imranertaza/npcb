@@ -22,7 +22,6 @@ return new class extends Migration
             $table->text('meta_description')->nullable();
             $table->string('image', 255);
             $table->string('alt_name', 255)->nullable();
-            $table->string('video_id', 255)->nullable();
             $table->timestamp('publish_date')->useCurrent();
             $table->enum('status', ['0', '1'])->default('1');
             $table->foreignId('createdBy')->constrained('users')->onDelete('cascade');

@@ -1,7 +1,17 @@
 <?php
 
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
-// Serve the Vue SPA (frontend)
-Route::get('/{any}', function () {
+
+
+Route::controller(FrontendController::class)->group(function () {
+        Route::get('/', 'index')->name('home');
+        Route::prefix('pages')->name('page.')->group(function () {
+            Route::get('/', 'pages')->name('index');
+            Route::get('/{slug}','pageDetails')->name('details');
+        });
+    });
+Route::get('admin/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
+

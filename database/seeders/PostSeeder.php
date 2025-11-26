@@ -29,7 +29,6 @@ class PostSeeder extends Seeder
                 'meta_description' => $faker->sentence(20),
                 'image'            => 'https://placehold.co/1400x400',
                 'alt_name'         => $faker->words(3, true),
-                'video_id'         => $faker->boolean ? 'yt-' . Str::random(8) : null,
                 'publish_date'     => now()->subDays(rand(0, 30)),
                 'status'           => $faker->randomElement(['0', '1']),
                 'createdBy'        => 1, // assuming admin ID = 1

@@ -3,88 +3,81 @@
   <section class="content">
     <div class="container-fluid">
       <div class="row row-cols-1">
-        <div class="card card-primary">
+        <div class="card card-purple">
           <div class="card-header">
             <h3 class="card-title">Create Post</h3>
           </div>
 
           <form @submit.prevent="submitPost">
             <div class="card-body">
-              <!-- Title & Slug -->
-              <div class="form-group">
-                <label>Post Title</label>
-                <input v-model="form.post_title" @input="generateSlug" type="text" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label>Slug</label>
-                <input v-model="form.slug" type="text" class="form-control" required />
-              </div>
+              <div class="row">
+                <div class="col-md-8">
 
-              <!-- Short Description -->
-              <div class="form-group">
-                <label>Short Description</label>
-                <input v-model="form.short_des" type="text" class="form-control" required />
-              </div>
+                  <!-- Title & Slug -->
+                  <div class="form-group">
+                    <label>Post Title</label>
+                    <input v-model="form.post_title" @input="generateSlug" type="text" class="form-control" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Slug</label>
+                    <input v-model="form.slug" type="text" class="form-control" required />
+                  </div>
 
-              <!-- Description (Summernote) -->
-              <div class="form-group">
-                <label>Description</label>
-                <RichTextEditor v-model="form.description" placeholder="Write your amazing post here..."
-                  class="editor"></RichTextEditor>
-              </div>
+                  <!-- Short Description -->
+                  <div class="form-group">
+                    <label>Short Description</label>
+                    <input v-model="form.short_des" type="text" class="form-control" required />
+                  </div>
 
-              <!-- Image & Alt -->
-              <div class="form-group">
-                <label>Upload Image</label>
-                <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                  <!-- Description (Summernote) -->
+                  <div class="form-group">
+                    <label>Description</label>
+                    <RichTextEditor v-model="form.description" placeholder="Write your amazing post here..."
+                      class="editor"></RichTextEditor>
+                  </div>
+                  <!-- SEO Meta -->
+                  <div class="form-group">
+                    <label>Meta Title</label>
+                    <input v-model="form.meta_title" type="text" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label>Meta Keywords</label>
+                    <input v-model="form.meta_keyword" type="text" class="form-control"
+                      placeholder="comma, separated, keywords" />
+                  </div>
+                  <div class="form-group">
+                    <label>Meta Description</label>
+                    <textarea v-model="form.meta_description" class="form-control"></textarea>
+                  </div>
+                </div>
 
-                <!-- <input type="file" class="form-control" @change="handleImageUpload" accept="image/*" required /> -->
-              </div>
-              <div class="form-group">
-                <label>Alt Name</label>
-                <input v-model="form.alt_name" type="text" class="form-control" />
-              </div>
+                <!-- Image & Alt -->
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Upload Image</label>
+                    <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                  </div>
+                  <div class="form-group">
+                    <label>Alt Name</label>
+                    <input v-model="form.alt_name" type="text" class="form-control" />
+                  </div>
+                  <!-- Status -->
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select v-model="form.status" class="custom-select">
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
+                    </select>
+                  </div>
+                  <div class="">
+                    <button type="submit" class="btn btn-success btn-block">Submit</button>
+                    <RouterLink :to="{ name: 'Posts' }" class="btn btn-secondary btn-block mt-2">Cancel</RouterLink>
+                  </div>
+                </div>
 
-              <!-- Video ID -->
-              <div class="form-group">
-                <label>Video ID</label>
-                <input v-model="form.video_id" type="text" class="form-control" />
-              </div>
-
-              <!-- Publish Date -->
-              <div class="form-group">
-                <label>Publish Date</label>
-                <input v-model="form.publish_date" type="date" class="form-control" />
-              </div>
-
-              <!-- Status -->
-              <div class="form-group">
-                <label>Status</label>
-                <select v-model="form.status" class="custom-select">
-                  <option value="1">Published</option>
-                  <option value="0">Draft</option>
-                </select>
-              </div>
-
-              <!-- SEO Meta -->
-              <div class="form-group">
-                <label>Meta Title</label>
-                <input v-model="form.meta_title" type="text" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label>Meta Keywords</label>
-                <input v-model="form.meta_keyword" type="text" class="form-control"
-                  placeholder="comma, separated, keywords" />
-              </div>
-              <div class="form-group">
-                <label>Meta Description</label>
-                <textarea v-model="form.meta_description" class="form-control"></textarea>
               </div>
             </div>
 
-            <div class="card-footer">
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
           </form>
         </div>
       </div>
@@ -111,7 +104,6 @@ const form = reactive({
   short_des: '',
   description: '',
   alt_name: '',
-  video_id: '',
   publish_date: '',
   status: '1',
   meta_title: '',

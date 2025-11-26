@@ -139,7 +139,6 @@ const fetchMenuItems = async (menuId = 1) => {
     const { data } = await axios.get('/api/menu-items', {
       params: { menu_id: menuId }
     })
-    console.log({ data });
     return data.data
   } catch (err) {
     console.error('Error fetching menu items', err)
