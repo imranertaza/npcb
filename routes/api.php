@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\ResultController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\EventCategoryController;
 use Illuminate\Support\Facades\Route;
@@ -168,6 +169,15 @@ Route::prefix('notices')->middleware(['auth:user'])->controller(NoticeController
     Route::put('{id}', 'update')->name('notices.update')->middleware('permission:edit-notices');
     Route::patch('{slug}/toggle-status', 'toggleStatus')->name('notices.toggle')->middleware('permission:edit-notices');
     Route::delete('{slug}', 'destroy')->name('notices.destroy')->middleware('permission:delete-notices');
+});
+
+Route::prefix('results')->middleware(['auth:user'])->controller(ResultController::class)->group(function () {
+    Route::get('/', 'index')->name('results.index')->middleware('permission:view-results');
+    Route::post('/', 'store')->name('results.store')->middleware('permission:create-results');
+    Route::get('{slug}', 'show')->name('results.show')->middleware('permission:view-results');
+    Route::put('{id}', 'update')->name('results.update')->middleware('permission:edit-results');
+    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('results.toggle')->middleware('permission:edit-results');
+    Route::delete('{slug}', 'destroy')->name('results.destroy')->middleware('permission:delete-results');
 });
 
 Route::middleware(['auth:user'])->get('templates', function () {

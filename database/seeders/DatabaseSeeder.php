@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call(GallerySeeder::class);
         $this->call(GalleryDetailsSeeder::class);
         $this->call(NoticeSeeder::class);
+        $this->call(ResultSeeder::class);
         $this->call(NewsCategoryMapSeeder::class);
     }
 }

@@ -283,6 +283,33 @@
             </ul>
           </li>
 
+          <!-- Results -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-results')"
+            :class="{ 'menu-open': isOpen('results') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('results')">
+              <i class="nav-icon fas fa-poll"></i>
+              <p>Results <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('results')">
+              <!-- Result List -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'Results' }" class="nav-link" :class="{ active: $route.name === 'Results' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Result List</p>
+                </router-link>
+              </li>
+
+              <!-- Create Result -->
+              <li class="nav-item" v-if="authStore.hasPermission('create-results')">
+                <router-link :to="{ name: 'CreateResult' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateResult' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Result</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+
           <!-- Manage Users -->
           <li class="nav-item" v-if="authStore.hasPermission('view-users')" :class="{ 'menu-open': isOpen('users') }">
             <a href="#" class="nav-link" @click.prevent="toggle('users')">
@@ -431,6 +458,12 @@ const openParentMenus = () => {
     'CreateNotice': ['notices'],
     'ShowNotice': ['notices'],
     'UpdateNotice': ['notices'],
+
+    // Results
+    'Results': ['results'],
+    'CreateResult': ['results'],
+    'ShowResult': ['results'],
+    'UpdateResult': ['results'],
   }
 
   const current = route.name
