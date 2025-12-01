@@ -1,9 +1,9 @@
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import AdminUserUpdate from "@/pages/admin/AdminUserUpdate.vue";
+import AdminUserUpdate from "@/pages/admin/users/AdminUserUpdate.vue";
 import AdminLogin from "@/pages/admin/auth/Login.vue";
 import AdminDashboard from "@/pages/admin/auth/Profile.vue";
 import Dashboard from "@/pages/admin/Dashboard.vue";
-import RolePermission from "@/pages/admin/ManageUser.vue";
+import RolePermission from "@/pages/admin/users/ManageUser.vue";
 import CreatePage from "@/pages/admin/Pages/CreatePage.vue";
 import Pages from "@/pages/admin/Pages/Pages.vue";
 import ShowPage from "@/pages/admin/Pages/ShowPage.vue";
@@ -12,7 +12,7 @@ import CreatePost from "@/pages/admin/Post/CreatePost.vue";
 import Post from "@/pages/admin/Post/Post.vue";
 import ShowPost from "@/pages/admin/Post/ShowPost.vue";
 import UpdatePost from "@/pages/admin/Post/UpdatePost.vue";
-import RolePermissionManager from "@/pages/admin/RolePermissionManager.vue";
+import RolePermissionManager from "@/pages/admin/users/RolePermissionManager.vue";
 import GeneralSettings from "@/pages/admin/Settings/GeneralSettings.vue";
 
 import Home from "@/pages/Home.vue";
@@ -30,6 +30,30 @@ import CategoryEdit from "../pages/admin/Post/Category/CategoryEdit.vue";
 import CategoryCreate from "../pages/admin/Post/Category/CategoryCreate.vue";
 import Category from "../pages/admin/Post/Category/Category.vue";
 import CategoryShow from "../pages/admin/Post/Category/CategoryShow.vue";
+import Gallery from "../pages/admin/Gallery/Gallery.vue";
+import ShowGallery from "../pages/admin/Gallery/ShowGallery.vue";
+import UpdateGallery from "../pages/admin/Gallery/UpdateGallery.vue";
+import CreateGallery from "../pages/admin/Gallery/CreateGallery.vue";
+import EventCategory from "../pages/admin/Event/EventsCategory/EventCategory.vue";
+import EventCategoryCreate from "../pages/admin/Event/EventsCategory/EventCategoryCreate.vue";
+import EventCategoryEdit from "../pages/admin/Event/EventsCategory/EventCategoryEdit.vue";
+import EventCategoryShow from "../pages/admin/Event/EventsCategory/EventCategoryShow.vue";
+import CreateEvent from "../pages/admin/Event/CreateEvent.vue";
+import UpdateEvent from "../pages/admin/Event/UpdateEvent.vue";
+import ShowEvent from "../pages/admin/Event/ShowEvent.vue";
+import Event from "../pages/admin/Event/Event.vue";
+import CreateNotice from "../pages/admin/Notice/CreateNotice.vue";
+import UpdateNotice from "../pages/admin/Notice/UpdateNotice.vue";
+import ShowNotice from "../pages/admin/Notice/ShowNotice.vue";
+import Notice from "../pages/admin/Notice/Notice.vue";
+import CreateNews from "../pages/admin/News/CreateNews.vue";
+import UpdateNews from "../pages/admin/News/UpdateNews.vue";
+import ShowNews from "../pages/admin/News/ShowNews.vue";
+import News from "../pages/admin/News/News.vue";
+import Result from "../pages/admin/Result/Result.vue";
+import ShowResult from "../pages/admin/Result/ShowResult.vue";
+import UpdateResult from "../pages/admin/Result/UpdateResult.vue";
+import CreateResult from "../pages/admin/Result/CreateResult.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -173,6 +197,34 @@ const routes = [
                             permission: "view-categories",
                         },
                     },
+                    // News CRUD
+                    {
+                        path: "manage-news",
+                        name: "News",
+                        component: News,
+                        meta: { permission: "view-news" },
+                    },
+                    {
+                        path: "news/:slug",
+                        name: "ShowNews",
+                        component: ShowNews,
+                        props: true,
+                        meta: { permission: "view-news" },
+                    },
+                    {
+                        path: "edit-news/:slug",
+                        name: "UpdateNews",
+                        component: UpdateNews,
+                        props: true,
+                        meta: { permission: "edit-news" },
+                    },
+                    {
+                        path: "create-news",
+                        name: "CreateNews",
+                        component: CreateNews,
+                        meta: { permission: "create-news" },
+                    },
+
                     {
                         path: "news-categories",
                         name: "NewsCategoryIndex",
@@ -190,7 +242,7 @@ const routes = [
                         },
                     },
                     {
-                        path: "news-categories/:id/edit",
+                        path: "news-categories/edit/:id",
                         name: "UpdateNewsCategory",
                         component: NewsCategoryEdit,
                         props: true,
@@ -216,13 +268,151 @@ const routes = [
                         },
                     },
                     {
-                        path: "menu/:id/view",
+                        path: "menu/view/:id",
                         name: "ShowMenu",
                         component: MenuManager,
                         meta: {
                             permission: "manage-menus",
                         },
                         props: true,
+                    },
+                    {
+                        path: "manage-galleries",
+                        name: "Gallery",
+                        component: Gallery,
+                        meta: { permission: "view-galleries" },
+                    },
+                    {
+                        path: "galleries/:id",
+                        name: "ShowGallery",
+                        component: ShowGallery,
+                        props: true,
+                        meta: { permission: "view-galleries" },
+                    },
+                    {
+                        path: "edit-galleries/:id",
+                        name: "UpdateGallery",
+                        component: UpdateGallery,
+                        props: true,
+                        meta: { permission: "edit-galleries" },
+                    },
+                    {
+                        path: "create-gallery",
+                        name: "CreateGallery",
+                        component: CreateGallery,
+                        meta: { permission: "create-galleries" },
+                    },
+                    {
+                        path: "manage-events",
+                        name: "Events",
+                        component: Event,
+                        meta: { permission: "view-events" },
+                    },
+                    {
+                        path: "events/:slug",
+                        name: "ShowEvent",
+                        component: ShowEvent,
+                        props: true,
+                        meta: { permission: "view-events" },
+                    },
+                    {
+                        path: "edit-events/:slug",
+                        name: "UpdateEvent",
+                        component: UpdateEvent,
+                        props: true,
+                        meta: { permission: "edit-events" },
+                    },
+                    {
+                        path: "create-events",
+                        name: "CreateEvent",
+                        component: CreateEvent,
+                        meta: { permission: "create-events" },
+                    },
+                    {
+                        path: "event-categories",
+                        name: "EventCategoryIndex",
+                        component: EventCategory,
+                        meta: {
+                            permission: "view-events-categories",
+                        },
+                    },
+                    {
+                        path: "event-categories/create",
+                        name: "EventCategoryCreate",
+                        component: EventCategoryCreate,
+                        meta: {
+                            permission: "create-events-categories",
+                        },
+                    },
+                    {
+                        path: "event-categories/edit/:id",
+                        name: "UpdateEventCategory",
+                        component: EventCategoryEdit,
+                        props: true,
+                        meta: {
+                            permission: "edit-events-categories",
+                        },
+                    },
+                    {
+                        path: "event-categories/:id",
+                        name: "EventCategoryShow",
+                        component: EventCategoryShow,
+                        props: true,
+                        meta: {
+                            permission: "view-events-categories",
+                        },
+                    },
+                    {
+                        path: "manage-notices",
+                        name: "Notices",
+                        component: Notice,
+                        meta: { permission: "view-notices" },
+                    },
+                    {
+                        path: "notices/:slug",
+                        name: "ShowNotice",
+                        component: ShowNotice,
+                        props: true,
+                        meta: { permission: "view-notices" },
+                    },
+                    {
+                        path: "edit-notices/:slug",
+                        name: "UpdateNotice",
+                        component: UpdateNotice,
+                        props: true,
+                        meta: { permission: "edit-notices" },
+                    },
+                    {
+                        path: "create-notices",
+                        name: "CreateNotice",
+                        component: CreateNotice,
+                        meta: { permission: "create-notices" },
+                    },
+                    {
+                        path: "manage-results",
+                        name: "Results",
+                        component: Result,
+                        meta: { permission: "view-results" },
+                    },
+                    {
+                        path: "results/:slug",
+                        name: "ShowResult",
+                        component: ShowResult,
+                        props: true,
+                        meta: { permission: "view-results" },
+                    },
+                    {
+                        path: "edit-results/:slug",
+                        name: "UpdateResult",
+                        component: UpdateResult,
+                        props: true,
+                        meta: { permission: "edit-results" },
+                    },
+                    {
+                        path: "create-results",
+                        name: "CreateResult",
+                        component: CreateResult,
+                    meta: { permission: "create-results" },
                     },
                 ],
             },

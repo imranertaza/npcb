@@ -35,22 +35,22 @@
                   <td v-if="authStore.hasPermission('publish-posts')" class="align-middle">
                     <select v-model="post.status" @change="updateStatus(post)" class="custom-select"
                       :class="post.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
-                      <option :value="1">Published</option>
-                      <option :value="0">Draft</option>
+                      <option :value="1">Active</option>
+                      <option :value="0">Inactive</option>
                     </select>
                   </td>
                   <td class="align-middle">
                     <div class="d-flex ">
                       <router-link v-if="authStore.hasPermission('view-posts')"
-                        :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-dark">
+                        :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-outline-dark">
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-posts')"
                         :to="{ name: 'UpdatePost', params: { slug: post.slug } }" class="ml-2 
-                  btn btn-sm btn-dark">
+                  btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
-                      <button v-if="authStore.hasPermission('delete-posts')" class="ml-2 btn btn-sm btn-danger"
+                      <button v-if="authStore.hasPermission('delete-posts')" class="ml-2 btn btn-sm btn-outline-danger"
                         @click="confirmDelete(post)">
                         <i class="fas fa-trash-alt"></i>
                       </button>
@@ -148,7 +148,8 @@ const confirmDelete = async (post) => {
     try {
       await axios.delete(`/api/posts/${post.slug}`);
       toast.success('Post deleted successfully!');
-      posts.value = posts.value.filter(p => p.id !== post.id);
+      
+      posts.value.data = posts.value.data.filter(p => p.id !== post.id);
     } catch (error) {
       toast.validationError(error);
     }

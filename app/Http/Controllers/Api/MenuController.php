@@ -9,12 +9,13 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
+    /**
+     * Display a listing of menus.
+     */
     public function index()
     {
-
         $menus = Menu::latest()->paginate(10);
-        // dd($menus);
-            return apiResponse::success($menus, 'Menus fetched successfully');
+        return apiResponse::success($menus, 'Menus fetched successfully');
     }
 
     /**

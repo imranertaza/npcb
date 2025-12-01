@@ -110,10 +110,9 @@
 <script setup>
 import axios from 'axios'
 import { inject, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import DashboardHeader from '../../components/DashboardHeader.vue'
-import { useToast } from '../../composables/useToast'
-import { useAuthStore } from '../../store/auth'
+import DashboardHeader from '@/components/DashboardHeader.vue'
+import { useToast } from '@/composables/useToast'
+import { useAuthStore } from '@/store/auth'
 
 const toast = useToast()
 const authStore = useAuthStore()

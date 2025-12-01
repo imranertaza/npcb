@@ -3,20 +3,26 @@
 use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\MenuItemController;
 use App\Http\Controllers\Api\NewsCategoryController;
+use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\ResultController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\EventCategoryController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 Route::prefix('admin')->controller(AdminAuthController::class)->group(function () {
-    // 🔹 Public route (no auth required)
     Route::post('login', 'login')->name('admin.login');
 
-    // 🔹 Protected routes (auth:admin required)
     Route::middleware('auth:user')->group(function () {
         Route::get('me', 'me')->name('admin.me');
         Route::get('profile', 'profile')->name('admin.profile');
@@ -24,9 +30,7 @@ Route::prefix('admin')->controller(AdminAuthController::class)->group(function (
     });
 });
 
-// ==========================
-// 🔹 Role & Permission Management (Protected)
-// ==========================
+
 Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(function () {
 
     Route::get('admins', 'index');
@@ -35,12 +39,10 @@ Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(
     Route::put('admins/{admin}/role', 'updateUserRole')->middleware('permission:update-users');
     Route::post('admins', 'store')->middleware('permission:create-users');
     Route::delete('admins/{admin}', 'destroy')->middleware('permission: delete-users');
-
+    // Role Permissions
     Route::get('roles', 'roles');
-
     Route::get('roles-with-permissions', 'rolesWithPermissions');
     Route::put('roles/{role}/permissions', 'updatePermissions')->middleware('permission:update-permissions');
-
     Route::get('permissions', 'permissions');
 });
 
@@ -59,7 +61,7 @@ Route::middleware('auth:user')->prefix('pages')->controller(PageController::clas
     Route::get('{slug}', 'show')->middleware('permission:view-pages');
     Route::put('{id}', 'update')->middleware('permission:edit-pages');
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-pages');
-    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish pages');
+    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-pages');
 });
 
 Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
@@ -74,9 +76,20 @@ Route::prefix('categories')->middleware(['auth:user'])->controller(CategoryContr
     Route::prefix('{category}')->group(function () {
         Route::get('/', 'show')->middleware('permission:view-categories');
         Route::put('/', 'update')->middleware('permission:edit-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-news-categories');
         Route::delete('/', 'destroy')->middleware('permission:delete-categories');
     });
 });
+
+Route::middleware('auth:user')->prefix('news')->controller(NewsController::class)->group(function () {
+    Route::get('/', 'index')->middleware('permission:view-news');
+    Route::post('/', 'store')->middleware('permission:create-news');
+    Route::get('{slug}', 'show')->middleware('permission:view-news');
+    Route::put('{id}', 'update')->middleware('permission:edit-news');
+    Route::delete('{slug}', 'destroy')->middleware('permission:delete-news');
+    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-news');
+});
+
 
 Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCategoryController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-news-categories');
@@ -85,38 +98,100 @@ Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCate
     Route::prefix('{category}')->group(function () {
         Route::get('/', 'show')->middleware('permission:view-news-categories');
         Route::put('/', 'update')->middleware('permission:edit-news-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-news-categories');
         Route::delete('/', 'destroy')->middleware('permission:delete-news-categories');
     });
 });
 
-Route::prefix('menus')->middleware(['auth:user', 'permission:manage-menus'])
-    ->controller(MenuController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/', 'store');
-        Route::prefix('{menu}')->group(function () {
-            Route::get('/', 'show');
-            Route::put('/', 'update');
-            Route::delete('/', 'destroy');
-        });
+Route::prefix('menus')->middleware(['auth:user', 'permission:manage-menus'])->controller(MenuController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store');
+    Route::prefix('{menu}')->group(function () {
+        Route::get('/', 'show');
+        Route::put('/', 'update');
+        Route::delete('/', 'destroy');
     });
+});
 
-Route::prefix('menu-items')->middleware(['auth:user', 'permission:manage-menus'])
-    ->controller(MenuItemController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/', 'store');
-        Route::get('{menuItem}', 'show');
-        Route::put('{menuItem}', 'update');
-        Route::delete('{menuItem}', 'destroy');
-        Route::post('reorder', 'reorder');
-    });
+Route::prefix('menu-items')->middleware(['auth:user', 'permission:manage-menus'])->controller(MenuItemController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store');
+    Route::get('{menuItem}', 'show');
+    Route::put('{menuItem}', 'update');
+    Route::delete('{menuItem}', 'destroy');
+    Route::post('reorder', 'reorder');
+});
 
-Route::middleware(['auth:user'])->prefix('media')
-    ->controller(MediaController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/folder', 'createFolder');
-        Route::put('/folder/rename', 'renameFolder');
-        Route::delete('/folder', 'deleteFolder');
-        Route::post('/upload', 'upload');
-        Route::delete('/file', 'deleteFile');
-        Route::put('/file/rename', 'renameFile');
+Route::middleware(['auth:user'])->prefix('media')->controller(MediaController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/upload', 'upload');
+    Route::delete('/file', 'deleteFile');
+});
+
+Route::middleware(['auth:user'])->prefix('gallery')->controller(GalleryController::class)->group(function () {
+    Route::get('/', 'index')->name('gallery.index')->middleware('permission:view-galleries');
+    Route::post('/', 'store')->name('gallery.store')->middleware('permission:create-galleries');
+    Route::get('{gallery}', 'show')->name('gallery.show')->middleware('permission:view-galleries');
+    Route::put('{gallery}', 'update')->name('gallery.update')->middleware('permission:edit-galleries');
+    Route::delete('{gallery}', 'destroy')->name('gallery.destroy')->middleware('permission:delete-galleries');
+    // Gallery Details
+    Route::post('details', 'storeDetail')->name('gallery.details.store')->middleware('permission:edit-galleries');
+    Route::patch('details/{detail}', 'updateDetail')->name('gallery.details.update')->middleware('permission:edit-galleries');
+    Route::delete('details/{detail}', 'destroyGalleryDetail')->name('gallery.details.destroy')->middleware('permission:delete-galleries');
+});
+
+Route::prefix('events')->middleware(['auth:user'])->controller(EventController::class)->group(function () {
+    Route::get('/', 'index')->name('events.index')->middleware('permission:view-events');
+    Route::post('/', 'store')->name('events.store')->middleware('permission:create-events');
+    Route::get('{slug}', 'show')->name('events.show')->middleware('permission:view-events');
+    Route::put('{id}', 'update')->name('events.update')->middleware('permission:edit-events');
+    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('events.toggle')->middleware('permission:edit-events');
+    Route::delete('{slug}', 'destroy')->name('events.destroy')->middleware('permission:delete-events');
+});
+
+Route::prefix('events-categories')->middleware(['auth:user'])->controller(EventCategoryController::class)->group(function () {
+    Route::get('/', 'index')->middleware('permission:view-events-categories');
+    Route::post('/', 'store')->middleware('permission:create-events-categories');
+
+    Route::prefix('{category}')->group(function () {
+        Route::get('/', 'show')->middleware('permission:view-events-categories');
+        Route::put('/', 'update')->middleware('permission:edit-events-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-events-categories');
+        Route::delete('/', 'destroy')->middleware('permission:delete-events-categories');
     });
+});
+
+
+Route::prefix('notices')->middleware(['auth:user'])->controller(NoticeController::class)->group(function () {
+    Route::get('/', 'index')->name('notices.index')->middleware('permission:view-notices');
+    Route::post('/', 'store')->name('notices.store')->middleware('permission:create-notices');
+    Route::get('{slug}', 'show')->name('notices.show')->middleware('permission:view-notices');
+    Route::put('{id}', 'update')->name('notices.update')->middleware('permission:edit-notices');
+    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('notices.toggle')->middleware('permission:edit-notices');
+    Route::delete('{slug}', 'destroy')->name('notices.destroy')->middleware('permission:delete-notices');
+});
+
+Route::prefix('results')->middleware(['auth:user'])->controller(ResultController::class)->group(function () {
+    Route::get('/', 'index')->name('results.index')->middleware('permission:view-results');
+    Route::post('/', 'store')->name('results.store')->middleware('permission:create-results');
+    Route::get('{slug}', 'show')->name('results.show')->middleware('permission:view-results');
+    Route::put('{id}', 'update')->name('results.update')->middleware('permission:edit-results');
+    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('results.toggle')->middleware('permission:edit-results');
+    Route::delete('{slug}', 'destroy')->name('results.destroy')->middleware('permission:delete-results');
+});
+
+Route::middleware(['auth:user'])->get('templates', function () {
+    $path = resource_path('views/layouts/frontend');
+    $files = [];
+    if (File::exists($path)) {
+        $files = collect(File::files($path))
+            ->filter(function ($file) {
+                return Str::endsWith($file->getFilename(), '.blade.php');
+            })->map(function ($file) {
+                $name = pathinfo($file->getFilename(), PATHINFO_FILENAME);
+                return Str::replaceLast('.blade', '', $name);
+            })->values()->toArray();
+    }
+
+    return response()->json($files);
+});

@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('notices', function (Blueprint $table) {
             $table->id();
             $table->string('title', 255);
+            $table->string('slug', 255)->unique();
             $table->text('description')->nullable();
-            $table->string('file')->nullable(); // PDF, Image, etc.
+            $table->string('file')->nullable();
+            $table->enum('status', ['1', '0'])->default('1');
+            $table->foreignId('createdBy')->nullable()->constrained('users');
+            $table->foreignId('updatedBy')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

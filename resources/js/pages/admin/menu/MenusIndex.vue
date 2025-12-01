@@ -171,7 +171,6 @@ const editForm = ref({
 const fetchMenus = async () => {
     try {
         const { data } = await axios.get('/api/menus')
-        console.log({ data })
         menus.value = data.data.data
     } catch (err) {
         console.error('Error fetching menus', err)
@@ -242,7 +241,6 @@ const openEditModal = (menu) => {
     editModal.value.open = true
     editModal.value.target = menu
     editForm.value = { ...menu,enabled: !!menu.enabled }
-    console.log({ menu }, { editForm });
 }
 const closeEditModal = () => {
     editModal.value.open = false

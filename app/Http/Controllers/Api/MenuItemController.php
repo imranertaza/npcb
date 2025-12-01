@@ -22,12 +22,10 @@ class MenuItemController extends Controller
             $query->where('menu_id', $request->menu_id);
         }
 
-        // ✅ Only fetch top-level items
         $query->whereNull('parent_id');
 
         $items = $query->orderBy('order')->get();
 
-        // Transform children -> elements recursively
         $transform = function ($item) use (&$transform) {
             return [
                 'id'            => $item->id,
@@ -113,6 +111,9 @@ class MenuItemController extends Controller
 
         return apiResponse::success($menuItem, 'Menu item updated successfully');
     }
+    /**
+     * Reorder menu items.
+     */
     public function reorder(Request $request)
     {
         $validated = $request->validate([
@@ -120,7 +121,7 @@ class MenuItemController extends Controller
             'items' => 'required|array',
             'items.*.id' => 'required|exists:menu_items,id',
             'items.*.order' => 'required|integer|min:1',
-            'items.*.parent_id' => 'nullable|integer', // ✅ allow null
+            'items.*.parent_id' => 'nullable|integer',
         ]);
 
         DB::transaction(function () use ($validated) {

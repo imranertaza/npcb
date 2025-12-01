@@ -7,10 +7,15 @@ export function truncateText(text = '', maxLength = 100, suffix = '...') {
 
  export function getImageUrl(path) {
     if (!path) {
-      return '/images/default.png'; // fallback image
+      return '/assets/images/default.svg'; // fallback image
     }
   
     return path.startsWith('http://') || path.startsWith('https://')
       ? path
       : `/storage/${path.replace(/^\/+/, '')}`;
   }
+
+  export const generateSlug = (title) => {
+  return title.toLowerCase().replace(title, title).replace(/^-+|-+$/g, '')
+        .replace(/\s/g, '-').replace(/\-\-+/g, '-');
+};
