@@ -50,6 +50,10 @@ import CreateNews from "../pages/admin/News/CreateNews.vue";
 import UpdateNews from "../pages/admin/News/UpdateNews.vue";
 import ShowNews from "../pages/admin/News/ShowNews.vue";
 import News from "../pages/admin/News/News.vue";
+import Result from "../pages/admin/Result/Result.vue";
+import ShowResult from "../pages/admin/Result/ShowResult.vue";
+import UpdateResult from "../pages/admin/Result/UpdateResult.vue";
+import CreateResult from "../pages/admin/Result/CreateResult.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -383,6 +387,32 @@ const routes = [
                         name: "CreateNotice",
                         component: CreateNotice,
                         meta: { permission: "create-notices" },
+                    },
+                    {
+                        path: "manage-results",
+                        name: "Results",
+                        component: Result,
+                        meta: { permission: "view-results" },
+                    },
+                    {
+                        path: "results/:slug",
+                        name: "ShowResult",
+                        component: ShowResult,
+                        props: true,
+                        meta: { permission: "view-results" },
+                    },
+                    {
+                        path: "edit-results/:slug",
+                        name: "UpdateResult",
+                        component: UpdateResult,
+                        props: true,
+                        meta: { permission: "edit-results" },
+                    },
+                    {
+                        path: "create-results",
+                        name: "CreateResult",
+                        component: CreateResult,
+                    meta: { permission: "create-results" },
                     },
                 ],
             },

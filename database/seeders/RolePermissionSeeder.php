@@ -82,6 +82,12 @@ class RolePermissionSeeder extends Seeder
             'edit-notices',
             'delete-notices',
 
+            // ✅ Results CRUD
+            'view-results',
+            'create-results',
+            'edit-results',
+            'delete-results',
+
             // ✅ News
             'view-news',
             'create-news',
@@ -150,6 +156,12 @@ class RolePermissionSeeder extends Seeder
                         'create-news-categories',
                         'edit-news-categories',
                         'delete-news-categories',
+
+                        // ✅ Results CRUD
+                        'view-results',
+                        'create-results',
+                        'edit-results',
+                        'delete-results',
 
                         // ✅ Galleries CRUD
                         'view-galleries',
@@ -244,6 +256,11 @@ class RolePermissionSeeder extends Seeder
                         'create-news',
                         'edit-news',
                         'delete-news',
+
+                        // ✅ Results CRUD
+                        'view-results',
+                        'create-results',
+                        'edit-results',
                     ]);
                     break;
 
@@ -269,7 +286,10 @@ class RolePermissionSeeder extends Seeder
                         'view-notices',
 
                         // ✅ News
-                        'view-news'
+                        'view-news',
+
+                        // ✅ Results CRUD
+                        'view-results',
                     ]);
                     break;
             }
