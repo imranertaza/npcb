@@ -135,7 +135,6 @@ const menuItems = ref([]);
 
 const fetchMenuItems = async (menuId = 1) => {
   try {
-
     const { data } = await axios.get('/api/menu-items', {
       params: { menu_id: menuId }
     })

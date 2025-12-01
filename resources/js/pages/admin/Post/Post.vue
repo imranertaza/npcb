@@ -148,7 +148,8 @@ const confirmDelete = async (post) => {
     try {
       await axios.delete(`/api/posts/${post.slug}`);
       toast.success('Post deleted successfully!');
-      posts.value = posts.value.filter(p => p.id !== post.id);
+      
+      posts.value.data = posts.value.data.filter(p => p.id !== post.id);
     } catch (error) {
       toast.validationError(error);
     }

@@ -12,166 +12,185 @@ class RolePermissionSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-   public function run(): void
-{
-    $guard = 'user';
+    public function run(): void
+    {
+        $guard = 'user';
 
-    // 🧩 Define roles
-    $roles = ['super-admin', 'admin', 'editor', 'viewer'];
+        // 🧩 Define roles
+        $roles = ['super-admin', 'admin', 'editor', 'viewer'];
 
-    // 🧩 Define permissions (expanded)
-    $permissions = [
-        // Dashboard
-        'view-dashboard',
+        // 🧩 Define permissions (expanded)
+        $permissions = [
+            // Dashboard
+            'view-dashboard',
 
-        // User management
-        'view-users',
-        'create-users',
-        'update-users',
-        'delete-users',
-        'update-user-role',
+            // User management
+            'view-users',
+            'create-users',
+            'update-users',
+            'delete-users',
+            'update-user-role',
 
-        // Posts CRUD
-        'view-posts',
-        'create-posts',
-        'edit-posts',
-        'delete-posts',
-        'publish-posts',
+            // Posts CRUD
+            'view-posts',
+            'create-posts',
+            'edit-posts',
+            'delete-posts',
+            'publish-posts',
 
-        // Pages CRUD
-        'view-pages',
-        'create-pages',
-        'edit-pages',
-        'delete-pages',
-        'publish-pages',
+            // Pages CRUD
+            'view-pages',
+            'create-pages',
+            'edit-pages',
+            'delete-pages',
+            'publish-pages',
 
-        // Categories CRUD
-        'view-categories',
-        'create-categories',
-        'edit-categories',
-        'delete-categories',
+            // Categories CRUD
+            'view-categories',
+            'create-categories',
+            'edit-categories',
+            'delete-categories',
 
-        // ✅ News Categories CRUD
-        'view-news-categories',
-        'create-news-categories',
-        'edit-news-categories',
-        'delete-news-categories',
+            // ✅ News Categories CRUD
+            'view-news-categories',
+            'create-news-categories',
+            'edit-news-categories',
+            'delete-news-categories',
 
-        // Settings
-        'view-settings',
-        'update-settings',
+            // ✅ Galleries CRUD
+            'view-galleries',
+            'create-galleries',
+            'edit-galleries',
+            'delete-galleries',
+            'publish-galleries',
 
-        'manage-menus',
+            // Settings
+            'view-settings',
+            'update-settings',
 
-        // Permissions management
-        'update-permissions',
-    ];
+            'manage-menus',
 
-    // ✅ Create permissions
-    foreach ($permissions as $perm) {
-        Permission::firstOrCreate(['name' => $perm, 'guard_name' => $guard]);
-    }
+            // Permissions management
+            'update-permissions',
+        ];
 
-    // ✅ Create roles and assign permissions
-    foreach ($roles as $roleName) {
-        $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guard]);
+        // ✅ Create permissions
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => $guard]);
+        }
 
-        switch ($roleName) {
-            case 'super-admin':
-                // Full access
-                $role->syncPermissions(Permission::where('guard_name', $guard)->pluck('name'));
-                break;
+        // ✅ Create roles and assign permissions
+        foreach ($roles as $roleName) {
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guard]);
 
-            case 'admin':
-                $role->syncPermissions([
-                    'view-dashboard',
+            switch ($roleName) {
+                case 'super-admin':
+                    // Full access
+                    $role->syncPermissions(Permission::where('guard_name', $guard)->pluck('name'));
+                    break;
 
-                    // User management
-                    'view-users',
-                    'create-users',
-                    'update-users',
-                    'delete-users',
-                    'update-user-role',
+                case 'admin':
+                    $role->syncPermissions([
+                        'view-dashboard',
 
-                    // Posts
-                    'view-posts',
-                    'create-posts',
-                    'edit-posts',
-                    'delete-posts',
-                    'publish-posts',
+                        // User management
+                        'view-users',
+                        'create-users',
+                        'update-users',
+                        'delete-users',
+                        'update-user-role',
 
-                    // Pages
-                    'view-pages',
-                    'create-pages',
-                    'edit-pages',
-                    'delete-pages',
-                    'publish-pages',
+                        // Posts
+                        'view-posts',
+                        'create-posts',
+                        'edit-posts',
+                        'delete-posts',
+                        'publish-posts',
 
-                    // Post Categories
-                    'view-categories',
-                    'create-categories',
-                    'edit-categories',
-                    'delete-categories',
+                        // Pages
+                        'view-pages',
+                        'create-pages',
+                        'edit-pages',
+                        'delete-pages',
+                        'publish-pages',
 
-                    // ✅ News Categories CRUD
-                    'view-news-categories',
-                    'create-news-categories',
-                    'edit-news-categories',
-                    'delete-news-categories',
+                        // Post Categories
+                        'view-categories',
+                        'create-categories',
+                        'edit-categories',
+                        'delete-categories',
 
-                    // Settings
-                    'view-settings',
-                    'update-settings',
-                    'update-permissions',
-                    'manage-menus',
-                ]);
-                break;
+                        // ✅ News Categories CRUD
+                        'view-news-categories',
+                        'create-news-categories',
+                        'edit-news-categories',
+                        'delete-news-categories',
 
-            case 'editor':
-                $role->syncPermissions([
-                    'view-dashboard',
+                        // ✅ Galleries CRUD
+                        'view-galleries',
+                        'create-galleries',
+                        'edit-galleries',
+                        'delete-galleries',
+                        'publish-galleries',
 
-                    // Posts
-                    'view-posts',
-                    'create-posts',
-                    'edit-posts',
-                    'publish-posts',
+                        // Settings
+                        'view-settings',
+                        'update-settings',
+                        'update-permissions',
+                        'manage-menus',
+                    ]);
+                    break;
 
-                    // Pages
-                    'view-pages',
-                    'create-pages',
-                    'edit-pages',
-                    'publish-pages',
+                case 'editor':
+                    $role->syncPermissions([
+                        'view-dashboard',
 
-                    // Categories
-                    'view-categories',
-                    'create-categories',
-                    'edit-categories',
+                        // Posts
+                        'view-posts',
+                        'create-posts',
+                        'edit-posts',
+                        'publish-posts',
 
-                    // ✅ News Categories (editor can manage but not delete)
-                    'view-news-categories',
-                    'create-news-categories',
-                    'edit-news-categories',
-                ]);
-                break;
+                        // Pages
+                        'view-pages',
+                        'create-pages',
+                        'edit-pages',
+                        'publish-pages',
 
-            case 'viewer':
-                $role->syncPermissions([
-                    'view-dashboard',
+                        // Categories
+                        'view-categories',
+                        'create-categories',
+                        'edit-categories',
 
-                    // Read-only access
-                    'view-users',
-                    'view-posts',
-                    'view-pages',
-                    'view-categories',
-                    'view-settings',
+                        // ✅ News Categories (editor can manage but not delete)
+                        'view-news-categories',
+                        'create-news-categories',
+                        'edit-news-categories',
 
-                    // ✅ News Categories (viewer can only view)
-                    'view-news-categories',
-                ]);
-                break;
+                        // ✅ Galleries (editor can manage but not delete)
+                        'view-galleries',
+                        'create-galleries',
+                        'edit-galleries',
+                        'publish-galleries',
+                    ]);
+                    break;
+
+                case 'viewer':
+                    $role->syncPermissions([
+                        'view-dashboard',
+
+                        'view-users',
+                        'view-posts',
+                        'view-pages',
+                        'view-categories',
+                        'view-settings',
+
+                        'view-news-categories',
+
+                        'view-galleries',
+                    ]);
+                    break;
+            }
         }
     }
-}
-
 }

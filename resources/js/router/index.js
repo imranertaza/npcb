@@ -1,9 +1,9 @@
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import AdminUserUpdate from "@/pages/admin/AdminUserUpdate.vue";
+import AdminUserUpdate from "@/pages/admin/users/AdminUserUpdate.vue";
 import AdminLogin from "@/pages/admin/auth/Login.vue";
 import AdminDashboard from "@/pages/admin/auth/Profile.vue";
 import Dashboard from "@/pages/admin/Dashboard.vue";
-import RolePermission from "@/pages/admin/ManageUser.vue";
+import RolePermission from "@/pages/admin/users/ManageUser.vue";
 import CreatePage from "@/pages/admin/Pages/CreatePage.vue";
 import Pages from "@/pages/admin/Pages/Pages.vue";
 import ShowPage from "@/pages/admin/Pages/ShowPage.vue";
@@ -12,7 +12,7 @@ import CreatePost from "@/pages/admin/Post/CreatePost.vue";
 import Post from "@/pages/admin/Post/Post.vue";
 import ShowPost from "@/pages/admin/Post/ShowPost.vue";
 import UpdatePost from "@/pages/admin/Post/UpdatePost.vue";
-import RolePermissionManager from "@/pages/admin/RolePermissionManager.vue";
+import RolePermissionManager from "@/pages/admin/users/RolePermissionManager.vue";
 import GeneralSettings from "@/pages/admin/Settings/GeneralSettings.vue";
 
 import Home from "@/pages/Home.vue";
@@ -30,6 +30,10 @@ import CategoryEdit from "../pages/admin/Post/Category/CategoryEdit.vue";
 import CategoryCreate from "../pages/admin/Post/Category/CategoryCreate.vue";
 import Category from "../pages/admin/Post/Category/Category.vue";
 import CategoryShow from "../pages/admin/Post/Category/CategoryShow.vue";
+import Gallery from "../pages/admin/Gallery/Gallery.vue";
+import ShowGallery from "../pages/admin/Gallery/ShowGallery.vue";
+import UpdateGallery from "../pages/admin/Gallery/UpdateGallery.vue";
+import CreateGallery from "../pages/admin/Gallery/CreateGallery.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -190,7 +194,7 @@ const routes = [
                         },
                     },
                     {
-                        path: "news-categories/:id/edit",
+                        path: "news-categories/edit/:id",
                         name: "UpdateNewsCategory",
                         component: NewsCategoryEdit,
                         props: true,
@@ -216,13 +220,39 @@ const routes = [
                         },
                     },
                     {
-                        path: "menu/:id/view",
+                        path: "menu/view/:id",
                         name: "ShowMenu",
                         component: MenuManager,
                         meta: {
                             permission: "manage-menus",
                         },
                         props: true,
+                    },
+                    {
+                        path: "manage-galleries",
+                        name: "Gallery",
+                        component: Gallery,
+                        meta: { permission: "view-galleries" },
+                    },
+                    {
+                        path: "galleries/:id",
+                        name: "ShowGallery",
+                        component: ShowGallery,
+                        props: true,
+                        meta: { permission: "view-galleries" },
+                    },
+                    {
+                        path: "edit-galleries/:id",
+                        name: "UpdateGallery",
+                        component: UpdateGallery,
+                        props: true,
+                        meta: { permission: "edit-galleries" },
+                    },
+                    {
+                        path: "create-gallery",
+                        name: "CreateGallery",
+                        component: CreateGallery,
+                        meta: { permission: "create-galleries" },
                     },
                 ],
             },

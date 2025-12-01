@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class NewsCategoryController extends Controller
 {
-    // 🟢 List all categories
+    /*  List categories with optional search and pagination */
     public function index(Request $request)
     {
         $all = $request->query('all', false);
@@ -19,7 +19,6 @@ class NewsCategoryController extends Controller
 
         $query = NewsCategory::with(['children', 'parent'])->orderBy('sort_order');
 
-        // Apply search if provided
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('category_name', 'like', "%{$search}%")
@@ -30,21 +29,21 @@ class NewsCategoryController extends Controller
         if ($all) {
             $categories = $query->get();
         } else {
-            $perPage = $request->query('per_page', 10); // default 10
+            $perPage = $request->query('per_page', 10);
             $categories = $query->paginate($perPage)->onEachSide(1);
         }
 
         return ApiResponse::success($categories, 'Categories fetched successfully');
     }
 
-    // 🟢 Show single category
+    /*  Get single category details */
     public function show(NewsCategory $category)
     {
         $category->load(['children.parent', 'parent']);
         return ApiResponse::success($category, 'Category fetched successfully');
     }
 
-    // 🟢 Create category
+    /*  Create new category */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -60,7 +59,6 @@ class NewsCategoryController extends Controller
             'status'           => 'in:0,1',
         ]);
 
-        // Handle image upload if present
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('categories', 'public');
             $validated['image'] = $path;
@@ -73,7 +71,7 @@ class NewsCategoryController extends Controller
         return ApiResponse::success($category, 'Category created successfully');
     }
 
-    // 🟢 Update category
+    /*  Update existing category */
     public function update(Request $request, NewsCategory $category)
     {
 
@@ -90,16 +88,15 @@ class NewsCategoryController extends Controller
             'status'           => 'in:0,1',
         ]);
 
-        // Handle image upload if present
         if ($request->hasFile('image')) {
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
-            // Store new image
+
             $path = $request->file('image')->store('categories', 'public');
             $validated['image'] = $path;
         } else {
-            // Keep existing image if no new file uploaded
+
             $validated['image'] = $category->image;
         }
 
@@ -110,6 +107,7 @@ class NewsCategoryController extends Controller
         return ApiResponse::success($category, 'Category updated successfully');
     }
 
+    /*  Update category status */
     public function updateStatus(Request $request, NewsCategory $category)
     {
         $request->validate([
@@ -121,10 +119,9 @@ class NewsCategoryController extends Controller
         return ApiResponse::success($category, 'Category status updated successfully');
     }
 
-    // 🟢 Delete category
+    /*  Delete category */
     public function destroy(NewsCategory $category)
     {
-        // Delete image file if it exists
         if ($category->image && Storage::disk('public')->exists($category->image)) {
             Storage::disk('public')->delete($category->image);
         }

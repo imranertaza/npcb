@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
+    /**
+     * Display a listing of media files and folders.
+     */
     public function index(Request $request)
     {
         $folder = $request->input('folder', 'uploads');
@@ -18,39 +21,9 @@ class MediaController extends Controller
         ]);
     }
 
-    public function createFolder(Request $request)
-    {
-        $request->validate(['name' => 'required|string']);
-        $parent = $request->input('parent', 'uploads');
-        $path   = $parent . '/' . $request->name;
-
-        Storage::disk('public')->makeDirectory($path);
-
-        return response()->json(['message' => 'Folder created', 'path' => $path]);
-    }
-
-    public function renameFolder(Request $request)
-    {
-        $request->validate([
-            'old_path' => 'required|string',
-            'new_name' => 'required|string'
-        ]);
-
-        $oldPath = $request->old_path;
-        $newPath = dirname($oldPath) . '/' . $request->new_name;
-
-        Storage::disk('public')->move($oldPath, $newPath);
-
-        return response()->json(['message' => 'Folder renamed', 'path' => $newPath]);
-    }
-
-    public function deleteFolder(Request $request)
-    {
-        $request->validate(['path' => 'required|string']);
-        Storage::disk('public')->deleteDirectory($request->path);
-
-        return response()->json(['message' => 'Folder deleted']);
-    }
+    /**
+     * Upload a media file.
+     */
     public function upload(Request $request)
     {
         $request->validate([
@@ -82,31 +55,14 @@ class MediaController extends Controller
         ]);
     }
 
+    /**
+     * Delete a media file.
+     */
     public function deleteFile(Request $request)
     {
         $request->validate(['path' => 'required|string']);
         Storage::disk('public')->delete($request->path);
 
         return response()->json(['message' => 'File deleted']);
-    }
-    public function renameFile(Request $request)
-    {
-        $request->validate([
-            'old_path' => 'required|string',
-            'new_name' => 'required|string'
-        ]);
-
-        $oldPath = $request->old_path;
-        $folder  = dirname($oldPath);
-        $newPath = $folder . '/' . $request->new_name;
-
-        Storage::disk('public')->move($oldPath, $newPath);
-
-        return response()->json([
-            'message' => 'File renamed',
-            'old_path' => $oldPath,
-            'new_path' => $newPath,
-            'url' => Storage::url($newPath)
-        ]);
     }
 }

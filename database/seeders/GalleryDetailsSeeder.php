@@ -2,57 +2,62 @@
 
 namespace Database\Seeders;
 
+use App\Models\Gallery;
+use App\Models\GalleryDetail;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class GalleryDetailsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
-        // Fetch all gallery IDs from gallery table
-        $galleryIds = DB::table('gallery')->pluck('id')->toArray();
+        // Fetch all gallery IDs
+        $galleryIds = Gallery::pluck('id')->toArray();
 
-        // Raw data WITHOUT gallery_id
+        // Expanded fake sports data
         $raw = [
-            ['image'=>'pro_1732366392_3698c8c9083a060408a1.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366392_5dfae867c3d9d05d147a.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366393_639dd523c21c997b82d8.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366394_fc36ee0240dfbb97c90e.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366395_604eeb7f6e105cd665a2.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366396_db4148c63de4bd8a5f60.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366397_ff8930b3ef3c04300467.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366397_1674b16070b6cb05609e.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1732366398_e4ecd36e90cbce6d2971.jpg','alt_name'=>null,'sort_order'=>0],
+            // Football
+            ['image' => 'https://placehold.co/400x300?text=Football+Kick', 'alt_name' => 'Football Kick', 'sort_order' => 1],
+            ['image' => 'https://placehold.co/400x300?text=Goal+Celebration', 'alt_name' => 'Goal Celebration', 'sort_order' => 2],
+            ['image' => 'https://placehold.co/400x300?text=Team+Huddle', 'alt_name' => 'Team Huddle', 'sort_order' => 3],
 
-            ['image'=>'pro_1735641684_27e25ca49f6f4df11fe6.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1735641685_9860bb0d60ce9d85ff96.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1735641685_1aa9f5cc533dae11bd0e.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1735641686_8c45b92bb3dd4bd5e22d.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1735641687_7084900e66d02cda189e.jpg','alt_name'=>null,'sort_order'=>0],
+            // Basketball
+            ['image' => 'https://placehold.co/400x300?text=Slam+Dunk', 'alt_name' => 'Slam Dunk', 'sort_order' => 1],
+            ['image' => 'https://placehold.co/400x300?text=Three+Pointer', 'alt_name' => 'Three Pointer', 'sort_order' => 2],
+            ['image' => 'https://placehold.co/400x300?text=Defense+Block', 'alt_name' => 'Defense Block', 'sort_order' => 3],
 
-            ['image'=>'pro_1735730226_e0e31380734102a19f30.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1735730227_e9681fbef5f87212b30c.jpg','alt_name'=>null,'sort_order'=>0],
-            ['image'=>'pro_1735730228_a07b69e52a0c47dbeeb9.jpg','alt_name'=>null,'sort_order'=>0],
+            // Cricket
+            ['image' => 'https://placehold.co/400x300?text=Cover+Drive', 'alt_name' => 'Cover Drive', 'sort_order' => 1],
+            ['image' => 'https://placehold.co/400x300?text=Bowling+Action', 'alt_name' => 'Bowling Action', 'sort_order' => 2],
+            ['image' => 'https://placehold.co/400x300?text=Celebrating+Wicket', 'alt_name' => 'Celebrating Wicket', 'sort_order' => 3],
+
+            // Tennis
+            ['image' => 'https://placehold.co/400x300?text=Serve+Motion', 'alt_name' => 'Serve Motion', 'sort_order' => 1],
+            ['image' => 'https://placehold.co/400x300?text=Backhand+Shot', 'alt_name' => 'Backhand Shot', 'sort_order' => 2],
+            ['image' => 'https://placehold.co/400x300?text=Forehand+Winner', 'alt_name' => 'Forehand Winner', 'sort_order' => 3],
+
+            // Swimming
+            ['image' => 'https://placehold.co/400x300?text=Freestyle+Stroke', 'alt_name' => 'Freestyle Stroke', 'sort_order' => 1],
+            ['image' => 'https://placehold.co/400x300?text=Butterfly+Stroke', 'alt_name' => 'Butterfly Stroke', 'sort_order' => 2],
+            ['image' => 'https://placehold.co/400x300?text=Relay+Race', 'alt_name' => 'Relay Race', 'sort_order' => 3],
+
+            // Athletics
+            ['image' => 'https://placehold.co/400x300?text=Sprint+Finish', 'alt_name' => 'Sprint Finish', 'sort_order' => 1],
+            ['image' => 'https://placehold.co/400x300?text=Long+Jump', 'alt_name' => 'Long Jump', 'sort_order' => 2],
+            ['image' => 'https://placehold.co/400x300?text=High+Jump', 'alt_name' => 'High Jump', 'sort_order' => 3],
         ];
 
-        // Insert with valid dynamic gallery_id
-        $data = [];
-
         foreach ($raw as $item) {
-            $data[] = [
-                'gallery_id' => $galleryIds[array_rand($galleryIds)], // assign random valid ID
+            GalleryDetail::create([
+                'gallery_id' => $galleryIds[array_rand($galleryIds)],
                 'image'      => $item['image'],
                 'alt_name'   => $item['alt_name'],
                 'sort_order' => $item['sort_order'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+                'createdBy'  => 1,
+                'updatedBy'  => null,
+            ]);
         }
-
-        DB::table('gallery_details')->insert($data);
     }
 }
