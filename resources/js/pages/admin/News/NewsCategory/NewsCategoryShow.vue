@@ -1,5 +1,5 @@
 <template>
-  <DashboardHeader title="Category Details" />
+  <DashboardHeader title=" News Category Details" />
 
   <section class="mt-3">
     <div class="card">
@@ -40,9 +40,9 @@
           <dd class="col-sm-9">{{ category.sort_order }}</dd>
         </dl>
 
-        <router-link :to="{ name: 'CategoryIndex' }" class="btn btn-secondary mt-3">Back to List</router-link>
+        <router-link :to="{ name: 'NewsCategoryIndex' }" class="btn btn-secondary mt-3">Back to List</router-link>
         <router-link v-if="authStore.hasPermission('edit-categories')"
-          :to="{ name: 'UpdateCategory', params: { id: category?.id } }" class="ml-2 btn btn-primary mt-3 ms-2">
+          :to="{ name: 'UpdateNewsCategory', params: { id: category?.id } }" class="ml-2 btn btn-primary mt-3 ms-2">
           Edit
         </router-link>
       </div>

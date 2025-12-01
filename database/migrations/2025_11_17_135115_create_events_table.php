@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('event_category_id')
-                  ->constrained('event_categories'); // no cascade delete
-
+                ->constrained('event_categories')->onDelete('cascade');
             $table->string('title');
+            $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('file')->nullable(); // pdf/jpg/png/jpeg
+            $table->string('file')->nullable();
+            $table->enum('status', ['1', '0'])->default('1');
+            $table->foreignId('createdBy')->constrained('users');
+            $table->foreignId('updatedBy')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

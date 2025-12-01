@@ -14,3 +14,8 @@ export function truncateText(text = '', maxLength = 100, suffix = '...') {
       ? path
       : `/storage/${path.replace(/^\/+/, '')}`;
   }
+
+  export const generateSlug = (title) => {
+  return title.toLowerCase().replace(title, title).replace(/^-+|-+$/g, '')
+        .replace(/\s/g, '-').replace(/\-\-+/g, '-');
+};

@@ -15,9 +15,10 @@ class NewsCategoryController extends Controller
     public function index(Request $request)
     {
         $all = $request->query('all', false);
+
         $search = $request->query('search');
 
-        $query = NewsCategory::with(['children', 'parent'])->orderBy('sort_order');
+        $query = NewsCategory::with(['children'])->orderBy('sort_order');
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -30,7 +31,11 @@ class NewsCategoryController extends Controller
             $categories = $query->get();
         } else {
             $perPage = $request->query('per_page', 10);
-            $categories = $query->paginate($perPage)->onEachSide(1);
+            if ($perPage > 0) {
+                $categories = $query->paginate($perPage)->onEachSide(1);
+            } else {
+                $categories = $query->select(['id', 'category_name'])->where('parent_id', null)->get();
+            }
         }
 
         return ApiResponse::success($categories, 'Categories fetched successfully');
@@ -60,7 +65,7 @@ class NewsCategoryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
+            $path = $request->file('image')->store('news_categories', 'public');
             $validated['image'] = $path;
         }
 
@@ -93,10 +98,9 @@ class NewsCategoryController extends Controller
                 Storage::disk('public')->delete($category->image);
             }
 
-            $path = $request->file('image')->store('categories', 'public');
+            $path = $request->file('image')->store('news_categories', 'public');
             $validated['image'] = $path;
         } else {
-
             $validated['image'] = $category->image;
         }
 

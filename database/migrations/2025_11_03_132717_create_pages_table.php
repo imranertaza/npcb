@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('meta_keyword', 255);
             $table->enum('status', ['Active', 'Inactive']);
             $table->foreignId('createdBy')->constrained('users');
-            $table->foreignId('updatedBy')->constrained('users');
+            $table->foreignId('updatedBy')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

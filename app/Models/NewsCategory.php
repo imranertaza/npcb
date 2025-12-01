@@ -16,4 +16,26 @@ class NewsCategory extends Model
     {
         return $this->belongsTo(NewsCategory::class, 'parent_id');
     }
+
+    /**
+     * Relationship: News items under this category.
+     */
+    public function news()
+    {
+        return $this->belongsToMany(
+            News::class,
+            'news_category_maps',
+            'news_category_id',
+            'news_id'
+        );
+    }
+
+
+    /**
+     * Scope: Active categories only.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', '1');
+    }
 }

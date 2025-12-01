@@ -106,7 +106,7 @@
               <li class="nav-item" :class="{ 'menu-open': isOpen('categories') }"
                 v-if="authStore.hasPermission('view-categories')">
                 <a href="#" class="nav-link" @click.prevent="toggle('categories')">
-                  <i class="nav-icon far fa-circle"></i>
+                  <i class="nav-icon fas fa-folder"></i>
                   <p>Post Category <i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview" v-show="isOpen('categories')">
@@ -129,35 +129,59 @@
             </ul>
           </li>
 
-          <!-- Manage News Category -->
-          <li class="nav-item" v-if="authStore.hasPermission('view-news-categories')"
-            :class="{ 'menu-open': isOpen('newsCategories') }">
-            <a href="#" class="nav-link" @click.prevent="toggle('newsCategories')">
+          <!-- News -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-news')" :class="{ 'menu-open': isOpen('news') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('news')">
               <i class="nav-icon fas fa-newspaper"></i>
-              <p>News Category <i class="fas fa-angle-left right"></i></p>
+              <p>News <i class="fas fa-angle-left right"></i></p>
             </a>
-            <ul class="nav nav-treeview" v-show="isOpen('newsCategories')">
-
-              <!-- News Category List -->
+            <ul class="nav nav-treeview" v-show="isOpen('news')">
+              <!-- News List -->
               <li class="nav-item">
-                <router-link :to="{ name: 'NewsCategoryIndex' }" class="nav-link"
-                  :class="{ active: $route.name === 'NewsCategoryIndex' }">
+                <router-link :to="{ name: 'News' }" class="nav-link" :class="{ active: $route.name === 'News' }">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>News Category List</p>
+                  <p>News List</p>
                 </router-link>
               </li>
 
-              <!-- Create News Category -->
-              <li class="nav-item" v-if="authStore.hasPermission('create-news-categories')">
-                <router-link :to="{ name: 'NewsCategoryCreate' }" class="nav-link"
-                  :class="{ active: $route.name === 'NewsCategoryCreate' }">
+              <!-- Create News -->
+              <li class="nav-item" v-if="authStore.hasPermission('create-news')">
+                <router-link :to="{ name: 'CreateNews' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateNews' }">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Create News Category</p>
+                  <p>Create News</p>
                 </router-link>
               </li>
 
+              <!-- Manage News Category (nested inside News) -->
+              <li class="nav-item" v-if="authStore.hasPermission('view-news-categories')"
+                :class="{ 'menu-open': isOpen('newsCategories') }">
+                <a href="#" class="nav-link" @click.prevent="toggle('newsCategories')">
+                  <i class="nav-icon fas fa-folder"></i>
+                  <p>News Category <i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview" v-show="isOpen('newsCategories')">
+                  <!-- News Category List -->
+                  <li class="nav-item">
+                    <router-link :to="{ name: 'NewsCategoryIndex' }" class="nav-link"
+                      :class="{ active: $route.name === 'NewsCategoryIndex' }">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Category List</p>
+                    </router-link>
+                  </li>
+                  <!-- Create News Category -->
+                  <li class="nav-item" v-if="authStore.hasPermission('create-news-categories')">
+                    <router-link :to="{ name: 'NewsCategoryCreate' }" class="nav-link"
+                      :class="{ active: $route.name === 'NewsCategoryCreate' }">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Create Category</p>
+                    </router-link>
+                  </li>
+                </ul>
+              </li>
             </ul>
           </li>
+
           <!-- Galleries -->
           <li class="nav-item" v-if="authStore.hasPermission('view-galleries')"
             :class="{ 'menu-open': isOpen('galleries') }">
@@ -177,6 +201,83 @@
                   :class="{ active: $route.name === 'CreateGallery' }">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Create Gallery</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+          <!-- Events (with nested Categories) -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-events')" :class="{ 'menu-open': isOpen('events') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('events')">
+              <i class="nav-icon fas fa-calendar-alt"></i>
+              <p>Events <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('events')">
+              <!-- Event List -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'Events' }" class="nav-link" :class="{ active: $route.name === 'Events' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Event List</p>
+                </router-link>
+              </li>
+
+              <!-- Create Event -->
+              <li class="nav-item" v-if="authStore.hasPermission('create-events')">
+                <router-link :to="{ name: 'CreateEvent' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateEvent' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Event</p>
+                </router-link>
+              </li>
+
+              <!-- Nested: Manage Event Category -->
+              <li class="nav-item" :class="{ 'menu-open': isOpen('event-categories') }"
+                v-if="authStore.hasPermission('view-events-categories')">
+                <a href="#" class="nav-link" @click.prevent="toggle('event-categories')">
+                  <i class="nav-icon far fa-circle"></i>
+                  <p>Event Category <i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview" v-show="isOpen('event-categories')">
+                  <li class="nav-item">
+                    <router-link :to="{ name: 'EventCategoryIndex' }" class="nav-link"
+                      :class="{ active: $route.name === 'EventCategoryIndex' }">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Category List</p>
+                    </router-link>
+                  </li>
+                  <li class="nav-item" v-if="authStore.hasPermission('create-events-categories')">
+                    <router-link :to="{ name: 'EventCategoryCreate' }" class="nav-link"
+                      :class="{ active: $route.name === 'EventCategoryCreate' }">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Create Category</p>
+                    </router-link>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Notices -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-notices')"
+            :class="{ 'menu-open': isOpen('notices') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('notices')">
+              <i class="nav-icon fas fa-bullhorn"></i>
+              <p>Notices <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('notices')">
+              <!-- Notice List -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'Notices' }" class="nav-link" :class="{ active: $route.name === 'Notices' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Notice List</p>
+                </router-link>
+              </li>
+
+              <!-- Create Notice -->
+              <li class="nav-item" v-if="authStore.hasPermission('create-notices')">
+                <router-link :to="{ name: 'CreateNotice' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateNotice' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Notice</p>
                 </router-link>
               </li>
             </ul>
@@ -268,33 +369,68 @@ const isOpen = (menu) => {
 // Auto-open parent menus based on current route
 const openParentMenus = () => {
   const map = {
+    // Pages
     'Pages': ['pages'],
     'CreatePage': ['pages'],
     'UpdatePages': ['pages'],
     'ShowPage': ['pages'],
+
+    // Posts
     'Posts': ['posts'],
     'CreatePost': ['posts'],
     'ShowPost': ['posts'],
     'UpdatePost': ['posts'],
+
+    // Post Categories
     'CategoryIndex': ['posts', 'categories'],
     'UpdateCategory': ['posts', 'categories'],
     'CreateCategory': ['posts', 'categories'],
     'CategoryShow': ['posts', 'categories'],
-    'NewsCategoryCreate': ['newsCategories'],
-    'NewsCategoryIndex': ['newsCategories'],
-    'UpdateNewsCategory': ['newsCategories'],
-    'NewsCategoryShow': ['newsCategories'],
-    'CategoryCreate': ['posts', 'categories'],
+
+    // News
+    'News': ['news'],
+    'CreateNews': ['news'],
+    'ShowNews': ['news'],
+    'UpdateNews': ['news'],
+
+    // News Categories (nested under News)
+    'NewsCategoryIndex': ['news', 'newsCategories'],
+    'NewsCategoryCreate': ['news', 'newsCategories'],
+    'UpdateNewsCategory': ['news', 'newsCategories'],
+    'NewsCategoryShow': ['news', 'newsCategories'],
+
+    // Users / Roles
     'RolePermission': ['users'],
     'RolePermissionManager': ['users'],
     'AdminUserUpdate': ['users'],
+
+    // Settings
     'GeneralSettings': ['settings'],
     'MenuManager': ['settings'],
     'ShowMenu': ['settings'],
+
+    // Galleries
     'Gallery': ['galleries'],
     'CreateGallery': ['galleries'],
     'ShowGallery': ['galleries'],
 
+    // Events
+    'Events': ['events'],
+    'CreateEvent': ['events'],
+    'ShowEvent': ['events'],
+    'UpdateEvent': ['events'],
+
+    // Event Categories
+    'EventCategoryIndex': ['events', 'event-categories'],
+    'EventCategoryCreate': ['events', 'event-categories'],
+    'UpdateEventCategory': ['events', 'event-categories'],
+    'EventCategoryShow': ['events', 'event-categories'],
+
+    // Notices
+    'Notices': ['notices'],
+    'CreateNotice': ['notices'],
+    'ShowNotice': ['notices'],
+    'UpdateNotice': ['notices'],
   }
 
   const current = route.name

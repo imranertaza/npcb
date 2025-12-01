@@ -1,5 +1,5 @@
 <template>
-  <DashboardHeader title="Create Category" />
+  <DashboardHeader title="Create News Category" />
 
   <section class="mt-3">
     <div class="card">

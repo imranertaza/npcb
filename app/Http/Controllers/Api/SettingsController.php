@@ -13,7 +13,6 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        // Adjusted to match the new ApiResponse::success() signature
         return ApiResponse::success(Setting::all(), 'Settings retrieved successfully');
     }
 

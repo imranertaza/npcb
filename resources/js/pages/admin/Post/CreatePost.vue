@@ -16,7 +16,8 @@
                   <!-- Title & Slug -->
                   <div class="form-group">
                     <label>Post Title</label>
-                    <input v-model="form.post_title" @input="generateSlug" type="text" class="form-control" required />
+                    <input v-model="form.post_title" @input="form.slug = generateSlug(form.post_title)" type="text"
+                      class="form-control" required />
                   </div>
                   <div class="form-group">
                     <label>Slug</label>
@@ -51,8 +52,36 @@
                   </div>
                 </div>
 
-                <!-- Image & Alt -->
                 <div class="col-md-4">
+
+                  <!-- Category Selector -->
+                  <div class="form-group">
+                    <label class="font-weight-bold">Categories</label>
+                    <div class="category-list">
+                      <div v-for="cat in categories" :key="cat.id"
+                        class="icheck-primary form-check category-item border-bottom">
+                        <!-- Parent Category -->
+                        <input type="checkbox" class="form-check-input" :id="'cat-' + cat.id" :value="cat.id"
+                          v-model="form.categories" />
+                        <label class="form-check-label d-block mb-4" :for="'cat-' + cat.id">
+                          {{ cat.category_name }}
+                        </label>
+
+                        <!-- Child Categories -->
+                        <div v-if="cat.children && cat.children.length" class="ml-2 mt-1">
+                          <div v-for="child in cat.children" :key="child.id"
+                            class="form-check icheck-primary category-child">
+                            <input type="checkbox" class="form-check-input" :id="'cat-' + child.id" :value="child.id"
+                              v-model="form.categories" />
+                            <label class="form-check-label d-block mb-3" :for="'cat-' + child.id">
+                              {{ child.category_name }}
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Image & Alt -->
                   <div class="form-group">
                     <label>Upload Image</label>
                     <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
@@ -90,9 +119,10 @@ import DashboardHeader from '@/components/DashboardHeader.vue';
 import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import axios from 'axios';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useToast } from '@/composables/useToast';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
+import { generateSlug } from '../../../layouts/helpers/helpers';
 
 const toast = useToast();
 const imageFile = ref(null);
@@ -109,16 +139,23 @@ const form = reactive({
   meta_title: '',
   meta_keyword: '',
   meta_description: '',
-  image: null
+  image: null,
+  categories: []
 });
 
-const generateSlug = () => {
-  form.slug = form.post_title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+const categories = ref([]);
+
+const fetchCategories = async () => {
+  try {
+    const res = await axios.get('/api/categories?per_page=0'); // your category index API
+    categories.value = res.data.data;
+  } catch (err) {
+    toast.error('Failed to load categories');
+  }
 };
+onMounted(() => {
+  fetchCategories();
+});
 
 const submitPost = async () => {
   const payload = new FormData();
@@ -144,3 +181,18 @@ const submitPost = async () => {
   }
 };
 </script>
+
+<style scoped>
+.category-list {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f9f9f9;
+  max-height: 410px;
+  overflow-y: auto;
+}
+
+.category-item {
+  margin-bottom: 6px;
+}
+</style>

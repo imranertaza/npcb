@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('alt_name', 255)->nullable();
             $table->timestamp('publish_date')->useCurrent();
             $table->enum('status', ['0', '1'])->default('1');
-            $table->foreignId('createdBy')->constrained('users')->onDelete('cascade');
-            $table->foreignId('updatedBy')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('createdBy')->constrained('users');
+            $table->foreignId('updatedBy')->nullable()->constrained('users');
             $table->timestamps();
         });
     }
