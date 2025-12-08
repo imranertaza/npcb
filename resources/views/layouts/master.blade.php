@@ -1,48 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> @yield('title') - {{ config('app.name', 'Laravel Vue App') }}</title>
+    <title>@yield('title') - {{ config('app.name', 'Laravel Vue App') }}</title>
 
-    <!-- Global Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Common CSS -->
-    <link href="{{ asset('assets/css/common.css') }}" rel="stylesheet">
-
-    <!-- Page-specific styles -->
+    {{-- google font --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="{{ getImageUrl($settings['store_icon']) }}" type="image/x-icon">
+    @vite(['resources/web/assets/bootstrap-5.3.8-dist/css/bootstrap.min.css', 'resources/web/assets/css/style.css'])
+    {{-- Page-specific styles --}}
     @stack('styles')
 </head>
+
 <body>
-    <div id="app">
-          <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5  rounded">
-      <div class="container">
-          <a class="navbar-brand fw-bold text-primary" href="{{ route('home') }}">MyApp</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-              <ul class="navbar-nav">
-                  <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                  <li class="nav-item"><a class="nav-link" href="{{ route('page.index') }}">Pages</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#testimonials">Testimonials</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#cta">Get Started</a></li>
-              </ul>
-          </div>
-      </div>
-  </nav>
+    @include('layouts.partial.navbar')
+    <main>
+        @if (request()->route()->getName() != 'home')
+            <!-- Breadcrumb Section Start -->
+            <section class="breadcrumb position-relative">
+                <img class="img-fluid" src="{{ asset('storage/web/about/breadcrumb.png') }}" alt="">
+                <img class="position-absolute bottom-0 w-100" draggable="false"
+                    src="{{ asset('storage/web/about/breadcrumb-gradient.png') }}" alt="">
+                <h6 class="page-title title-one position-absolute text-capitalize">@yield('breadcrumb')</h6>
+            </section>
+        @endif
+        <!-- Breadcrumb Section Start -->
         @yield('content')
-    </div>
+    </main>
+    <button id="backToTop" class="back-to-top">
+        ↑
+    </button>
+    @include('layouts.partial.footer')
 
-    <!-- Global Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Global Bootstrap JS --}}
+    @if (request()->route()->getName() == 'home')
+        @vite('resources/web/assets/js/home.js')
+    @endif
+    @vite(['resources/web/assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js', 'resources/web/assets/js/main.js'])
 
-    
-    <!-- Page-specific scripts -->
+    {{-- Page-specific scripts --}}
     @stack('scripts')
 </body>
+
 </html>

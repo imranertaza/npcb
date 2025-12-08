@@ -32,16 +32,29 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Store Logo</label>
-                <Vue3Dropzone v-model="logoFile" v-model:previews="logoPreview" mode="edit" :allowSelectOnPreview="true" :maxFiles="1" />
+                <Vue3Dropzone v-model="logoFile" v-model:previews="logoPreview" mode="edit" :allowSelectOnPreview="true"
+                  :maxFiles="1" />
                 <div v-if="logoPreview.length" class="mt-2">
-                  <img :src="logoPreview[0]" alt="Logo Preview" class="img-thumbnail" style="width:120px;height:auto;" />
+                  <img :src="logoPreview[0]" alt="Logo Preview" class="img-thumbnail"
+                    style="width:120px;height:auto;" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Footer Logo</label>
+                <Vue3Dropzone v-model="footerLogoFile" v-model:previews="footerLogoPreview" mode="edit"
+                  :allowSelectOnPreview="true" :maxFiles="1" />
+                <div v-if="footerLogoPreview.length" class="mt-2">
+                  <img :src="footerLogoPreview[0]" alt="Footer Logo Preview" class="img-thumbnail"
+                    style="width:120px;height:auto;" />
                 </div>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Store Icon (Favicon)</label>
-                <Vue3Dropzone v-model="faviconFile" v-model:previews="faviconPreview" mode="edit" :allowSelectOnPreview="true" :maxFiles="1" />
+                <Vue3Dropzone v-model="faviconFile" v-model:previews="faviconPreview" mode="edit"
+                  :allowSelectOnPreview="true" :maxFiles="1" />
                 <div v-if="faviconPreview.length" class="mt-2">
-                  <img :src="faviconPreview[0]" alt="Favicon Preview" class="img-thumbnail" style="width:40px;height:40px;" />
+                  <img :src="faviconPreview[0]" alt="Favicon Preview" class="img-thumbnail"
+                    style="width:40px;height:40px;" />
                 </div>
               </div>
             </div>
@@ -120,15 +133,18 @@
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Twitter URL</label>
-                <input v-model="form.twitter_url" type="url" class="form-control" placeholder="https://twitter.com/..." />
+                <input v-model="form.twitter_url" type="url" class="form-control"
+                  placeholder="https://twitter.com/..." />
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">TikTok URL</label>
-                <input v-model="form.tiktok_url" type="url" class="form-control" placeholder="https://tiktok.com/..." />
+                <label class="form-label">Linkedin URL</label>
+                <input v-model="form.linkedin_url" type="url" class="form-control"
+                  placeholder="https://linkedin.com/..." />
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Instagram URL</label>
-                <input v-model="form.instagram_url" type="url" class="form-control" placeholder="https://instagram.com/..." />
+                <input v-model="form.instagram_url" type="url" class="form-control"
+                  placeholder="https://instagram.com/..." />
               </div>
             </div>
           </div>
@@ -172,7 +188,7 @@ import { onMounted, ref } from 'vue';
 const toast = useToast();
 // ---------- Reactive form ----------
 const form = ref({
-  // General
+  // General  
   address: '',
   email: '',
   phone: '',
@@ -188,7 +204,7 @@ const form = ref({
   // Social
   fb_url: '',
   twitter_url: '',
-  tiktok_url: '',
+  linkedin_url: '',
   instagram_url: '',
   // SEO
   meta_title: '',
@@ -198,7 +214,9 @@ const form = ref({
 
 // ---------- Dropzone refs ----------
 const logoFile = ref([]);
+const footerLogoFile = ref([]);
 const logoPreview = ref([]);
+const footerLogoPreview = ref([]);
 const faviconFile = ref([]);
 const faviconPreview = ref([]);
 // ---------- Fetch existing settings ----------
@@ -219,6 +237,9 @@ const fetchSettings = async () => {
       // Pre-populate image previews
       if (key === 'store_logo' && value) {
         logoPreview.value = [getImageUrl(value)];
+      }
+      if (key === 'footer_logo' && value) {
+        footerLogoPreview.value = [getImageUrl(value)];
       }
       if (key === 'store_icon' && value) {
         faviconPreview.value = [getImageUrl(value)];
@@ -249,6 +270,9 @@ const submitSettings = async () => {
   // Append image files ONLY if a new file is selected
   if (logoFile.value[0]?.file) {
     payload.append('store_logo', logoFile.value[0].file);
+  }
+  if (footerLogoFile.value[0]?.file) {
+    payload.append('footer_logo', footerLogoFile.value[0].file);
   }
   if (faviconFile.value[0]?.file) {
     payload.append('store_icon', faviconFile.value[0].file);

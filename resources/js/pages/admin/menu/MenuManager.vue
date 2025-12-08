@@ -271,7 +271,7 @@ const editModal = ref({ open: false, target: null })
 const editForm = ref({
   name: '',
   icon: '',
-  link: '',
+  url: '',
   link_type: '',
   page_id: '',
   category_id: '',
@@ -383,16 +383,17 @@ const deleteItem = async (id, name = 'this item') => {
 
 
 const openEditPanel = (item) => {
+
   editModal.value.open = true
   editModal.value.target = item
+  console.log({editModal})
   editForm.value = {
     name: item.name || '',
     icon: item.icon || '',
     link_type: item.link_type || '',
-    link: item.link || '',
+    url: item.link || '',
     category_id: item.category_id || '',
     page_id: item.page_id || '',
-    url: item.url || '',
     enabled: item.enabled !== false
   }
 }
@@ -405,7 +406,6 @@ const closeEditPanel = () => {
 const applyEdit = async () => {
   const target = editModal.value.target
   if (!target) return
-
   try {
     const payload = {
       name: editForm.value.name,

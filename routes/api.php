@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ResultController;
+use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\EventCategoryController;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,13 @@ Route::middleware('auth:user')->prefix('pages')->controller(PageController::clas
     Route::put('{id}', 'update')->middleware('permission:edit-pages');
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-pages');
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-pages');
+});
+
+Route::prefix('sections')->middleware('auth:user')->controller(SectionController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('{name}', 'show')->name('sections.show');
+    Route::post('{name}', 'update')->name('sections.update');
+    Route::post('{name}/key', 'updateKey')->name('sections.updateKey');
 });
 
 Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
