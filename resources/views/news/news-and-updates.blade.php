@@ -12,7 +12,7 @@
                     <div>
                         <div class="latest-blog-card news-card card-smooth">
                             <div class="position-relative">
-                                <img src="{{ getImageUrl($item->image) }}" class="card-img-top" alt="news image">
+                                <img src="{{ getImageUrl($item->f_image) }}" class="card-img-top" alt="news image">
                                 <div class="content-text d-inline-flex align-items-center bg-primary published-date">
                                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">

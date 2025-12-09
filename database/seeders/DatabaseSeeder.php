@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\BlogCategory;
+use App\Models\BlogCategoryMap;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -35,5 +37,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ResultSeeder::class);
         $this->call(NewsCategoryMapSeeder::class);
         $this->call(SectionSeeder::class);
+        $this->call(BlogSeeder::class);
+        $this->call(CommitteeMemberSeeder::class);
     }
 }

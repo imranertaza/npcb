@@ -7,7 +7,7 @@
 
     <section class="container py-100">
         <div class="news-details">
-            <h1 class="header-one text-blue mb-4">{{ $blog->post_title }}</h1>
+            <h1 class="header-one text-blue mb-4">{{ $blog->title }}</h1>
             <div class="d-flex gap-4 mb-40 text-dark-emphasis">
                 <div class="d-flex gap-2">
                     <div class="user">
@@ -31,7 +31,7 @@
                             </defs>
                         </svg>
                     </span>
-                    <span class="date">{{ Carbon\Carbon::parse($blog->publish_date)->format('d M Y') }}</span>
+                    <span class="date">{{ formatDate($blog->publish_date) }}</span>
                 </div>
             </div>
         </div>

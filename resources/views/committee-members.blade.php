@@ -48,10 +48,7 @@
                 margin-top: -8%;
             }
 
-            .profile-card .card-body {
-                background-color: var(--common-white);
-            }
-
+            
             .profile-card {
                 width: 265px;
                 padding: 0px !important;

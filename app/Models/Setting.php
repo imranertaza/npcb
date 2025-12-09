@@ -17,7 +17,12 @@ class Setting extends Model
 
     public static function allCached()
     {
-        return Cache::rememberForever('settings', fn() => static::pluck('value', 'label')->toArray());
+        try {
+            return Cache::rememberForever('settings', fn() => static::pluck('value', 'label')->toArray());
+        } catch (\Exception $e) {
+            // Table not found or other DB issue
+            return [];
+        }
     }
 
     public static function get(string $key, $default = null)

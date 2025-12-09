@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
 use App\Models\CommitteeMember;
 use App\Models\Event;
 use App\Models\Gallery;
@@ -21,9 +22,10 @@ class FrontendController extends Controller
         $runningEvent = Event::orderBy("created_at", "desc")->where('type', 1)->paginate(15);
         $upcomingEvent = Event::orderBy("created_at", "desc")->where('type', 0)->paginate(15);
         $about_mission_vision = Section::where('name', 'about_mission_vision')->first();
-
+        $blogs = Blog::latest()->paginate(7);
+        $topNews = News::latest()->paginate(5);
         $gamesNews = News::getGamesNews();
-        return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews'));
+        return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews', 'blogs', 'topNews'));
     }
     public function pages()
     {
@@ -72,18 +74,16 @@ class FrontendController extends Controller
     public function newsAndUpdatesDetails($slug)
     {
         $news = News::where('slug', $slug)->firstOrFail();
-        // dd($news);
         return view('news.news-and-updates-details', compact('news'));
     }
     public function blogs()
     {
-        $blogs = Post::paginate(3);
+        $blogs = Blog::paginate();
         return view('blog.blogs', compact('blogs'));
     }
     public function blogsDetails($slug)
     {
-        $blog = Post::where('slug', $slug)->first();
-        // dd($blog);
+        $blog = Blog::where('slug', $slug)->first();
         return view('blog.blog-details', compact('blog'));
     }
     public function runningEvents()

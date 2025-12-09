@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('committee_members', function (Blueprint $table) {
+        Schema::create('blog_category_maps', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('designation');
-            $table->string('image');
-            $table->integer('order');
-            $table->tinyInteger('status')->default(0)->comment('0=inactive, 1=active');
+            $table->foreignId('blog_id')
+                ->constrained('blogs')
+                ->onDelete('cascade');
+
+            $table->foreignId('blog_category_id')
+                ->constrained('blog_categories')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('committee_members');
+        Schema::dropIfExists('blog_category_maps');
     }
 };
