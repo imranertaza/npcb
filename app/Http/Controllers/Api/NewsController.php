@@ -59,6 +59,7 @@ class NewsController extends Controller
             'meta_keyword'   => 'nullable|string',
             'meta_description' => 'nullable|string',
             'image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name'       => 'nullable|string|max:255',
             'publish_date'   => 'nullable|date',
             'status'         => ['required', Rule::in(['0', '1'])],
@@ -72,6 +73,9 @@ class NewsController extends Controller
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('news', 'public');
+        }
+        if ($request->hasFile('f_image')) {
+            $validated['f_image'] = $request->file('f_image')->store('news', 'public');
         }
 
         $news = News::create($validated);
@@ -102,6 +106,7 @@ class NewsController extends Controller
             'meta_keyword'   => 'nullable|string',
             'meta_description' => 'nullable|string',
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name'       => 'nullable|string|max:255',
             'status'         => ['required', Rule::in(['0', '1'])],
             'categories' => 'required|array',
@@ -115,6 +120,12 @@ class NewsController extends Controller
                 Storage::disk('public')->delete($news->image);
             }
             $validated['image'] = $request->file('image')->store('news', 'public');
+        }
+        if ($request->hasFile('f_image')) {
+            if ($news->f_image && Storage::disk('public')->exists($news->f_image)) {
+                Storage::disk('public')->delete($news->f_image);
+            }
+            $validated['f_image'] = $request->file('f_image')->store('news', 'public');
         }
 
         $news->update($validated);
@@ -150,6 +161,9 @@ class NewsController extends Controller
 
         if ($news->image && Storage::disk('public')->exists($news->image)) {
             Storage::disk('public')->delete($news->image);
+        }
+        if ($news->f_image && Storage::disk('public')->exists($news->f_image)) {
+            Storage::disk('public')->delete($news->f_image);
         }
 
         $news->delete();

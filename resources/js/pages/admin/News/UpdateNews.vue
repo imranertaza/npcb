@@ -83,10 +83,16 @@
 
                   </div>
 
-                  <!-- Image Upload -->
+                  <!-- Banner Image Upload -->
                   <div class="form-group">
-                    <label>Upload Image</label>
+                    <label>Upload Banner Image</label>
                     <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
+                      :allowSelectOnPreview="true" />
+                  </div>
+                  <!-- Featured Image Upload -->
+                  <div class="form-group">
+                    <label>Upload Featured Image</label>
+                    <Vue3Dropzone v-model="f_imageFile" v-model:previews="f_previews" mode="edit"
                       :allowSelectOnPreview="true" />
                   </div>
 
@@ -141,6 +147,7 @@ const route = useRoute();
 const router = useRouter();
 const newsSlug = route.params.slug;
 const previews = ref();
+const f_previews = ref();
 
 const form = reactive({
   news_title: '',
@@ -148,6 +155,7 @@ const form = reactive({
   short_des: '',
   description: '',
   image: '',
+  f_image: '',
   alt_name: '',
   publish_date: '',
   status: '1',
@@ -160,6 +168,7 @@ const form = reactive({
 });
 
 const imageFile = ref(null);
+const f_imageFile = ref(null);
 
 const fetchNews = async () => {
   try {
@@ -169,6 +178,7 @@ const fetchNews = async () => {
     form.categories = res.data.data.categories.map(c => c.id);
 
     previews.value = [getImageUrl(form.image)];
+    f_previews.value = [getImageUrl(form.f_image)];
   } catch (err) {
     toast.error('Failed to load news');
     console.error(err);
@@ -179,12 +189,15 @@ const updateNews = async () => {
   const payload = new FormData();
 
   for (const key in form) {
-    if (key !== 'image') {
+    if (key !== 'image' && key !== 'f_image') {
       payload.append(key, form[key]);
     }
   }
   if (imageFile.value && imageFile.value[0]) {
     payload.append('image', imageFile.value[0].file);
+  }
+  if (f_imageFile.value && f_imageFile.value[0]) {
+    payload.append('f_image', f_imageFile.value[0].file);
   }
   form.categories.forEach(catId => {
     payload.append('categories[]', catId);

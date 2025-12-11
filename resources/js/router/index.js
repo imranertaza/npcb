@@ -54,6 +54,22 @@ import Result from "../pages/admin/Result/Result.vue";
 import ShowResult from "../pages/admin/Result/ShowResult.vue";
 import UpdateResult from "../pages/admin/Result/UpdateResult.vue";
 import CreateResult from "../pages/admin/Result/CreateResult.vue";
+import Blog from "../pages/admin/Blog/Blog.vue";
+import ShowBlog from "../pages/admin/Blog/ShowBlog.vue";
+import UpdateBlog from "../pages/admin/Blog/UpdateBlog.vue";
+import CreateBlog from "../pages/admin/Blog/CreateBlog.vue";
+import BlogCategory from "../pages/admin/Blog/BlogCategory/BlogCategory.vue";
+import BlogCategoryCreate from "../pages/admin/Blog/BlogCategory/BlogCategoryCreate.vue";
+import BlogCategoryEdit from "../pages/admin/Blog/BlogCategory/BlogCategoryEdit.vue";
+import BlogCategoryShow from "../pages/admin/Blog/BlogCategory/BlogCategoryShow.vue";
+import UpdateSection from "../pages/admin/Section/UpdateSection.vue";
+import Section from "../pages/admin/Section/Section.vue";
+import Sliders from "../pages/admin/Sliders/Sliders.vue";
+import CreateSlider from "../pages/admin/Sliders/CreateSlider.vue";
+import UpdateSlider from "../pages/admin/Sliders/UpdateSlider.vue";
+import CommitteeMembers from "../pages/admin/CommitteeMember/CommitteeMembers.vue";
+import UpdateCommitteeMembers from "../pages/admin/CommitteeMember/UpdateCommitteeMembers.vue";
+import CreateCommitteeMembers from "../pages/admin/CommitteeMember/CreateCommitteeMembers.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -259,6 +275,69 @@ const routes = [
                             permission: "view-news-categories",
                         },
                     },
+                    // Blog CRUD
+                    {
+                        path: "manage-blogs",
+                        name: "Blog",
+                        component: Blog,
+                        meta: { permission: "view-blog" },
+                    },
+                    {
+                        path: "blogs/:slug",
+                        name: "ShowBlog",
+                        component: ShowBlog,
+                        props: true,
+                        meta: { permission: "view-blog" },
+                    },
+                    {
+                        path: "edit-blogs/:slug",
+                        name: "UpdateBlog",
+                        component: UpdateBlog,
+                        props: true,
+                        meta: { permission: "edit-blog" },
+                    },
+                    {
+                        path: "create-blogs",
+                        name: "CreateBlog",
+                        component: CreateBlog,
+                        meta: { permission: "create-blog" },
+                    },
+
+                    {
+                        path: "blog-categories",
+                        name: "BlogCategoryIndex",
+                        component: BlogCategory,
+                        meta: {
+                            permission: "view-blog-categories",
+                        },
+                    },
+                    {
+                        path: "blog-categories/create",
+                        name: "BlogCategoryCreate",
+                        component: BlogCategoryCreate,
+                        meta: {
+                            permission: "create-blog-categories",
+                        },
+                    },
+                    {
+                        path: "blog-categories/edit/:id",
+                        name: "UpdateBlogCategory",
+                        component: BlogCategoryEdit,
+                        props: true,
+                        meta: {
+                            permission: "edit-blog-categories",
+                        },
+                    },
+                    {
+                        path: "admin/blog-categories/:id",
+                        name: "BlogCategoryShow",
+                        component: BlogCategoryShow,
+                        props: true,
+                        meta: {
+                            permission: "view-blog-categories",
+                        },
+                    },
+                    // Menu manager
                     {
                         path: "menus",
                         name: "MenuManager",
@@ -412,7 +491,60 @@ const routes = [
                         path: "create-results",
                         name: "CreateResult",
                         component: CreateResult,
-                    meta: { permission: "create-results" },
+                        meta: { permission: "create-results" },
+                    },
+                    {
+                        path: "manage-sections",
+                        name: "Section",
+                        component: Section,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "edit-sections/:id",
+                        name: "UpdateSection",
+                        component: UpdateSection,
+                        props: true,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "banner-sliders",
+                        name: "Sliders",
+                        component: Sliders,
+                        props: true,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "edit-sliders/:id",
+                        name: "UpdateSlider",
+                        component: UpdateSlider,
+                        props: true,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "create-sliders",
+                        name: "CreateSlider",
+                        component: CreateSlider,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "manage-committee-members",
+                        name: "CommitteeMembers",
+                        component: CommitteeMembers,
+                        props: true,
+                        meta: { permission: "manage-committee-members" },
+                    },
+                    {
+                        path: "edit-committee-members/:id",
+                        name: "UpdateCommitteeMembers",
+                        component: UpdateCommitteeMembers,
+                        props: true,
+                        meta: { permission: "manage-committee-members" },
+                    },
+                    {
+                        path: "create-committee-members",
+                        name: "CreateCommitteeMembers",
+                        component: CreateCommitteeMembers,
+                        meta: { permission: "manage-committee-members" },
                     },
                 ],
             },

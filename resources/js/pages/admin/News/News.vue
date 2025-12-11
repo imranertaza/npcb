@@ -122,7 +122,7 @@ const updateStatus = async (item) => {
       status: item.status
     });
 
-    if (response.data.status === '1') {
+    if (response.data.data.status === '1') {
       toast.success('News published');
     } else {
       toast.info('News set to draft');

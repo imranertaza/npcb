@@ -31,7 +31,7 @@
                             </defs>
                         </svg>
                     </span>
-                    <span class="date">{{ Carbon\Carbon::parse($news->publish_date)->format('d M Y') }} 26 May 2025</span>
+                    <span class="date">{{ formatDate($news->publish_date) }}</span>
                 </div>
             </div>
         </div>
@@ -40,38 +40,6 @@
         </div>
         <div class="text-start text-dark-emphasis mt-40">
             {!! $news->description !!}
-            {{-- <p class="content-text mb-30">
-                A spirited celebration of amputee football brought together 45 players on Monday at the Fayyaz
-                Stadium, adjacent to the National Parliament, organised by the National Paralympic Committee of
-                Bangladesh.
-
-            </p>
-            <p class="content-text mb-30">
-                The day-long event featured training sessions and trials, culminating in the preliminary selection
-                of 20 standout players poised to represent Bangladesh in domestic and international competitions.
-                Participants displayed remarkable skill, some playing with prosthetic limbs while others relied on
-                crutches, highlighting the determination and talent of physically challenged footballers.
-
-            </p>
-            <p class="content-text mb-30">
-                Former national star Kaiser Hamid attended the event, visibly moved by the players’ performance.
-                “Allah has given us so much. We became national stars through football, but witnessing the sheer
-                skill of these physically challenged players is truly inspiring. I will always support them,” he
-                said.
-
-            </p>
-            <p class="content-text mb-30">
-                Awards were presented to the winners by Mo. Selim Fakir, Additional Secretary of the Ministry of
-                Youth and Sports, alongside Kaiser Hamid. The event also saw the presence of former footballer
-                Mamunul Islam, Yakub Sujan Bhuiya, Managing Director of Mangoline PLC, Sharmin Farhan, Founder and
-                CEO of Sports for Hope and Independence, Subhash Sinha, Manager of ICRC, and NPC officials including
-                Secretary Dr. Maruf Ahmed and Joint Secretary and former cricketer Sanowar Hossain.
-
-            </p>
-            <p class="content-text mb-30">
-                The festival not only celebrated the spirit of amputee football but also marked a significant step
-                towards nurturing talent and promoting inclusivity in Bangladesh sports.
-            </p> --}}
         </div>
         <hr class="mt-60">
 

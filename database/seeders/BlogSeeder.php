@@ -28,6 +28,7 @@ class BlogSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
+            $cat['slug'] = Str::slug($cat['category_name']);
             BlogCategory::create($cat);
         }
 

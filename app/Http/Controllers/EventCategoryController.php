@@ -8,6 +8,7 @@ use App\Models\EventCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EventCategoryController extends Controller
 {
@@ -62,6 +63,8 @@ class EventCategoryController extends Controller
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
+
+        $validated['slug'] = Str::slug($validated['category_name']);
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('event_categories', 'public');

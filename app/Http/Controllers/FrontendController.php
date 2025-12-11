@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\Category;
 use App\Models\CommitteeMember;
 use App\Models\Event;
 use App\Models\Gallery;
@@ -13,6 +14,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\Result;
 use App\Models\Section;
+use App\Models\Slider;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -25,7 +27,9 @@ class FrontendController extends Controller
         $blogs = Blog::latest()->paginate(7);
         $topNews = News::latest()->paginate(5);
         $gamesNews = News::getGamesNews();
-        return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews', 'blogs', 'topNews'));
+        $slides = Slider::where('key', 'banner_section')->where('enabled', 1)->get();
+
+        return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews', 'blogs', 'topNews', 'slides'));
     }
     public function pages()
     {
@@ -37,6 +41,9 @@ class FrontendController extends Controller
         $page = Page::where('slug', $slug)->firstOrFail();
         if ($slug == 'contact-us') {
             return view('contact', compact('page'));
+        } else if ($slug == 'sports') {
+            $ports = Post::where('status', 1)->paginate(10);
+            return view('pages.details', compact('page', 'sports'));
         } else {
             return view('pages.details', compact('page'));
         }
@@ -68,8 +75,15 @@ class FrontendController extends Controller
     }
     public function newsAndUpdates()
     {
+        $pageTitle = 'News and Updates';
         $news = News::paginate(3);
-        return view('news.news-and-updates', compact('news'));
+        return view('news.news-and-updates', compact('news', 'pageTitle'));
+    }
+    public function spotlightNews()
+    {
+        $news = News::getSpotlightNews();
+        $pageTitle = 'Spotlights';
+        return view('news.news-and-updates', compact('news', 'pageTitle'));
     }
     public function newsAndUpdatesDetails($slug)
     {
@@ -86,6 +100,16 @@ class FrontendController extends Controller
         $blog = Blog::where('slug', $slug)->first();
         return view('blog.blog-details', compact('blog'));
     }
+    // public function sports()
+    // {
+    //     return view('sports.sports', compact('sports'));
+    // }
+    // public function sportsDetails($slug)
+    // {
+    //     $sports = Post::where('slug', $slug)->firstOrFail();
+    //     $details = $sports->details()->paginate();
+    //     return view('sports.sports-details', compact('sports', 'details'));
+    // }
     public function runningEvents()
     {
         $events = Event::where('type', 1)->paginate(10);
@@ -105,5 +129,17 @@ class FrontendController extends Controller
     {
         $members = CommitteeMember::orderBy('order')->where('status', 1)->get();
         return view('committee-members', compact('members'));
+    }
+    public function postCategoryDetails($slug)
+    {
+           $category = Category::where('slug', $slug)->firstOrFail();
+    // paginate directly on the relationship
+    $posts = $category->posts()->paginate(12);
+        return view('sports.sports', compact('category','posts'));
+    }
+    public function postDetails($slug)
+    {
+        $post = Post::where('slug', $slug)->firstOrFail();
+        return view('sports.sports-details', compact('post'));
     }
 }

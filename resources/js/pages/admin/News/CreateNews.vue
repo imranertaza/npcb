@@ -82,7 +82,12 @@
                   </div>
                   <!-- Image & Alt -->
                   <div class="form-group">
-                    <label>Upload Image</label>
+                    <label>Upload Featured Image</label>
+                    <Vue3Dropzone v-model="f_imageFile" :allowSelectOnPreview="true" />
+                  </div>
+                  <!-- Image & Alt -->
+                  <div class="form-group">
+                    <label>Upload Banner Image</label>
                     <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
                   </div>
                   <div class="form-group">
@@ -125,6 +130,9 @@ import { generateSlug } from '../../../layouts/helpers/helpers';
 
 const toast = useToast();
 const imageFile = ref(null);
+const f_imageFile = ref(null);
+
+
 
 const form = reactive({
   news_title: '',
@@ -138,6 +146,7 @@ const form = reactive({
   meta_keyword: '',
   meta_description: '',
   image: null,
+  f_image: null,
   categories: []
 });
 
@@ -160,7 +169,7 @@ const submitNews = async () => {
 
   // Append form fields
   for (const key in form) {
-    if (key !== 'image') {
+    if (key !== 'image' && key !== 'f_image') {
       payload.append(key, form[key]);
     }
   }
@@ -168,6 +177,11 @@ const submitNews = async () => {
   if (imageFile.value && imageFile.value[0]) {
     payload.append('image', imageFile.value[0].file);
   }
+  // Append featured image file from Dropzone
+  if (f_imageFile.value && f_imageFile.value[0]) {
+    payload.append('f_image', f_imageFile.value[0].file);
+  }
+
 
   form.categories.forEach(catId => {
     payload.append('categories[]', catId);

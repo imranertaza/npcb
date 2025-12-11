@@ -39,8 +39,8 @@ class MenuItem extends Model
             case 'page':
                 return $this->page ? route('page.details', $this->page->slug) : '#';
             case 'category':
-                return '';
-                // return $this->category ? route('category-details', $this->category->slug) : '#';
+                // return '';
+                return $this->category ? route('post-categories', $this->category->slug) : '#';
             case 'url':
             default:
                 return $this->attributes['url'] ?? '#';

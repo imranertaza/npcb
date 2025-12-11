@@ -91,39 +91,5 @@ class SectionSeeder extends Seeder
                 ],
             ]
         );
-        Section::updateOrCreate(
-            ['name' => 'banner_section'],
-            [
-                'data' => [
-                    'title'   => 'Homepage Banner',
-                    'slides'  => [
-                        [
-                            'image'       => 'banner-1.jpg',
-                            'title'       => 'Amputee Football Festival Showcases Rising Talent in Dhaka',
-                            'description' => 'A spirited celebration of amputee football brought together 45 players...',
-                            'link'        => '/news-and-updates',
-                            'order'       => 1,
-                            'enabled'     => true,
-                        ],
-                        [
-                            'image'       => 'banner-2.jpeg',
-                            'title'       => 'Another Inspiring Paralympic Event',
-                            'description' => 'Highlights from the latest para-sports activities in Bangladesh...',
-                            'link'        => '/blogs',
-                            'order'       => 2,
-                            'enabled'     => true,
-                        ],
-                        [
-                            'image'       => 'banner-3.jpeg',
-                            'title'       => 'Future Paralympic Dreams',
-                            'description' => 'Bangladesh continues its journey in para-sports with new talent...',
-                            'link'        => '/photo-gallery',
-                            'order'       => 3,
-                            'enabled'     => true,
-                        ],
-                    ],
-                ],
-            ]
-        );
     }
 }

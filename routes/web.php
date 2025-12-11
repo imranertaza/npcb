@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\FrontendController;
-use App\Models\Event;
-use App\Models\EventCategory;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,9 +12,13 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('/photo-gallery', 'gallery')->name('gallery');
     Route::get('gallery-details/{id}', 'galleryDetails')->name('gallery-details');
     Route::get('news-and-updates', 'newsAndUpdates')->name('news-and-updates');
+    Route::get('spotlights', 'spotlightNews')->name('spotlight-news');
     Route::get('news-and-updates/{slug}', 'newsAndUpdatesDetails')->name('news-and-updates-details');
     Route::get('blogs', 'blogs')->name('blogs');
     Route::get('blogs/{slug}', 'blogsDetails')->name('blogs-details');
+    Route::get('post-categories/{slug}', 'postCategoryDetails')->name('post-categories');
+    Route::get('sports/{slug}', 'postDetails')->name('sports-details');
+    
     Route::get('running-events', 'runningEvents')->name('running-events');
     Route::get('upcoming-events', 'upcomingEvents')->name('upcoming-events');
     Route::get('running-events/{slug}', 'runningEventsDetails')->name('event-details');

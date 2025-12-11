@@ -6,32 +6,45 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SectionController extends Controller
 {
     public function index()
     {
-        $sections = Section::all();
+        $sections = Section::paginate();
         return ApiResponse::success($sections, 'Sections retrieved successfully');
     }
     // Show section data
-    public function show($name)
+    public function show($id)
     {
-        $section = Section::where('name', $name)->firstOrFail();
-        return ApiResponse::success($section->data, 'Section data retrieved successfully');
+        $section = Section::findOrFail($id);
+        return ApiResponse::success($section, 'Section data retrieved successfully');
     }
 
     // Update section data (replace full JSON)
-    public function update(Request $request, $name)
+    public function update(Request $request, $id)
     {
-        $section = Section::firstOrCreate(['name' => $name]);
-
+        $section = Section::findOrFail($id);
+        // dd($request->all());
         // Validate incoming JSON as associative array
         $data = $request->validate([
-            'data' => 'required|array',
+            'data' => 'required|json',
+            'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $section->data = $data['data'];
+        $data = json_decode($request->input('data'), true);
+
+        if ($request->hasFile('image')) {
+            // remove old image if exists
+            if (!empty($section->data['image']) && Storage::disk('public')->exists($section->data['image'])) {
+                Storage::disk('public')->delete($section->data['image']);
+            }
+
+            $data['image'] = $request->file('image')->store('web/about', 'public');
+        }
+
+        $section->data = $data;
         $section->save();
 
         return response()->json([

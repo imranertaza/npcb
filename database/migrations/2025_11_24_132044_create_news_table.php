@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('news', function (Blueprint $table) {
             $table->id();
-             $table->string('news_title', 255);
+            $table->string('news_title', 255);
             $table->text('slug');
             $table->string('short_des', 255);
             $table->string('f_image', 255);
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('image', 255);
             $table->string('alt_name', 255)->nullable();
             $table->timestamp('publish_date')->useCurrent();
-            $table->enum('status', ['0', '1'])->default('1');
+            $table->tinyInteger('status')->default(0);
             $table->foreignId('createdBy')->constrained('users');
             $table->foreignId('updatedBy')->nullable()->constrained('users');
             $table->timestamps();

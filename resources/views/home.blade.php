@@ -2,19 +2,15 @@
 
 @section('title', 'Home')
 @section('content')
-    @php
-        $bannerSection = App\Models\Section::where('name', 'banner_section')->first();
-        $slides = $bannerSection?->data['slides'] ?? [];
-    @endphp
+
     {{-- Banner section start --}}
     <section class="banner">
         <div class="swiper mySwiperBg">
             <div class="swiper-wrapper">
                 @foreach ($slides as $slide)
-                    @if ($slide['enabled'])
+                    @if ($slide->enabled)
                         <div class="swiper-slide justify-content-start">
-                            <img draggable="false" src="{{ asset('storage/web/banner/' . $slide['image']) }}"
-                                alt="{{ $slide['title'] }}">
+                            <img draggable="false" src="{{ getImageUrl($slide->image) }}" alt="{{ $slide->title }}">
                         </div>
                     @endif
                 @endforeach
@@ -24,13 +20,13 @@
             <div class="swiper mySwiper d-flex">
                 <div class="swiper-wrapper w-75 bg-common banner-main-content-area">
                     @foreach ($slides as $slide)
-                        @if ($slide['enabled'])
+                        @if ($slide->enabled)
                             <div class="swiper-slide">
                                 <div class="slider-content">
-                                    <h1 class="title-one">{{ $slide['title'] }}</h1>
-                                    <p class="content-text mt-16">{{ $slide['description'] }}</p>
-                                    @if (!empty($slide['link']))
-                                        <a href="{{ $slide['link'] }}" class="read-more mt-16 btn-1 slower">Read More</a>
+                                    <h1 class="title-one">{{ $slide->title }}</h1>
+                                    <p class="content-text mt-16">{{ $slide->description }}</p>
+                                    @if (!empty($slide->link))
+                                        <a href="{{ $slide->link }}" class="read-more mt-16 btn-1 slower">Read More</a>
                                     @endif
                                 </div>
                             </div>
@@ -90,7 +86,7 @@
                                     {{ $firstTopNews->news_title }}
                                 </h5>
                                 <p class="content-text-sm">
-                                    {{ truncateText($firstTopNews->short_des,120) }}
+                                    {{ truncateText($firstTopNews->short_des, 120) }}
                                 </p>
                             </div>
                         </a>

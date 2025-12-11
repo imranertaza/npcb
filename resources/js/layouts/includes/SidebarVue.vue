@@ -3,21 +3,21 @@
     <!-- Brand Logo -->
     <router-link :to="{ name: 'Dashboard' }" class="brand-link">
       <img :src="adminLogo" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+      <span class="brand-text font-weight-light">NPCB</span>
     </router-link>
 
     <div class="sidebar">
       <!-- User Panel -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
           <img :src="UserAvatar2" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block">Alexander Pierce</a>
         </div>
-      </div>
+      </div> -->
       <!-- SidebarSearch Form -->
-      <div class="form-inline">
+      <!-- <div class="form-inline">
         <div class="input-group" data-widget="sidebar-search">
           <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
@@ -41,7 +41,7 @@
               <div class="search-path"></div>
             </a></div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -181,6 +181,58 @@
               </li>
             </ul>
           </li>
+          <!-- Blog -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-blog')" :class="{ 'menu-open': isOpen('blog') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('blog')">
+              <i class="nav-icon fas fa-newspaper"></i>
+              <p>Blog <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('blog')">
+              <!-- Blog List -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'Blog' }" class="nav-link" :class="{ active: $route.name === 'Blog' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Blog List</p>
+                </router-link>
+              </li>
+
+              <!-- Create Blog -->
+              <li class="nav-item" v-if="authStore.hasPermission('create-blog')">
+                <router-link :to="{ name: 'CreateBlog' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateBlog' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Blog</p>
+                </router-link>
+              </li>
+
+              <!-- Manage Blog Category (nested inside Blog) -->
+              <li class="nav-item" v-if="authStore.hasPermission('view-blog-categories')"
+                :class="{ 'menu-open': isOpen('blogCategories') }">
+                <a href="#" class="nav-link" @click.prevent="toggle('blogCategories')">
+                  <i class="nav-icon fas fa-folder"></i>
+                  <p>Blog Category <i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview" v-show="isOpen('blogCategories')">
+                  <!-- Blog Category List -->
+                  <li class="nav-item">
+                    <router-link :to="{ name: 'BlogCategoryIndex' }" class="nav-link"
+                      :class="{ active: $route.name === 'BlogCategoryIndex' }">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Category List</p>
+                    </router-link>
+                  </li>
+                  <!-- Create Blog Category -->
+                  <li class="nav-item" v-if="authStore.hasPermission('create-blog-categories')">
+                    <router-link :to="{ name: 'BlogCategoryCreate' }" class="nav-link"
+                      :class="{ active: $route.name === 'BlogCategoryCreate' }">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Create Category</p>
+                    </router-link>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
 
           <!-- Galleries -->
           <li class="nav-item" v-if="authStore.hasPermission('view-galleries')"
@@ -282,7 +334,33 @@
               </li>
             </ul>
           </li>
+          <!-- Committee Members -->
+          <li class="nav-item" v-if="authStore.hasPermission('manage-committee-members')"
+            :class="{ 'menu-open': isOpen('committee-members') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('committee-members')">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Committee Members <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('committee-members')">
+              <!-- Committee Member List -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'CommitteeMembers' }" class="nav-link"
+                  :class="{ active: $route.name === 'CommitteeMembers' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Member List</p>
+                </router-link>
+              </li>
 
+              <!-- Create Committee Member -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'CreateCommitteeMembers' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateCommitteeMembers' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Member</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
           <!-- Results -->
           <li class="nav-item" v-if="authStore.hasPermission('view-results')"
             :class="{ 'menu-open': isOpen('results') }">
@@ -329,6 +407,42 @@
                   :class="{ active: $route.name === 'RolePermissionManager' }">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Role & Permission</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Frontend -->
+          <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')"
+            :class="{ 'menu-open': isOpen('frontend') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('frontend')">
+              <i class="nav-icon fas fa-desktop"></i>
+              <p>
+                Frontend
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('frontend')">
+              <!-- Slider -->
+              <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')">
+                <router-link :to="{ name: 'Sliders' }" class="nav-link" :class="{ active: $route.name === 'Sliders' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Slider</p>
+                </router-link>
+              </li>
+              <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')">
+                <router-link :to="{ name: 'CreateSlider' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreateSlider' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Slider</p>
+                </router-link>
+              </li>
+
+              <!-- Sections -->
+              <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')">
+                <router-link :to="{ name: 'Section' }" class="nav-link" :class="{ active: $route.name === 'Section' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Sections</p>
                 </router-link>
               </li>
             </ul>
@@ -426,6 +540,30 @@ const openParentMenus = () => {
     'UpdateNewsCategory': ['news', 'newsCategories'],
     'NewsCategoryShow': ['news', 'newsCategories'],
 
+    // Blogs
+    'Blog': ['blog'],
+    'CreateBlog': ['blog'],
+    'ShowBlog': ['blog'],
+    'UpdateBlog': ['blog'],
+
+    // Sliders
+    'Sliders': ['frontend', 'sliders'],
+    'CreateSlider': ['frontend', 'sliders'],
+    'ShowSlider': ['frontend', 'sliders'],
+    'UpdateSlider': ['frontend', 'sliders'],
+    'Section': ['frontend', 'sections'],
+    'CreateSection': ['frontend', 'sections'],
+    'ShowSection': ['frontend', 'sections'],
+    'UpdateSection': ['frontend', 'sections'],
+
+
+
+    // Blog Categories (nested under Blogs)
+    'BlogCategoryIndex': ['blog', 'blogCategories'],
+    'BlogCategoryCreate': ['blog', 'blogCategories'],
+    'UpdateBlogCategory': ['blog', 'blogCategories'],
+    'BlogCategoryShow': ['blog', 'blogCategories'],
+
     // Users / Roles
     'RolePermission': ['users'],
     'RolePermissionManager': ['users'],
@@ -458,6 +596,13 @@ const openParentMenus = () => {
     'CreateNotice': ['notices'],
     'ShowNotice': ['notices'],
     'UpdateNotice': ['notices'],
+
+    // Committee Members
+    'CommitteeMembers': ['committee-members'],
+    'CreateCommitteeMembers': ['committee-members'],
+    'ShowCommitteeMembers': ['committee-members'],
+    'UpdateCommitteeMembers': ['committee-members'],
+
 
     // Results
     'Results': ['results'],

@@ -64,7 +64,7 @@
                 <select id="edit-link-type" v-model="editForm.link_type" class="form-control form-control-sm">
                   <option value="">-- Select Type --</option>
                   <option value="page">Page</option>
-                  <option value="category">Category</option>
+                  <option value="category">Post Category</option>
                   <option value="url">URL</option>
                 </select>
               </div>
@@ -386,7 +386,6 @@ const openEditPanel = (item) => {
 
   editModal.value.open = true
   editModal.value.target = item
-  console.log({editModal})
   editForm.value = {
     name: item.name || '',
     icon: item.icon || '',

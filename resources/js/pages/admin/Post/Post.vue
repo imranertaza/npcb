@@ -122,9 +122,11 @@ const updateStatus = async (post) => {
       status: post.status
     });
 
-    if (response.data.status === '1') {
+    if (response.data.status == 1) {
+      post.status = 1;
       toast.success('Post published');
     } else {
+      post.status = 0;
       toast.info('Post set to draft');
     }
   } catch (error) {
