@@ -7,15 +7,18 @@ use App\Models\Category;
 use App\Models\CommitteeMember;
 use App\Models\Event;
 use App\Models\Gallery;
-use App\Models\Menu;
 use App\Models\News;
 use App\Models\Notice;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Result;
 use App\Models\Section;
+use App\Models\Setting;
 use App\Models\Slider;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
+use Exception;
 use Illuminate\Http\Request;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class FrontendController extends Controller
 {
@@ -50,7 +53,8 @@ class FrontendController extends Controller
     }
     public function matchFixtures()
     {
-        return view('match-fixtures');
+        $matchFixtures = Notice::where('type', 1)->where('status', 1)->paginate(10);
+        return view('match-fixtures', compact('matchFixtures'));
     }
     public function noticeBoard()
     {
@@ -76,7 +80,7 @@ class FrontendController extends Controller
     public function newsAndUpdates()
     {
         $pageTitle = 'News and Updates';
-        $news = News::paginate(3);
+        $news = News::paginate();
         return view('news.news-and-updates', compact('news', 'pageTitle'));
     }
     public function spotlightNews()
@@ -100,16 +104,6 @@ class FrontendController extends Controller
         $blog = Blog::where('slug', $slug)->first();
         return view('blog.blog-details', compact('blog'));
     }
-    // public function sports()
-    // {
-    //     return view('sports.sports', compact('sports'));
-    // }
-    // public function sportsDetails($slug)
-    // {
-    //     $sports = Post::where('slug', $slug)->firstOrFail();
-    //     $details = $sports->details()->paginate();
-    //     return view('sports.sports-details', compact('sports', 'details'));
-    // }
     public function runningEvents()
     {
         $events = Event::where('type', 1)->paginate(10);
@@ -132,14 +126,74 @@ class FrontendController extends Controller
     }
     public function postCategoryDetails($slug)
     {
-           $category = Category::where('slug', $slug)->firstOrFail();
-    // paginate directly on the relationship
-    $posts = $category->posts()->paginate(12);
-        return view('sports.sports', compact('category','posts'));
+        $category = Category::where('slug', $slug)->firstOrFail();
+        // paginate directly on the relationship
+        $posts = $category->posts()->paginate(12);
+        return view('sports.sports', compact('category', 'posts'));
     }
     public function postDetails($slug)
     {
         $post = Post::where('slug', $slug)->firstOrFail();
         return view('sports.sports-details', compact('post'));
+    }
+
+    public function contactSubmit(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'subject' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'g-recaptcha-response' => 'required|captcha',
+        ]);
+
+        // Load mail settings from DB
+        $settings = Setting::whereIn('label', [
+            'mail_protocol',
+            'mail_address',
+            'smtp_host',
+            'smtp_username',
+            'smtp_password',
+            'smtp_port',
+            'smtp_timeout',
+            'smtp_crypto'
+        ])->pluck('value', 'label');
+
+        try {
+            $mail = new PHPMailer(true);
+
+            // Choose protocol based on DB setting
+            if (($settings['mail_protocol'] ?? 'smtp') === 'mail') {
+                // Use PHP's built-in mail() function
+                $mail->isMail();
+            } else {
+                // Default to SMTP
+                $mail->isSMTP();
+                $mail->Host       = $settings['smtp_host'] ?? '';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = $settings['smtp_username'] ?? '';
+                $mail->Password   = $settings['smtp_password'] ?? '';
+                $mail->SMTPSecure = $settings['smtp_crypto'] ?? 'tls';
+                $mail->Port       = (int)($settings['smtp_port'] ?? 587);
+                $mail->Timeout    = (int)($settings['smtp_timeout'] ?? 30);
+            }
+
+            // Sender & recipient
+            $mail->setFrom($request->email, 'Website Contact Form');
+            $mail->addAddress($settings['mail_address'] ?? 'admin@example.com');
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = $request->subject ?? 'Contact Form Submission';
+            $mail->Body    = nl2br($request->description ?? 'No message provided');
+
+            $mail->send();
+
+            ToastMagic::success('Message sent successfully!');
+        } catch (Exception $e) {
+
+            ToastMagic::error('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
+        }
+
+        return back();
     }
 }

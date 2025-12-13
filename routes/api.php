@@ -89,6 +89,7 @@ Route::prefix('sliders')->middleware(['auth:user', 'permission:manage-frontend']
 Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/update', 'update');
+    Route::get('/security', 'getSecuritySettings');
 });
 
 Route::prefix('categories')->middleware(['auth:user'])->controller(CategoryController::class)->group(function () {

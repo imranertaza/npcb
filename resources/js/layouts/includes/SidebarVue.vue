@@ -334,6 +334,33 @@
               </li>
             </ul>
           </li>
+          <!-- Players -->
+          <li class="nav-item" v-if="authStore.hasPermission('view-players')"
+            :class="{ 'menu-open': isOpen('players') }">
+            <a href="#" class="nav-link" @click.prevent="toggle('players')">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Players <i class="fas fa-angle-left right"></i></p>
+            </a>
+            <ul class="nav nav-treeview" v-show="isOpen('players')">
+              <!-- Player List -->
+              <li class="nav-item">
+                <router-link :to="{ name: 'Players' }" class="nav-link" :class="{ active: $route.name === 'Players' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Player List</p>
+                </router-link>
+              </li>
+
+              <!-- Create Player -->
+              <li class="nav-item" v-if="authStore.hasPermission('create-players')">
+                <router-link :to="{ name: 'CreatePlayer' }" class="nav-link"
+                  :class="{ active: $route.name === 'CreatePlayer' }">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Player</p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+
           <!-- Committee Members -->
           <li class="nav-item" v-if="authStore.hasPermission('manage-committee-members')"
             :class="{ 'menu-open': isOpen('committee-members') }">
@@ -596,6 +623,11 @@ const openParentMenus = () => {
     'CreateNotice': ['notices'],
     'ShowNotice': ['notices'],
     'UpdateNotice': ['notices'],
+    // Player
+    'Players': ['players'],
+    'CreatePlayer': ['players'],
+    'ShowPlayer': ['players'],
+    'UpdatePlayer': ['players'],
 
     // Committee Members
     'CommitteeMembers': ['committee-members'],

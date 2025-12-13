@@ -69,7 +69,7 @@
         <div class="container">
             <div class="d-flex justify-content-between mb-30">
                 <h2 class="title-two">Top News</h2>
-                <a href="news-and-updates.html" class="btn-1 btn-common btn  text-white btn-primary slower">View
+                <a href="{{ route('news-and-updates') }}" class="btn-1 btn-common btn  text-white btn-primary slower">View
                     all</a>
             </div>
             <div class="row px-md-0 row-cols-xl-2 justify-content-center justify-content-between g-4">
@@ -80,7 +80,7 @@
                     <div class="top-news-card highlight card-smooth">
                         <img src="{{ getImageUrl($firstTopNews->f_image) }}" class="card-img-top" alt="news image">
 
-                        <a href="news-details.html" class="">
+                        <a href="{{ route('news-and-updates-details', $firstTopNews->slug) }}" class="">
                             <div class="card-body">
                                 <h5 class="title-four mb-2 p-0">
                                     {{ $firstTopNews->news_title }}
@@ -101,7 +101,7 @@
                             <div class="">
                                 <div class="top-news-card hover-fill-horizontal">
                                     <img src="{{ getImageUrl($news->f_image) }}" class="card-img-top" alt="news image">
-                                    <a href="news-details.html" class="">
+                                    <a href="{{ route('news-and-updates-details', $firstTopNews->slug) }}" class="">
                                         <div class="card-body">
                                             <h5 class="title-four p-0">
                                                 {{ truncateText($news->news_title, 40) }}
@@ -123,7 +123,7 @@
         <div class="container">
             <div class="d-flex justify-content-between mb-30">
                 <h2 class="title-two text-white">Game News</h2>
-                <a href="news-and-updates.html"
+                <a href="{{ route('news-and-updates') }}"
                     class="btn-common btn btn-default text-primary bg-white  btn-1 slower border-0">View
                     all</a>
             </div>
@@ -317,7 +317,7 @@
         <div class="container">
             <div class="d-flex justify-content-between mb-30">
                 <h2 class="title-two">Our Latest Blog</h2>
-                <a href="/blog.html" class="btn-common btn btn-primary btn-1 slower">View all</a>
+                <a href="{{ route('blogs') }}" class="btn-common btn btn-primary btn-1 slower">View all</a>
             </div>
             <div class="gaming-news-slider position-relative">
                 <div class="swiper myLatestBlogSwiper">

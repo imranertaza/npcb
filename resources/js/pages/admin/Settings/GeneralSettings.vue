@@ -17,10 +17,20 @@
             <a class="nav-link" id="mail-tab" data-toggle="tab" href="#mail" role="tab">Mail</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" id="security-tab" data-toggle="tab" href="#security" role="tab">Security</a>
+          </li>
+
+          <li class="nav-item">
             <a class="nav-link" id="social-tab" data-toggle="tab" href="#social" role="tab">Social</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="seo-tab" data-toggle="tab" href="#seo" role="tab">SEO</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="opengraph-tab" data-toggle="tab" href="#opengraph" role="tab">Open Graph</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="twittercard-tab" data-toggle="tab" href="#twittercard" role="tab">Twitter Card</a>
           </li>
         </ul>
 
@@ -57,6 +67,10 @@
                     style="width:40px;height:40px;" />
                 </div>
               </div>
+              <div class="col-md-6">
+                <label class="form-label">Brand Name</label>
+                <input v-model="form.brand_name" type="text" class="form-control" />
+              </div>
             </div>
           </div>
 
@@ -65,7 +79,7 @@
             <div class="row g-3">
               <div class="col-md-12 mb-3">
                 <label class="form-label">Address</label>
-                <textarea v-model="form.address" class="form-control" rows="2"></textarea>
+                <textarea v-model="form.address" class="form-control" rows="3"></textarea>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Email</label>
@@ -74,6 +88,10 @@
               <div class="col-md-6">
                 <label class="form-label">Phone</label>
                 <input v-model="form.phone" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">State</label>
+                <input v-model="form.state" type="text" class="form-control" />
               </div>
             </div>
           </div>
@@ -86,7 +104,6 @@
                 <select v-model="form.mail_protocol" class="form-control">
                   <option value="smtp">SMTP</option>
                   <option value="mail">Mail</option>
-                  <option value="sendmail">Sendmail</option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
@@ -103,7 +120,7 @@
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">SMTP Password</label>
-                <input v-model="form.smtp_password" type="password" class="form-control" />
+                <input v-model="form.smtp_password" type="password" class="form-control" autocomplete="new-password" />
               </div>
               <div class="col-md-3 mb-3">
                 <label class="form-label">SMTP Port</label>
@@ -120,6 +137,31 @@
                   <option value="tls">TLS</option>
                   <option value="">None</option>
                 </select>
+              </div>
+            </div>
+          </div>
+          <!-- Security Tab -->
+          <div class="tab-pane fade" id="security" role="tabpanel">
+            <div class="row g-3">
+              <div class="col-md-12 mb-3">
+                <div class="form-check">
+                  <input v-model="form.use_recaptcha" :checked="form.use_recaptcha == 1" type="checkbox"
+                    class="form-check-input" id="useRecaptcha">
+                  <label class="form-check-label" for="useRecaptcha">
+                    Enable Google reCAPTCHA
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">reCAPTCHA Site Key</label>
+                <input v-model="form.nocaptcha_sitekey" type="text" class="form-control" placeholder="Enter Site Key" />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">reCAPTCHA Secret Key</label>
+                <input v-model="form.nocaptcha_secret" type="text" class="form-control"
+                  placeholder="Enter Secret Key" />
               </div>
             </div>
           </div>
@@ -164,10 +206,87 @@
                 <label class="form-label">Meta Description</label>
                 <input v-model="form.meta_description" type="text" class="form-control" />
               </div>
+              <div class="col-md-6">
+                <label class="form-label">Meta Author</label>
+                <input v-model="form.meta_author" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Meta News Keywords</label>
+                <input v-model="form.meta_news_keywords" type="text" class="form-control" />
+              </div>
             </div>
           </div>
 
-          <!-- Submit -->
+          <!-- Open Graph Tab -->
+          <div class="tab-pane fade" id="opengraph" role="tabpanel">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">OG Type</label>
+                <input v-model="form.og_type" type="text" class="form-control" placeholder="e.g. website" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">OG Title</label>
+                <input v-model="form.og_title" type="text" class="form-control" />
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">OG Description</label>
+                <textarea v-model="form.og_description" class="form-control" rows="3"></textarea>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">OG Image</label>
+                <Vue3Dropzone v-model="ogImageFile" v-model:previews="ogImagePreview" mode="edit"
+                  :allowSelectOnPreview="true" :maxFiles="1" />
+                <div v-if="ogImagePreview.length" class="mt-2">
+                  <img :src="ogImagePreview[0]" alt="OG Image Preview" class="img-thumbnail"
+                    style="max-width:250px;height:auto;" />
+                </div>
+                <small class="text-muted">Recommended: 1200×630px</small>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">OG Image Width</label>
+                <input v-model="form.og_image_width" type="number" class="form-control" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">OG Image Height</label>
+                <input v-model="form.og_image_height" type="number" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Twitter Card Tab -->
+          <div class="tab-pane fade" id="twittercard" role="tabpanel">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Twitter Card Type</label>
+                <input v-model="form.twitter_card" type="text" class="form-control"
+                  placeholder="e.g. summary_large_image" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Twitter Title</label>
+                <input v-model="form.twitter_title" type="text" class="form-control" />
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Twitter Description</label>
+                <textarea v-model="form.twitter_description" class="form-control" rows="3"></textarea>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Twitter Image</label>
+                <Vue3Dropzone v-model="twitterImageFile" v-model:previews="twitterImagePreview" mode="edit"
+                  :allowSelectOnPreview="true" :maxFiles="1" />
+                <div v-if="twitterImagePreview.length" class="mt-2">
+                  <img :src="twitterImagePreview[0]" alt="Twitter Image Preview" class="img-thumbnail"
+                    style="max-width:250px;height:auto;" />
+                </div>
+                <small class="text-muted">Recommended: 1200×628px</small>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Twitter Domain</label>
+                <input v-model="form.twitter_domain" type="url" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
           <div class="mt-5 text-end">
             <button type="submit" class="btn btn-primary px-5">Save Settings</button>
           </div>
@@ -176,7 +295,6 @@
     </div>
   </section>
 </template>
-
 <script setup>
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import { useToast } from '@/composables/useToast';
@@ -185,14 +303,16 @@ import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+
 const toast = useToast();
-// ---------- Reactive form ----------
+
+// Reactive form data (text/select/number fields only)
 const form = ref({
-  // General  
   address: '',
   email: '',
   phone: '',
-  // Mail
+  state: '',
+  brand_name: '',
   mail_protocol: '',
   mail_address: '',
   smtp_host: '',
@@ -201,100 +321,124 @@ const form = ref({
   smtp_port: '',
   smtp_timeout: '',
   smtp_crypto: '',
-  // Social
   fb_url: '',
   twitter_url: '',
   linkedin_url: '',
   instagram_url: '',
-  // SEO
   meta_title: '',
   meta_keyword: '',
   meta_description: '',
+  meta_author: '',
+  meta_news_keywords: '',
+  og_type: '',
+  og_title: '',
+  og_description: '',
+  og_image_width: '',
+  og_image_height: '',
+  twitter_card: '',
+  twitter_title: '',
+  twitter_description: '',
+  twitter_domain: '',
+  // 🔒 Security / reCAPTCHA fields
+  use_recaptcha: false,
+  nocaptcha_sitekey: '',
+  nocaptcha_secret: '',
 });
 
-// ---------- Dropzone refs ----------
+// Dropzone file and preview refs
 const logoFile = ref([]);
 const footerLogoFile = ref([]);
+const faviconFile = ref([]);
+const ogImageFile = ref([]);
+const twitterImageFile = ref([]);
+
 const logoPreview = ref([]);
 const footerLogoPreview = ref([]);
-const faviconFile = ref([]);
 const faviconPreview = ref([]);
-// ---------- Fetch existing settings ----------
+const ogImagePreview = ref([]);
+const twitterImagePreview = ref([]);
+
+// Fetch existing settings
 const fetchSettings = async () => {
   try {
     const { data } = await axios.get('/api/settings');
     const settings = data.data || [];
 
     settings.forEach(s => {
-      const key = s.label;               // e.g. "invoice_prefix"
+      const key = s.label;
       const value = s.value;
 
-      // Fill text / select fields
       if (form.value.hasOwnProperty(key)) {
-        form.value[key] = value;
+        // handle boolean for use_recaptcha
+        if (key === 'use_recaptcha') {
+          form.value[key] = value === '1' || value === true;
+        } else {
+          form.value[key] = value ?? '';
+        }
       }
 
-      // Pre-populate image previews
-      if (key === 'store_logo' && value) {
-        logoPreview.value = [getImageUrl(value)];
-      }
-      if (key === 'footer_logo' && value) {
-        footerLogoPreview.value = [getImageUrl(value)];
-      }
-      if (key === 'store_icon' && value) {
-        faviconPreview.value = [getImageUrl(value)];
-      }
-
-      // Convert checkbox values ("1"/"0") → boolean for UI
-      if (['new_account_alert_mail', 'new_order_alert_mail'].includes(key)) {
-        form.value[key] = value === '1' ? true : false;
-      }
+      // Load image previews
+      if (key === 'store_logo' && value) logoPreview.value = [getImageUrl(value)];
+      if (key === 'footer_logo' && value) footerLogoPreview.value = [getImageUrl(value)];
+      if (key === 'store_icon' && value) faviconPreview.value = [getImageUrl(value)];
+      if (key === 'og_image' && value) ogImagePreview.value = [getImageUrl(value)];
+      if (key === 'twitter_image' && value) twitterImagePreview.value = [getImageUrl(value)];
     });
   } catch (e) {
     toast.validationError(e);
   }
 };
 
-// ---------- Submit ----------
+const fetchSecuritySettings = async () => {
+  try {
+    const { data } = await axios.get('/api/settings/security');
+    form.value.use_recaptcha = data.use_recaptcha;
+    form.value.nocaptcha_sitekey = data.nocaptcha_sitekey;
+    form.value.nocaptcha_secret = data.nocaptcha_secret;
+  } catch (e) {
+    toast.validationError(e);
+  }
+};
+
+// Submit settings
 const submitSettings = async () => {
   const payload = new FormData();
 
-  // === 1. Append all text / select / checkbox fields ===
+  // Append all text/boolean fields
   Object.entries(form.value).forEach(([key, value]) => {
-    if (['new_account_alert_mail', 'new_order_alert_mail'].includes(key)) {
+    // convert boolean to 1/0 for backend
+    if (typeof value === 'boolean') {
       payload.append(key, value ? '1' : '0');
     } else {
       payload.append(key, value ?? '');
     }
   });
-  // Append image files ONLY if a new file is selected
-  if (logoFile.value[0]?.file) {
-    payload.append('store_logo', logoFile.value[0].file);
-  }
-  if (footerLogoFile.value[0]?.file) {
-    payload.append('footer_logo', footerLogoFile.value[0].file);
-  }
-  if (faviconFile.value[0]?.file) {
-    payload.append('store_icon', faviconFile.value[0].file);
-  }
 
-  // === 3. Submit ===
+  // Append image files only if new file selected
+  if (logoFile.value[0]?.file) payload.append('store_logo', logoFile.value[0].file);
+  if (footerLogoFile.value[0]?.file) payload.append('footer_logo', footerLogoFile.value[0].file);
+  if (faviconFile.value[0]?.file) payload.append('store_icon', faviconFile.value[0].file);
+  if (ogImageFile.value[0]?.file) payload.append('og_image', ogImageFile.value[0].file);
+  if (twitterImageFile.value[0]?.file) payload.append('twitter_image', twitterImageFile.value[0].file);
+
   try {
     await axios.post('/api/settings/update', payload, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     toast.success('Settings saved successfully');
   } catch (error) {
     toast.validationError(error);
   }
 };
-onMounted(fetchSettings);
+
+onMounted(() => {
+  fetchSettings();
+  fetchSecuritySettings();
+});
 </script>
 
+
 <style scoped>
-/* Optional: make checkboxes a bit larger */
 .form-check-input {
   transform: scale(1.2);
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - {{ config('app.name', 'Laravel Vue App') }}</title>
-
+    @include('layouts.partial.seo')
     {{-- google font --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,8 +24,9 @@
         @if (request()->route()->getName() != 'home')
             <!-- Breadcrumb Section Start -->
             <section class="breadcrumb position-relative">
-                <img class="img-fluid" src="{{ asset('storage/web/about/breadcrumb.png') }}" alt="">
-                <img class="position-absolute bottom-0 w-100" draggable="false"
+                <img class="img-fluid" draggable="false"
+                   src="{{ asset('storage/web/about/breadcrumb.png') }}" alt="">
+                <img  class="position-absolute bottom-0 w-100" draggable="false"
                     src="{{ asset('storage/web/about/breadcrumb-gradient.png') }}" alt="">
                 <h6 class="page-title title-one position-absolute text-capitalize">@yield('breadcrumb')</h6>
             </section>

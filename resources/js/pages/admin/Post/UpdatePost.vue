@@ -12,7 +12,7 @@
           <form @submit.prevent="updatePost">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-8"> 
+                <div class="col-md-8">
                   <!-- Title & Slug -->
                   <div class="form-group">
                     <label>Post Title</label>
@@ -202,15 +202,24 @@ const fetchCategories = async () => {
 const updatePost = async () => {
   const payload = new FormData();
 
+  // Append all non-file fields
   for (const key in form) {
-    if (key !== 'image') {
-      payload.append(key, form[key]);
+    if (key !== 'image' && key !== 'f_image') {
+      payload.append(key, form[key] ?? '');
     }
   }
-  if (imageFile.value && imageFile.value[0]) {
+
+  // Append image only if a new file is selected
+  if (imageFile.value?.[0]?.file) {
     payload.append('image', imageFile.value[0].file);
   }
 
+  // Append f_image only if a new file is selected
+  if (fImageFile.value?.[0]?.file) {
+    payload.append('f_image', fImageFile.value[0].file);
+  }
+
+  // Append categories
   form.categories.forEach(catId => {
     payload.append('categories[]', catId);
   });
@@ -224,6 +233,7 @@ const updatePost = async () => {
     toast.validationError(err);
   }
 };
+
 
 const formattedDate = computed({
   get: () => form.publish_date?.slice(0, 10) || '',

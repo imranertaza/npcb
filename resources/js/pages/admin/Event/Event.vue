@@ -69,7 +69,7 @@
                       <span>&times;</span>
                     </button>
                   </div>
-                  <div class="modal-body text-center overflow-scroll " style="height: 100vh; overflow: auto;">
+                  <div class="modal-body text-center overflow-scroll " style="height: 80vh; overflow: auto;">
                     <img :src="modalImage" alt="Event Image" class="img-fluid rounded border" />
                   </div>
                 </div>

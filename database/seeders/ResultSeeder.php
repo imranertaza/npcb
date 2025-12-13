@@ -12,41 +12,34 @@ class ResultSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-   public function run(): void
+    public function run(): void
     {
         $results = [
             [
-                'title' => 'Final Exam Results Published',
-                'description' => 'The final exam results for all departments have been published.',
-                'file' => 'final_exam_results.pdf',
+                'title' => 'Quarter Final Results',
+                'description' => 'Results of the quarter final matches.',
+                'file' => 'quarter_final.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
             ],
             [
-                'title' => 'Midterm Results Available',
-                'description' => 'Midterm examination results are now available for review.',
-                'file' => 'midterm_results.pdf',
+                'title' => 'Semi Final Results',
+                'description' => 'Results of the semi final matches.',
+                'file' => 'semi_final.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
             ],
             [
-                'title' => 'Practical Assessment Results',
-                'description' => 'Results of the practical assessments conducted last week.',
-                'file' => 'practical_assessment.xlsx',
+                'title' => 'Final Match Results',
+                'description' => 'Results of the championship final.',
+                'file' => 'final_match.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
             ],
             [
-                'title' => 'Monthly Performance Report',
-                'description' => 'Performance evaluation results for the month have been released.',
-                'file' => 'monthly_performance.docx',
-                'createdBy' => 1,
-                'updatedBy' => 1,
-            ],
-            [
-                'title' => 'Project Evaluation Results',
-                'description' => 'Results of the submitted projects are now available.',
-                'file' => 'project_evaluation.pdf',
+                'title' => 'Top Scorers Report',
+                'description' => 'List of top scorers in the tournament.',
+                'file' => 'top_scorers.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
             ],

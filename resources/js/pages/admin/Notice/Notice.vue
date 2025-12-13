@@ -117,7 +117,7 @@ onMounted(() => {
 const updateStatus = async (notice) => {
   try {
     const response = await axios.patch(`/api/notices/${notice.slug}/toggle-status`);
-    notice.status = response.data.status;
+    notice.status = response.data.data.status;
     toast.success(response.data.message);
   } catch (error) {
     toast.error('Failed to update status');

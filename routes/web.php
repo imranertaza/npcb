@@ -18,12 +18,12 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('blogs/{slug}', 'blogsDetails')->name('blogs-details');
     Route::get('post-categories/{slug}', 'postCategoryDetails')->name('post-categories');
     Route::get('sports/{slug}', 'postDetails')->name('sports-details');
-    
+
     Route::get('running-events', 'runningEvents')->name('running-events');
     Route::get('upcoming-events', 'upcomingEvents')->name('upcoming-events');
     Route::get('running-events/{slug}', 'runningEventsDetails')->name('event-details');
     Route::get('executive-committee', 'committeeMembers')->name('committee-members');
-
+    Route::post('contact-us', 'contactSubmit')->name('contact.submit');
     Route::prefix('pages')->name('page.')->group(function () {
         Route::get('/', 'pages')->name('index');
         Route::get('/{slug}', 'pageDetails')->name('details');

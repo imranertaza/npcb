@@ -2,6 +2,9 @@
 
 @section('title', $page->page_title)
 @section('breadcrumb', $page->page_title)
+@section('meta_description', $page->meta_description)
+@section('meta_keywords', $page->meta_keywords)
+@section('meta_title', $page->meta_title)
 @section('content')
     <!-- contact section start -->
     <section class="container py-100 contact-query-section">
@@ -104,24 +107,48 @@
                             <p class="content-text mb-0 fade-in-observer">If you have any query about us then you
                                 can direct message from here.</p>
                         </div>
-                        <form id="contactForm">
+                        <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
+                            @csrf
+
                             <div class="mb-3">
-                                <input type="email" class="form-control" id="email" placeholder="Email (Required)"
-                                    required>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                    name="email" value="{{ old('email') }}" placeholder="Email (Required)" required>
+                                @error('email')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
                             </div>
+
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="subject" placeholder="Subject">
+                                <input type="text" class="form-control @error('subject') is-invalid @enderror"
+                                    name="subject" value="{{ old('subject') }}" placeholder="Subject">
+                                @error('subject')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
                             </div>
+
                             <div class="mb-4">
-                                <textarea class="form-control" id="description" rows="4" placeholder="Descriptions"></textarea>
+                                <textarea class="form-control @error('description') is-invalid @enderror" name="description" rows="4"
+                                    placeholder="Descriptions">{{ old('description') }}</textarea>
+                                @error('description')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
                             </div>
-                            <!-- <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 ">
-                                                                <span>Send Message</span>
-                                                            </button> -->
-                            <button type="submit" class="btn  w-100 py-3 btn-slide-fill">
+                            @if (env('USE_RECAPTCHA') == 1)
+                                <!-- Google reCAPTCHA -->
+                                <div class="mb-3">
+                                    {!! NoCaptcha::display() !!}
+                                    {!! NoCaptcha::renderJs() !!}
+                                    @error('g-recaptcha-response')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+
+                            <button type="submit" class="btn w-100 py-3 btn-slide-fill">
                                 <span>Send Message</span>
                             </button>
                         </form>
+
                         <div id="formMessage" class="mt-3"></div>
                     </div>
                 </div>
@@ -131,6 +158,7 @@
     </section>
     <!-- Contact Section End -->
     @push('styles')
+        {!! ToastMagic::styles() !!}
         <style>
             .contact-query-section .card {
                 border: none;
@@ -363,4 +391,8 @@
             }
         </style>
     @endpush
+    @push('scripts')
+        {!! ToastMagic::scripts() !!}
+    @endpush
+
 @endsection

@@ -19,82 +19,144 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
-        // === 1. VALIDATION ===
         $validated = $request->validate([
-
             // Store Info
-            'address'                => 'sometimes|string|max:255',
-            'email'                  => 'sometimes|email|max:155',
-            'phone'                  => 'sometimes|string|max:50',
-            'state'                  => 'sometimes|string|max:50',
+            'address'          => 'sometimes|string|max:255',
+            'email'            => 'sometimes|email|max:155',
+            'phone'            => 'sometimes|string|max:50',
+            'state'            => 'sometimes|string|max:50',
 
-            // File Uploads (only if sent)
-            'store_logo'             => 'sometimes|file|mimes:png,jpg,jpeg,svg|max:4096',
-            'store_icon'             => 'sometimes|file|mimes:png,jpg,jpeg,ico|max:2048',
-            'footer_logo'             => 'sometimes|file|mimes:png,jpg,jpeg,svg|max:4096',
+            // File Uploads (now including OG and Twitter images)
+            'store_logo'       => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'store_icon'       => 'sometimes|file|mimes:png,jpg,jpeg,ico,webp|max:2048',
+            'footer_logo'      => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'og_image'         => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x630
+            'twitter_image'    => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x628
+
             // Mail Settings
-            'mail_protocol'          => 'sometimes|in:smtp,mail,sendmail',
-            'mail_address'           => 'sometimes|email|max:155',
-            'smtp_host'              => 'sometimes|string|max:155',
-            'smtp_username'          => 'sometimes|string|max:155',
-            'smtp_password'          => 'sometimes|string|max:255',
-            'smtp_port'              => 'sometimes|numeric|between:1,65535',
-            'smtp_timeout'           => 'sometimes|numeric|between:1,300',
-            'smtp_crypto'            => 'sometimes|in:ssl,tls,""',
+            'mail_protocol'    => 'sometimes|in:smtp,mail,sendmail',
+            'mail_address'     => 'sometimes|email|max:155',
+            'smtp_host'        => 'sometimes|string|max:155',
+            'smtp_username'    => 'sometimes|string|max:155',
+            'smtp_password'    => 'sometimes|string|max:255',
+            'smtp_port'        => 'sometimes|numeric|between:1,65535',
+            'smtp_timeout'     => 'sometimes|numeric|between:1,300',
+            'smtp_crypto'      => 'sometimes|in:ssl,tls,""',
 
             // Social
-            'fb_url'                 => 'sometimes|url|max:255',
-            'twitter_url'            => 'sometimes|url|max:255',
-            'linkedin_url'             => 'sometimes|url|max:255',
-            'instagram_url'          => 'sometimes|url|max:255',
-            // SEO
-            'meta_title'             => 'sometimes|string|max:155',
-            'meta_keyword'           => 'sometimes|string|max:255',
-            'meta_description'       => 'sometimes|string|max:500',
+            'fb_url'           => 'sometimes|url|max:255',
+            'twitter_url'      => 'sometimes|url|max:255',
+            'linkedin_url'     => 'sometimes|url|max:255',
+            'instagram_url'    => 'sometimes|url|max:255',
+
+            // SEO Basics
+            'meta_title'       => 'sometimes|string|max:155',
+            'meta_keyword'     => 'sometimes|string|max:255',
+            'meta_description' => 'sometimes|string|max:500',
+            'meta_author'      => 'sometimes|string|max:155',
+            'meta_news_keywords' => 'sometimes|string|max:255',
+
+            // Open Graph (non-file fields)
+            'og_type'            => 'sometimes|string|max:50',
+            'og_title'           => 'sometimes|string|max:255',
+            'og_description'     => 'sometimes|string|max:500',
+            'og_image_width'     => 'sometimes|numeric',
+            'og_image_height'    => 'sometimes|numeric',
+
+            // Twitter Card (non-file fields)
+            'twitter_card'       => 'sometimes|string|max:50',
+            'twitter_title'      => 'sometimes|string|max:255',
+            'twitter_description' => 'sometimes|string|max:500',
+            'twitter_domain'     => 'sometimes|url|max:255',
+
+            // Brand
+            'brand_name'         => 'sometimes|string|max:255',
+
+            // reCAPTCHA
+            'use_recaptcha'     => 'sometimes|nullable|numeric|between:0,1',
+            'nocaptcha_sitekey' => 'sometimes|string|max:255',
+            'nocaptcha_secret'  => 'sometimes|string|max:255',
         ]);
 
         $updated = [];
 
-        // === 2. PROCESS EACH FIELD ===
+        $envKeys = ['use_recaptcha', 'nocaptcha_sitekey', 'nocaptcha_secret'];
+
         foreach ($validated as $label => $value) {
-            $setting = Setting::where('label', $label)->first();
 
-            if (!$setting) {
-                continue; // Safety
+            if (in_array($label, $envKeys)) {
+                $envKey = strtoupper($label);
+
+                // Get current value from env
+                $current = env($envKey);
+
+                // Normalize booleans (since use_recaptcha may be true/false or "1"/"0")
+                if (is_bool($value)) {
+                    $value = $value ? 'true' : 'false';
+                }
+
+                if ($current !== (string)$value) {
+                    // Only update if changed
+                    $this->setEnvValue($envKey, $value);
+                    $updated[$label] = $value;
+                } else {
+                    // No change, just return current
+                    $updated[$label] = $current;
+                }
+
+                continue;
             }
+            $setting = Setting::where('label', $label)->firstOrNew(['label' => $label]);
 
-            // === HANDLE FILE UPLOADS ===
+            // Handle file uploads
             if ($request->hasFile($label)) {
                 $file = $request->file($label);
 
-                // Delete old file
-                if ($setting->value && Storage::disk('public')->exists($setting->value)) {
+                // Delete old file if exists
+                if ($setting->exists && $setting->value && Storage::disk('public')->exists($setting->value)) {
                     Storage::disk('public')->delete($setting->value);
                 }
 
-                // Save new file
-                $ext = $file->getClientOriginalExtension();
-                $filename = $label . '_' . time() . '_' . uniqid() . '.' . $ext;
+                $filename = $label . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('settings', $filename, 'public');
-
                 $newValue = $path;
             } else {
-                // === TEXT / SELECT / CHECKBOX ===
                 $newValue = $value;
             }
 
-            // === UPDATE DB ===
-            $setting->updateOrCreate([
-                'label'     => $label,
-            ], [
-                'value'     => $newValue,
-                'updatedBy' => Auth::id(),
-            ]);
+            $setting->value = $newValue;
+            $setting->updatedBy = Auth::id();
+            $setting->save();
 
             $updated[$label] = $newValue;
         }
 
-        // === 3. RETURN SUCCESS ===
         return ApiResponse::success($updated, 'Settings updated successfully');
+    }
+
+    private function setEnvValue($key, $value)
+    {
+        $envPath = base_path('.env');
+        $content = file_get_contents($envPath);
+
+        $pattern = "/^{$key}=.*/m";
+
+        if (preg_match($pattern, $content)) {
+            // Replace existing
+            $content = preg_replace($pattern, "{$key}={$value}", $content);
+        } else {
+            // Append new
+            $content .= "\n{$key}={$value}";
+        }
+
+        file_put_contents($envPath, $content);
+    }
+    public function getSecuritySettings()
+    {
+        return response()->json([
+            'use_recaptcha'     => config('services.use_recaptcha'),
+            'nocaptcha_sitekey' => config('services.sitekey'),
+            'nocaptcha_secret'  => config('services.secret'),
+        ]);
     }
 }

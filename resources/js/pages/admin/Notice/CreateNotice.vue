@@ -47,6 +47,14 @@
                       <option value="0">Inactive</option>
                     </select>
                   </div>
+                  <!-- Type -->
+                  <div class="form-group">
+                    <label>Type</label>
+                    <select v-model="form.type" class="custom-select">
+                      <option value="0">Notice</option>
+                      <option value="1">Match Fixtures</option>
+                    </select>
+                  </div>
 
                   <div>
                     <button type="submit" class="btn btn-success btn-block">Submit</button>
@@ -79,6 +87,7 @@ const fileUpload = ref(null);
 const form = reactive({
   title: '',
   slug: '',
+  type: '0',
   description: '',
   status: '1',
   file: null

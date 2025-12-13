@@ -2,7 +2,9 @@
 
 @section('title', 'News Details')
 @section('breadcrumb', 'News Details')
-
+@section('meta_description', $news->meta_description)
+@section('meta_keywords', $news->meta_keywords)
+@section('meta_title', $news->meta_title)
 @section('content')
 
     <section class="container py-100">
