@@ -27,7 +27,10 @@
                   <td class="align-middle">{{ index + 1 }}</td>
                   <td class="align-middle">{{ truncateText(event.title, 20) }}</td>
                   <td class="align-middle">
-                    <img :src="getImageUrl(event.featured_image)" alt="" style="width: 50px;">
+                    <button v-if="event.featured_image" @click="openImageModal(event.featured_image)"
+                      class="btn btn-sm btn-outline-primary">
+                      View Image
+                    </button>
                   </td>
                   <td v-if="authStore.hasPermission('edit-events')" class="align-middle">
                     <select v-model="event.status" @change="updateStatus(event)" class="custom-select"
@@ -56,6 +59,24 @@
                 </tr>
               </tbody>
             </table>
+            <!-- Image Modal -->
+            <div v-if="showModal" class="modal fade show d-block" tabindex="-1" role="dialog">
+              <div class="modal-dialog modal-lg" role="document" @click.stop>
+                <div class="modal-content ">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Event Image</h5>
+                    <button type="button" class="close" @click="closeImageModal">
+                      <span>&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body text-center overflow-scroll " style="height: 100vh; overflow: auto;">
+                    <img :src="modalImage" alt="Event Image" class="img-fluid rounded border" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="showModal" class="modal-backdrop fade show" @click="closeImageModal"></div>
+
           </div>
           <Pagination :pData="events" @page-change="fetchPage" />
         </div>
@@ -81,6 +102,20 @@ const events = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
+
+
+const showModal = ref(false);
+const modalImage = ref('');
+
+const openImageModal = (imagePath) => {
+  modalImage.value = getImageUrl(imagePath);
+  showModal.value = true;
+};
+
+const closeImageModal = () => {
+  showModal.value = false;
+  modalImage.value = '';
+};
 
 // Fetch events with pagination + search
 const fetchPage = async (page = 1, term = "") => {

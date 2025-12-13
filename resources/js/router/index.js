@@ -70,6 +70,10 @@ import UpdateSlider from "../pages/admin/Sliders/UpdateSlider.vue";
 import CommitteeMembers from "../pages/admin/CommitteeMember/CommitteeMembers.vue";
 import UpdateCommitteeMembers from "../pages/admin/CommitteeMember/UpdateCommitteeMembers.vue";
 import CreateCommitteeMembers from "../pages/admin/CommitteeMember/CreateCommitteeMembers.vue";
+import CreatePlayer from "../pages/admin/Player/CreatePlayer.vue";
+import UpdatePlayer from "../pages/admin/Player/UpdatePlayer.vue";
+import ShowPlayer from "../pages/admin/Player/ShowPlayer.vue";
+import Player from "../pages/admin/Player/Player.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
@@ -466,6 +470,32 @@ const routes = [
                         name: "CreateNotice",
                         component: CreateNotice,
                         meta: { permission: "create-notices" },
+                    },
+                    {
+                        path: "manage-players",
+                        name: "Players",
+                        component: Player,
+                        meta: { permission: "view-players" },
+                    },
+                    {
+                        path: "players/:slug",
+                        name: "ShowPlayer",
+                        component: ShowPlayer,
+                        props: true,
+                        meta: { permission: "view-players" },
+                    },
+                    {
+                        path: "edit-players/:slug",
+                        name: "UpdatePlayer",
+                        component: UpdatePlayer,
+                        props: true,
+                        meta: { permission: "edit-players" },
+                    },
+                    {
+                        path: "create-players",
+                        name: "CreatePlayer",
+                        component: CreatePlayer,
+                        meta: { permission: "create-players" },
                     },
                     {
                         path: "manage-results",

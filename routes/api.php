@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\NewsCategoryController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PlayerController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ResultController;
 use App\Http\Controllers\Api\SectionController;
@@ -203,7 +204,6 @@ Route::prefix('events-categories')->middleware(['auth:user'])->controller(EventC
     });
 });
 
-
 Route::prefix('notices')->middleware(['auth:user'])->controller(NoticeController::class)->group(function () {
     Route::get('/', 'index')->name('notices.index')->middleware('permission:view-notices');
     Route::post('/', 'store')->name('notices.store')->middleware('permission:create-notices');
@@ -211,6 +211,14 @@ Route::prefix('notices')->middleware(['auth:user'])->controller(NoticeController
     Route::put('{id}', 'update')->name('notices.update')->middleware('permission:edit-notices');
     Route::patch('{slug}/toggle-status', 'toggleStatus')->name('notices.toggle')->middleware('permission:edit-notices');
     Route::delete('{slug}', 'destroy')->name('notices.destroy')->middleware('permission:delete-notices');
+});
+Route::prefix('players')->middleware(['auth:user'])->controller(PlayerController::class)->group(function () {
+    Route::get('/', 'index')->name('players.index')->middleware('permission:view-players');
+    Route::post('/', 'store')->name('players.store')->middleware('permission:create-players');
+    Route::get('{slug}', 'show')->name('players.show')->middleware('permission:view-players');
+    Route::put('{id}', 'update')->name('players.update')->middleware('permission:edit-players');
+    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('players.toggle')->middleware('permission:edit-players');
+    Route::delete('{slug}', 'destroy')->name('players.destroy')->middleware('permission:delete-players');
 });
 
 Route::prefix('results')->middleware(['auth:user'])->controller(ResultController::class)->group(function () {

@@ -89,6 +89,16 @@ class RolePermissionSeeder extends Seeder
             'edit-notices',
             'delete-notices',
 
+            // ✅ Players CRUD
+            // View-players
+            'view-players',
+            // Create-players
+            'create-players',
+            // Edit-players
+            'edit-players',
+            // Delete-players
+            'delete-players',
+
             // ✅ Results CRUD
             'view-results',
             'create-results',
@@ -229,6 +239,12 @@ class RolePermissionSeeder extends Seeder
 
                         'manage-frontend',
                         'manage-committee-members',
+
+                        // Players CRUD
+                        'view-players',
+                        'create-players',
+                        'edit-players',
+                        'delete-players',
 
                         // Settings
                         'view-settings',

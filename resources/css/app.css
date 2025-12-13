@@ -1,7 +1,13 @@
-.dropdown-toggle::after{
+.dropdown-toggle::after {
     display: none !important;
 }
 
-.ck-rounded-corners .ck.ck-editor__main > .ck-editor__editable, .ck.ck-editor__main > .ck-editor__editable.ck-rounded-corners {
+.ck-rounded-corners .ck.ck-editor__main>.ck-editor__editable,
+.ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners {
     min-height: 350px;
+}
+
+.table-body {
+    height: 50vh !important;
+    overflow: scroll !important;
 }

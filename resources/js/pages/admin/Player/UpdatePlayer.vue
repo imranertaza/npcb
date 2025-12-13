@@ -1,0 +1,163 @@
+<template>
+  <DashboardHeader title="Update Player" />
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row row-cols-1">
+        <div class="card card-purple">
+          <div class="card-header">
+            <h3 class="card-title">Edit Player</h3>
+          </div>
+
+          <form @submit.prevent="updatePlayer">
+            <div class="card-body">
+              <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-8">
+                  <!-- Player Name -->
+                  <div class="form-group">
+                    <label>Player Name</label>
+                    <input v-model="form.name" type="text" class="form-control" required />
+                  </div>
+
+                  <!-- Sport -->
+                  <div class="form-group">
+                    <label>Sport</label>
+                    <input v-model="form.sport" type="text" class="form-control" required />
+                  </div>
+
+                  <!-- Position -->
+                  <div class="form-group">
+                    <label>Position</label>
+                    <input v-model="form.position" type="text" class="form-control" />
+                  </div>
+
+                  <!-- Team -->
+                  <div class="form-group">
+                    <label>Team</label>
+                    <input v-model="form.team" type="text" class="form-control" />
+                  </div>
+
+                  <!-- Age -->
+                  <div class="form-group">
+                    <label>Age</label>
+                    <input v-model="form.age" type="number" class="form-control" min="1" />
+                  </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-4">
+                  <!-- Image Upload -->
+                  <div class="form-group">
+                    <label>Upload Image</label>
+                    <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
+                      :allowSelectOnPreview="true" />
+
+                    <!-- Preview -->
+                    <div v-if="previews && previews.length" class="mt-3">
+                      <div v-for="(preview, idx) in previews" :key="idx">
+                        <img :src="preview" alt="Preview" class="img-fluid rounded border"
+                          style="max-height:120px" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Status -->
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select v-model="form.status" class="custom-select">
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <button type="submit" class="btn btn-success btn-block">Update</button>
+                    <RouterLink :to="{ name: 'Players' }" class="btn btn-secondary btn-block mt-2">Cancel</RouterLink>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup>
+import axios from 'axios';
+import { onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import DashboardHeader from '@/components/DashboardHeader.vue';
+import { useToast } from '@/composables/useToast';
+import { getImageUrl } from '@/layouts/helpers/helpers';
+import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
+import '@jaxtheprime/vue3-dropzone/dist/style.css';
+
+const toast = useToast();
+const route = useRoute();
+const router = useRouter();
+const previews = ref([]);
+
+const form = reactive({
+  id: null,
+  name: '',
+  sport: '',
+  position: '',
+  team: '',
+  age: '',
+  image: '',
+  status: '1'
+});
+
+const fileUpload = ref(null);
+
+// Fetch player
+const fetchPlayer = async () => {
+  try {
+    const res = await axios.get(`/api/players/${route.params.slug}`);
+    Object.assign(form, res.data.data);
+    if (form.image) {
+      previews.value = [getImageUrl(form.image)];
+    }
+  } catch (err) {
+    toast.error('Failed to load player');
+    console.error(err);
+  }
+};
+
+// Update player
+const updatePlayer = async () => {
+  const payload = new FormData();
+
+  for (const key in form) {
+    if (key !== 'image') {
+      payload.append(key, form[key]);
+    }
+  }
+  if (fileUpload.value && fileUpload.value[0]) {
+    payload.append('image', fileUpload.value[0].file);
+  }
+
+  try {
+    await axios.post(`/api/players/${form.id}?_method=PUT`, payload, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    router.push({ name: 'Players', query: { toast: 'Player updated successfully' } });
+  } catch (err) {
+    toast.validationError(err);
+  }
+};
+
+defineProps({
+  slug: {
+    type: [String, Number],
+  }
+});
+
+onMounted(() => {
+  fetchPlayer();
+});
+</script>
