@@ -58,7 +58,8 @@
                   <div class="form-group">
                     <label class="font-weight-bold">Categories</label>
                     <div class="category-list">
-                      <div v-for="cat in categories" :key="cat.id" class="icheck-primary form-check category-item border-bottom">
+                      <div v-for="cat in categories" :key="cat.id"
+                        class="icheck-primary form-check category-item border-bottom">
                         <!-- Parent Category -->
                         <input type="checkbox" class="form-check-input" :id="'cat-' + cat.id" :value="cat.id"
                           v-model="form.categories" />
@@ -68,7 +69,8 @@
 
                         <!-- Child Categories -->
                         <div v-if="cat.children && cat.children.length" class="ml-2 mt-1">
-                          <div v-for="child in cat.children" :key="child.id" class="form-check icheck-primary category-child">
+                          <div v-for="child in cat.children" :key="child.id"
+                            class="form-check icheck-primary category-child">
                             <input type="checkbox" class="form-check-input" :id="'cat-' + child.id" :value="child.id"
                               v-model="form.categories" />
                             <label class="form-check-label d-block mb-3" :for="'cat-' + child.id">
@@ -87,8 +89,8 @@
                   </div>
                   <!-- Image & Alt -->
                   <div class="form-group">
-                    <label>Upload Banner Image</label>
-                    <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                    <label>Upload Banner Image or Video (Max 500MB)</label>
+                    <Vue3Dropzone acceptedFiles="image/*,video/*" :maxFileSize="500" v-model="imageFile" :allowSelectOnPreview="true" />
                   </div>
                   <div class="form-group">
                     <label>Alt Name</label>
@@ -131,7 +133,6 @@ import { generateSlug } from '../../../layouts/helpers/helpers';
 const toast = useToast();
 const imageFile = ref(null);
 const f_imageFile = ref(null);
-
 
 
 const form = reactive({

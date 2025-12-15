@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -58,7 +59,7 @@ class NewsController extends Controller
             'meta_title'     => 'nullable|string',
             'meta_keyword'   => 'nullable|string',
             'meta_description' => 'nullable|string',
-            'image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image' => 'required|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov,wmv|max:500000',
             'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name'       => 'nullable|string|max:255',
             'publish_date'   => 'nullable|date',
@@ -92,49 +93,62 @@ class NewsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $news = News::findOrFail($id);
-        $validated = $request->validate([
-            'news_title'     => 'required|string|max:255',
-            'slug'           => [
-                'required',
-                'string',
-                Rule::unique('news', 'slug')->ignore($news->id),
-            ],
-            'short_des'      => 'required|string|max:255',
-            'description'    => 'required|string',
-            'meta_title'     => 'nullable|string',
-            'meta_keyword'   => 'nullable|string',
-            'meta_description' => 'nullable|string',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'       => 'nullable|string|max:255',
-            'status'         => ['required', Rule::in(['0', '1'])],
-            'categories' => 'required|array',
-            'categories.*' => 'exists:news_categories,id',
-        ]);
+        try {
+            $news = News::findOrFail($id);
 
-        $validated['updatedBy'] = Auth::id();
+            $validated = $request->validate([
+                'news_title'       => 'required|string|max:255',
+                'slug'             => [
+                    'required',
+                    'string',
+                    Rule::unique('news', 'slug')->ignore($news->id),
+                ],
+                'short_des'        => 'required|string|max:255',
+                'description'      => 'required|string',
+                'meta_title'       => 'nullable|string',
+                'meta_keyword'     => 'nullable|string',
+                'meta_description' => 'nullable|string',
+                'image' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov,wmv|max:500000',
+                'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'alt_name'         => 'nullable|string|max:255',
+                'status'           => ['required', Rule::in(['0', '1'])],
+                'categories'       => 'required|array',
+                'categories.*'     => 'exists:news_categories,id',
+            ]);
 
-        if ($request->hasFile('image')) {
-            if ($news->image && Storage::disk('public')->exists($news->image)) {
-                Storage::disk('public')->delete($news->image);
+            $validated['updatedBy'] = Auth::id();
+
+            // Handle main image
+            if ($request->hasFile('image')) {
+                if ($news->image && Storage::disk('public')->exists($news->image)) {
+                    Storage::disk('public')->delete($news->image);
+                }
+                $validated['image'] = $request->file('image')->store('news', 'public');
             }
-            $validated['image'] = $request->file('image')->store('news', 'public');
-        }
-        if ($request->hasFile('f_image')) {
-            if ($news->f_image && Storage::disk('public')->exists($news->f_image)) {
-                Storage::disk('public')->delete($news->f_image);
+
+            // Handle featured image
+            if ($request->hasFile('f_image')) {
+                if ($news->f_image && Storage::disk('public')->exists($news->f_image)) {
+                    Storage::disk('public')->delete($news->f_image);
+                }
+                $validated['f_image'] = $request->file('f_image')->store('news', 'public');
             }
-            $validated['f_image'] = $request->file('f_image')->store('news', 'public');
+
+            $news->update($validated);
+
+            if (isset($validated['categories'])) {
+                $news->categories()->sync($validated['categories']);
+            }
+
+            return ApiResponse::success($news, 'News updated successfully');
+        } catch (\Exception $e) {
+            Log::error('News update failed: ' . $e->getMessage(), [
+                'id' => $id,
+                'user_id' => Auth::id(),
+            ]);
+
+            return ApiResponse::error('Failed to update news. Please try again later.', 500);
         }
-
-        $news->update($validated);
-
-        if (isset($validated['categories'])) {
-            $news->categories()->sync($validated['categories']);
-        }
-
-        return ApiResponse::success($news, 'News updated successfully');
     }
 
     /**
@@ -143,13 +157,13 @@ class NewsController extends Controller
     public function toggleStatus($slug)
     {
         $news = News::where('slug', $slug)->firstOrFail();
-        $news->status = $news->status === '1' ? '0' : '1';
+        $news->status = $news->status == 1 ? 0 : 1;
         $news->updatedBy = Auth::id();
         $news->save();
 
         return ApiResponse::success([
             'status' => $news->status,
-        ], $news->status === '1' ? 'News active' : 'News inactive');
+        ], $news->status == 1 ? 'News active' : 'News inactive');
     }
 
     /**

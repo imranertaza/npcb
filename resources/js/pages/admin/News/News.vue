@@ -29,9 +29,18 @@
                   <td class="align-middle">{{ truncateText(item.news_title, 20) }}</td>
                   <td class="align-middle">{{ truncateText(item.short_des, 50) }}</td>
                   <td class="align-middle">
-                    <img v-if="item.image" draggable="false" :src="getImageUrl(item.image)" alt="News Image" height="50"
-                      class="rounded" />
+                    <template v-if="item.image">
+                      <template v-if="isVideo(item.image)">
+                        <a class="btn btn-sm btn-outline-primary" :href="getImageUrl(item.image)" target="_blank"
+                          rel="noopener noreferrer">View</a>
+                      </template>
+                      <template v-else>
+                        <img draggable="false" :src="getImageUrl(item.image)" alt="News Image" height="50"
+                          class="rounded" />
+                      </template>
+                    </template>
                   </td>
+
                   <td v-if="authStore.hasPermission('publish-news')" class="align-middle">
                     <select v-model="item.status" @change="updateStatus(item)" class="custom-select"
                       :class="item.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
@@ -46,7 +55,8 @@
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-news')"
-                        :to="{ name: 'UpdateNews', params: { slug: item.slug } }" class="ml-2 btn btn-sm btn-outline-info">
+                        :to="{ name: 'UpdateNews', params: { slug: item.slug } }"
+                        class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
                       <button v-if="authStore.hasPermission('delete-news')" class="ml-2 btn btn-sm btn-outline-danger"
@@ -84,6 +94,16 @@ const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
 
+
+const isVideo = (file) => {
+  if (!file) return false;
+
+  // Handle cases where file might be a full URL or path
+  const ext = file.split("?")[0].split(".").pop().toLowerCase();
+
+  const videoExts = ["mp4", "avi", "mov", "wmv", "webm", "mkv"];
+  return videoExts.includes(ext);
+};
 // Fetch news with pagination + search
 const fetchPage = async (page = 1, term = "") => {
   try {
@@ -122,7 +142,7 @@ const updateStatus = async (item) => {
       status: item.status
     });
 
-    if (response.data.data.status === '1') {
+    if (response.data.data.status == 1) {
       toast.success('News published');
     } else {
       toast.info('News set to draft');

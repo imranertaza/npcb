@@ -12,13 +12,6 @@
             <h1 class="header-one text-blue mb-4">{{ $news->news_title }}</h1>
             <div class="d-flex gap-4 mb-40 text-dark-emphasis">
                 <div class="d-flex gap-2">
-                    <div class="user">
-                        <img class="rounded-circle" height="19" width="19"
-                            src="{{ asset('storage/web/news-details/user.jpg') }}" alt="user profile">
-                    </div>
-                    <span class="name">Syed irfan</span>
-                </div>
-                <div class="d-flex gap-2">
                     <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_1037_3358)">
@@ -38,8 +31,23 @@
             </div>
         </div>
         <div class="">
-            <img class="img-fluid" src="{{ getImageUrl($news->image) }}" alt="{{ $news->alt_name }}">
+            @php
+                $fileUrl = getImageUrl($news->image);
+                $extension = pathinfo($fileUrl, PATHINFO_EXTENSION);
+            @endphp
+
+            @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']))
+                <img class="img-fluid" src="{{ $fileUrl }}" alt="{{ $news->alt_name }}">
+            @elseif(in_array(strtolower($extension), ['mp4', 'avi', 'mov', 'wmv', 'webm']))
+                <video class="img-fluid" controls>
+                    <source src="{{ $fileUrl }}" type="video/{{ $extension }}">
+                    Your browser does not support the video tag.
+                </video>
+            @else
+                <img class="img-fluid" src="{{ $fileUrl }}" alt="{{ $news->alt_name }}">
+            @endif
         </div>
+
         <div class="text-start text-dark-emphasis mt-40">
             {!! $news->description !!}
         </div>

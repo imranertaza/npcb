@@ -70,7 +70,8 @@
 
                         <!-- Child Categories -->
                         <div v-if="cat.children && cat.children.length" class="ml-2 mt-1">
-                          <div v-for="child in cat.children" :key="child.id" class="icheck-primary form-check category-child">
+                          <div v-for="child in cat.children" :key="child.id"
+                            class="icheck-primary form-check category-child">
                             <input type="checkbox" class="form-check-input" :id="'cat-' + child.id" :value="child.id"
                               v-model="form.categories" />
                             <label class="form-check-label d-block mb-2" :for="'cat-' + child.id">
@@ -85,9 +86,17 @@
 
                   <!-- Banner Image Upload -->
                   <div class="form-group">
-                    <label>Upload Banner Image</label>
-                    <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
+                    <label>Upload Banner Image or Video (Max 500MB)</label>
+                    <Vue3Dropzone acceptedFiles="image/*,video/*" :maxFileSize="500" v-model="imageFile" mode="edit"
                       :allowSelectOnPreview="true" />
+                    <!-- Banner Preview -->
+                    <div v-if="previews && previews.length" class="mt">
+                      <template v-for="(file, index) in previews" :key="index">
+                        <video v-if="isVideo(file)" :src="file" controls class="rounded mb-2" height="100"></video>
+                        <img v-else :src="file" alt="Preview" class="img-fluid rounded mb-2" height="100" />
+                      </template>
+                    </div>
+
                   </div>
                   <!-- Featured Image Upload -->
                   <div class="form-group">
@@ -169,7 +178,10 @@ const form = reactive({
 
 const imageFile = ref(null);
 const f_imageFile = ref(null);
-
+const isVideo = (file) => {
+  const ext = file.split('?')[0].split('.').pop().toLowerCase()
+  return ['mp4', 'avi', 'mov', 'wmv', 'webm', 'mkv'].includes(ext)
+}
 const fetchNews = async () => {
   try {
     const res = await axios.get(`/api/news/${newsSlug}`);
@@ -255,5 +267,4 @@ onMounted(() => {
 .category-item {
   margin-bottom: 6px;
 }
-
 </style>

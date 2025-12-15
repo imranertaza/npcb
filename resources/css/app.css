@@ -11,3 +11,8 @@
     height: 50vh !important;
     overflow: scroll !important;
 }
+
+:root {
+    --bs-pagination-border-radius: 0px !important;
+}
+

@@ -101,7 +101,7 @@
                             <div class="">
                                 <div class="top-news-card hover-fill-horizontal">
                                     <img src="{{ getImageUrl($news->f_image) }}" class="card-img-top" alt="news image">
-                                    <a href="{{ route('news-and-updates-details', $firstTopNews->slug) }}" class="">
+                                    <a href="{{ route('news-and-updates-details', $news->slug) }}" class="">
                                         <div class="card-body">
                                             <h5 class="title-four p-0">
                                                 {{ truncateText($news->news_title, 40) }}
@@ -323,7 +323,7 @@
                 <div class="swiper myLatestBlogSwiper">
                     <div class="swiper-wrapper mb-5">
                         @forelse ($blogs as $blog)
-                            <div class="swiper-slide ">
+                            <div class="swiper-slide">
                                 <div class="gaming-news-card latest-blog-card card-smooth">
                                     <img src="{{ getImageUrl($blog->f_image) }}" class="card-img-top" alt="news image">
                                     <div class="card-body">
@@ -337,7 +337,7 @@
                                             {{ formatDate($blog->publish_date) }}
                                         </p>
                                         <h5 class="title-four mb-3">
-                                            <a href="" class="">{{ truncateText($blog->title, 40) }}</a>
+                                            <a href="" class="">{{ truncateText($blog->title, 35) }}</a>
                                         </h5>
                                         <a href="{{ route('blogs-details', $blog->slug) }}"
                                             class="btn-primary btn-common">View Details</a>
