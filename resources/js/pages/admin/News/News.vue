@@ -35,7 +35,7 @@
                           rel="noopener noreferrer">View</a>
                       </template>
                       <template v-else>
-                        <img draggable="false" :src="getImageUrl(item.image)" alt="News Image" height="50"
+                        <img draggable="false" :src="getImageCacheUrl(item.image,100,100)" alt="News Image" height="50"
                           class="rounded" />
                       </template>
                     </template>
@@ -83,7 +83,7 @@ import { inject, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
-import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
+import { getImageUrl, truncateText,getImageCacheUrl } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
 

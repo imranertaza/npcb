@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel + Vue</title>
+    <title>{{ env('APP_NAME') }}</title>
+    <link rel="icon" href="{{ getImageUrl($settings['store_icon']) }}" type="image/x-icon">
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -16,24 +17,25 @@
     <div id="app"></div>
 </body>
 
-    <!-- jQuery -->
-    <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+<!-- jQuery -->
+<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
 
-    <!-- Bootstrap 4 -->
-    <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
-    <!-- OverlayScrollbars -->
-    <script src="{{ asset('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+<!-- OverlayScrollbars -->
+<script src="{{ asset('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 
-    <!-- AdminLTE App -->
-    <script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
 
-    <!-- ChartJS -->
-    <script src="{{ asset('assets/plugins/chart.js/Chart.min.js') }}"></script>
+<!-- ChartJS -->
+<script src="{{ asset('assets/plugins/chart.js/Chart.min.js') }}"></script>
 
-    <!-- jQuery Mapael -->
-    <script src="{{ asset('assets/plugins/raphael/raphael.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
-    <script src="{{ asset('assets/plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/jquery-mapael/maps/usa_states.min.js') }}"></script>
+<!-- jQuery Mapael -->
+<script src="{{ asset('assets/plugins/raphael/raphael.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
+<script src="{{ asset('assets/plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/jquery-mapael/maps/usa_states.min.js') }}"></script>
+
 </html>

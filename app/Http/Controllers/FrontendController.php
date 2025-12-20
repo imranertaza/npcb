@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
@@ -15,6 +14,7 @@ use App\Models\Result;
 use App\Models\Section;
 use App\Models\Setting;
 use App\Models\Slider;
+use App\Services\ImageService;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Exception;
 use Illuminate\Http\Request;
@@ -24,13 +24,13 @@ class FrontendController extends Controller
 {
     public function index()
     {
-        $runningEvent = Event::orderBy("created_at", "desc")->where('type', 1)->paginate(15);
-        $upcomingEvent = Event::orderBy("created_at", "desc")->where('type', 0)->paginate(15);
+        $runningEvent         = Event::orderBy("created_at", "desc")->where('type', 1)->paginate(15);
+        $upcomingEvent        = Event::orderBy("created_at", "desc")->where('type', 0)->paginate(15);
         $about_mission_vision = Section::where('name', 'about_mission_vision')->first();
-        $blogs = Blog::latest()->paginate(7);
-        $topNews = News::latest()->paginate(5);
-        $gamesNews = News::getGamesNews();
-        $slides = Slider::where('key', 'banner_section')->where('enabled', 1)->get();
+        $blogs                = Blog::latest()->paginate(7);
+        $topNews              = News::latest()->paginate(5);
+        $gamesNews            = News::getGamesNews();
+        $slides               = Slider::where('key', 'banner_section')->where('enabled', 1)->get();
 
         return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews', 'blogs', 'topNews', 'slides'));
     }
@@ -42,6 +42,9 @@ class FrontendController extends Controller
     public function pageDetails($slug)
     {
         $page = Page::where('slug', $slug)->firstOrFail();
+
+        $imagePath = 'assets/images/default.jpg';
+        $url       = ImageService::resizeAndCache($imagePath, 80, 80);
         if ($slug == 'contact-us') {
             return view('contact', compact('page'));
         } else if ($slug == 'sports') {
@@ -80,12 +83,12 @@ class FrontendController extends Controller
     public function newsAndUpdates()
     {
         $pageTitle = 'News and Updates';
-        $news = News::paginate();
+        $news      = News::paginate();
         return view('news.news-and-updates', compact('news', 'pageTitle'));
     }
     public function spotlightNews()
     {
-        $news = News::getSpotlightNews();
+        $news      = News::getSpotlightNews();
         $pageTitle = 'Spotlights';
         return view('news.news-and-updates', compact('news', 'pageTitle'));
     }
@@ -140,9 +143,9 @@ class FrontendController extends Controller
     public function contactSubmit(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'subject' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
+            'email'                => 'required|email',
+            'subject'              => 'nullable|string|max:255',
+            'description'          => 'nullable|string|max:1000',
             'g-recaptcha-response' => 'required|captcha',
         ]);
 
@@ -155,7 +158,7 @@ class FrontendController extends Controller
             'smtp_password',
             'smtp_port',
             'smtp_timeout',
-            'smtp_crypto'
+            'smtp_crypto',
         ])->pluck('value', 'label');
 
         try {
@@ -173,8 +176,8 @@ class FrontendController extends Controller
                 $mail->Username   = $settings['smtp_username'] ?? '';
                 $mail->Password   = $settings['smtp_password'] ?? '';
                 $mail->SMTPSecure = $settings['smtp_crypto'] ?? 'tls';
-                $mail->Port       = (int)($settings['smtp_port'] ?? 587);
-                $mail->Timeout    = (int)($settings['smtp_timeout'] ?? 30);
+                $mail->Port       = (int) ($settings['smtp_port'] ?? 587);
+                $mail->Timeout    = (int) ($settings['smtp_timeout'] ?? 30);
             }
 
             // Sender & recipient

@@ -8,7 +8,9 @@
   <section class="">
     <div class="row">
       <div class="col-md-12">
-        <div v-if="posts?.data?.length === 0" class="alert alert-info">No posts found.</div>
+        <div v-if="posts?.data?.length === 0" class="alert alert-info">
+          No posts found.
+        </div>
 
         <div v-else>
           <div class="table-responsive">
@@ -29,68 +31,90 @@
                   <td class="align-middle">{{ truncateText(post.post_title, 20) }}</td>
                   <td class="align-middle">{{ truncateText(post.short_des, 50) }}</td>
                   <td class="align-middle">
-                    <img v-if="post.image" draggable="false" :src="getImageUrl(post.image)" alt="Post Image" height="50"
-                      class="rounded" />
+                    <img
+                      v-if="post.image"
+                      draggable="false"
+                      :src="getImageCacheUrl(post.image)"
+                      alt="Post Image"
+                      height="50"
+                      class="rounded"
+                    />
                   </td>
-                  <td v-if="authStore.hasPermission('publish-posts')" class="align-middle">
-                    <select v-model="post.status" @change="updateStatus(post)" class="custom-select"
-                      :class="post.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
+                  <td
+                    v-if="authStore.hasPermission('publish-posts')"
+                    class="align-middle"
+                  >
+                    <select
+                      v-model="post.status"
+                      @change="updateStatus(post)"
+                      class="custom-select"
+                      :class="
+                        post.status == 1
+                          ? 'bg-success text-white'
+                          : 'bg-transparent text-dark'
+                      "
+                    >
                       <option :value="1">Active</option>
                       <option :value="0">Inactive</option>
                     </select>
                   </td>
                   <td class="align-middle">
-                    <div class="d-flex ">
-                      <router-link v-if="authStore.hasPermission('view-posts')"
-                        :to="{ name: 'ShowPost', params: { slug: post.slug } }" class="btn btn-sm btn-outline-dark">
+                    <div class="d-flex">
+                      <router-link
+                        v-if="authStore.hasPermission('view-posts')"
+                        :to="{ name: 'ShowPost', params: { slug: post.slug } }"
+                        class="btn btn-sm btn-outline-dark"
+                      >
                         <i class="fas fa-eye"></i>
                       </router-link>
-                      <router-link v-if="authStore.hasPermission('edit-posts')"
-                        :to="{ name: 'UpdatePost', params: { slug: post.slug } }" class="ml-2 
-                  btn btn-sm btn-outline-info">
+                      <router-link
+                        v-if="authStore.hasPermission('edit-posts')"
+                        :to="{ name: 'UpdatePost', params: { slug: post.slug } }"
+                        class="ml-2 btn btn-sm btn-outline-info"
+                      >
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
-                      <button v-if="authStore.hasPermission('delete-posts')" class="ml-2 btn btn-sm btn-outline-danger"
-                        @click="confirmDelete(post)">
+                      <button
+                        v-if="authStore.hasPermission('delete-posts')"
+                        class="ml-2 btn btn-sm btn-outline-danger"
+                        @click="confirmDelete(post)"
+                      >
                         <i class="fas fa-trash-alt"></i>
                       </button>
                     </div>
                   </td>
-
                 </tr>
               </tbody>
             </table>
           </div>
           <Pagination :pData="posts" @page-change="fetchPage" />
         </div>
-
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import axios from 'axios';
-import DashboardHeader from '@/components/DashboardHeader.vue';
-import { inject, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import Pagination from '@/components/Paginations/Pagination.vue';
-import { useToast } from '@/composables/useToast';
-import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
-import { useAuthStore } from '@/store/auth';
-import SearchBox from '@/components/SearchBox.vue';
-const router = useRouter()
-
+import axios from "axios";
+import DashboardHeader from "@/components/DashboardHeader.vue";
+import { inject, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import Pagination from "@/components/Paginations/Pagination.vue";
+import { useToast } from "@/composables/useToast";
+import { getImageUrl, truncateText, getImageCacheUrl } from "@/layouts/helpers/helpers";
+import { useAuthStore } from "@/store/auth";
+import SearchBox from "@/components/SearchBox.vue";
+const router = useRouter();
 
 const route = useRoute();
 const posts = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
-const $swal = inject('$swal');
+const $swal = inject("$swal");
 
 const fetchPage = async (page = 1, term = "") => {
   try {
-    const res = await axios.get(`/api/posts?page=${page}&search=${term || ''}`);
+    const res = await axios.get(`/api/posts?page=${page}&search=${term || ""}`);
     posts.value = res.data.data;
   } catch (error) {
     console.error(error);
@@ -103,7 +127,7 @@ onMounted(async () => {
   try {
     fetchPage();
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error("Error fetching posts:", error);
   }
   if (route.query.toast) {
     toast.success(route.query.toast);
@@ -119,18 +143,18 @@ onMounted(async () => {
 const updateStatus = async (post) => {
   try {
     const response = await axios.patch(`/api/posts/${post.slug}/status`, {
-      status: post.status
+      status: post.status,
     });
 
     if (response.data.status == 1) {
       post.status = 1;
-      toast.success('Post published');
+      toast.success("Post published");
     } else {
       post.status = 0;
-      toast.info('Post set to draft');
+      toast.info("Post set to draft");
     }
   } catch (error) {
-    toast.error('Failed to update status');
+    toast.error("Failed to update status");
     console.error(error);
   }
 };
@@ -138,26 +162,25 @@ const updateStatus = async (post) => {
 const confirmDelete = async (post) => {
   const result = await $swal({
     title: `Delete "${post.post_title}"?`,
-    text: 'This action cannot be undone.',
-    icon: 'warning',
+    text: "This action cannot be undone.",
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonText: 'Yes, delete',
-    cancelButtonText: 'Cancel',
-    reverseButtons: true
+    confirmButtonText: "Yes, delete",
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
   });
 
   if (result.isConfirmed) {
     try {
       await axios.delete(`/api/posts/${post.slug}`);
-      toast.success('Post deleted successfully!');
-      
-      posts.value.data = posts.value.data.filter(p => p.id !== post.id);
+      toast.success("Post deleted successfully!");
+
+      posts.value.data = posts.value.data.filter((p) => p.id !== post.id);
     } catch (error) {
       toast.validationError(error);
     }
   } else {
-    toast.info('Deletion cancelled.');
+    toast.info("Deletion cancelled.");
   }
 };
-
 </script>

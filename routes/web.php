@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\FrontendController;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Route;
-
 
 Route::controller(FrontendController::class)->group(function () {
     Route::get('/', 'index')->name('home');
@@ -28,6 +28,13 @@ Route::controller(FrontendController::class)->group(function () {
         Route::get('/', 'pages')->name('index');
         Route::get('/{slug}', 'pageDetails')->name('details');
     });
+    Route::get('/image/{width}/{height}/{format}/{path}', function ($width, $height, $format, $path) {
+        $fullPath = $path;
+
+        $url = ImageService::resizeAndCache($fullPath, (int) $width, (int) $height, $format);
+
+        return redirect($url);
+    })->where('path', '.*');
 });
 Route::get('admin/{any}', function () {
     return view('welcome');
