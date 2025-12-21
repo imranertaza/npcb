@@ -37,7 +37,7 @@
             @endphp
 
             @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']))
-                <img class="img-fluid" src="{{ $fileUrl }}" alt="{{ $news->alt_name }}">
+                <img class="img-fluid" src="{{ getImageCacheUrl($news->image, 1140, 375) }}" alt="{{ $news->alt_name }}">
             @elseif(in_array(strtolower($extension), ['mp4', 'avi', 'mov', 'wmv', 'webm']))
                 <div class="position-relative">
                     <video id="myVideo" class="w-100 rounded shadow" controls>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             @else
-                <img class="img-fluid" src="{{ $fileUrl }}" alt="{{ $news->alt_name }}">
+                <img class="img-fluid" src="{{ getImageCacheUrl($news->image, 1140, 375) }}" alt="{{ $news->alt_name }}">
             @endif
         </div>
 

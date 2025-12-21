@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
@@ -31,9 +30,7 @@ class BlogController extends Controller
         }
 
         $perPage = $request->input('per_page', 10);
-        $blogs = $query->paginate($perPage);
-
-
+        $blogs   = $query->paginate($perPage);
 
         return ApiResponse::success($blogs, 'Blogs retrieved successfully');
     }
@@ -53,24 +50,24 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'     => 'required|string|max:255',
-            'slug'           => 'required|string|unique:blogs,slug',
-            'short_des'      => 'required|string|max:255',
-            'description'    => 'required|string',
-            'meta_title'     => 'nullable|string',
-            'meta_keyword'   => 'nullable|string',
+            'title'            => 'required|string|max:255',
+            'slug'             => 'required|string|unique:blogs,slug',
+            'short_des'        => 'required|string|max:255',
+            'description'      => 'required|string',
+            'meta_title'       => 'nullable|string',
+            'meta_keyword'     => 'nullable|string',
             'meta_description' => 'nullable|string',
-            'image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'       => 'nullable|string|max:255',
-            'publish_date'   => 'nullable|date',
-            'status'         => ['required', Rule::in(['0', '1'])],
-            'categories' => 'required|array',
-            'categories.*' => 'exists:blog_categories,id',
+            'alt_name'         => 'nullable|string|max:255',
+            'publish_date'     => 'nullable|date',
+            'status'           => ['required', Rule::in(['0', '1'])],
+            'categories'       => 'required|array',
+            'categories.*'     => 'exists:blog_categories,id',
         ]);
 
-        $validated['createdBy'] = Auth::id();
-        $validated['updatedBy'] = Auth::id();
+        $validated['createdBy']    = Auth::id();
+        $validated['updatedBy']    = Auth::id();
         $validated['publish_date'] = $request->input('publish_date', now());
 
         if ($request->hasFile('image')) {
@@ -79,7 +76,6 @@ class BlogController extends Controller
         if ($request->hasFile('f_image')) {
             $validated['f_image'] = $request->file('f_image')->store('blogs', 'public');
         }
-
 
         $blog = Blog::create($validated);
 
@@ -95,25 +91,25 @@ class BlogController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $blog = Blog::findOrFail($id);
+        $blog      = Blog::findOrFail($id);
         $validated = $request->validate([
-            'title'     => 'required|string|max:255',
-            'slug'           => [
+            'title'            => 'required|string|max:255',
+            'slug'             => [
                 'required',
                 'string',
                 Rule::unique('blogs', 'slug')->ignore($blog->id),
             ],
-            'short_des'      => 'required|string|max:255',
-            'description'    => 'required|string',
-            'meta_title'     => 'nullable|string',
-            'meta_keyword'   => 'nullable|string',
+            'short_des'        => 'required|string|max:255',
+            'description'      => 'required|string',
+            'meta_title'       => 'nullable|string',
+            'meta_keyword'     => 'nullable|string',
             'meta_description' => 'nullable|string',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'       => 'nullable|string|max:255',
-            'status'         => ['required', Rule::in(['0', '1'])],
-            'categories' => 'required|array',
-            'categories.*' => 'exists:blog_categories,id',
+            'alt_name'         => 'nullable|string|max:255',
+            'status'           => ['required', Rule::in(['0', '1'])],
+            'categories'       => 'required|array',
+            'categories.*'     => 'exists:blog_categories,id',
         ]);
 
         $validated['updatedBy'] = Auth::id();
@@ -131,8 +127,6 @@ class BlogController extends Controller
             $validated['f_image'] = $request->file('f_image')->store('blogs', 'public');
         }
 
-
-
         $blog->update($validated);
 
         if (isset($validated['categories'])) {
@@ -147,14 +141,14 @@ class BlogController extends Controller
      */
     public function toggleStatus($slug)
     {
-        $blog = Blog::where('slug', $slug)->firstOrFail();
-        $blog->status = $blog->status === '1' ? '0' : '1';
+        $blog            = Blog::where('slug', $slug)->firstOrFail();
+        $blog->status    = $blog->status == 1 ? "0" : "1";
         $blog->updatedBy = Auth::id();
         $blog->save();
 
         return ApiResponse::success([
             'status' => $blog->status,
-        ], $blog->status === '1' ? 'Blog active' : 'Blog inactive');
+        ], $blog->status == 1 ? 'Blog active' : 'Blog inactive');
     }
 
     /**

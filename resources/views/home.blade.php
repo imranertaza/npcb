@@ -78,8 +78,8 @@
                         $firstTopNews = $topNews->first();
                     @endphp
                     <div class="top-news-card highlight card-smooth">
-                        <img src="{{ getImageUrl($firstTopNews->f_image) }}" class="card-img-top" alt="news image">
-
+                        <img src="{{ getImageCacheUrl($firstTopNews->f_image, 548, 340, 'webp') }}" alt=""
+                            class="card-img-top" alt="news image">
                         <a href="{{ route('news-and-updates-details', $firstTopNews->slug) }}" class="">
                             <div class="card-body">
                                 <h5 class="title-four mb-2 p-0">
@@ -100,7 +100,8 @@
                             @endif
                             <div class="">
                                 <div class="top-news-card hover-fill-horizontal">
-                                    <img src="{{ getImageUrl($news->f_image) }}" class="card-img-top" alt="news image">
+                                    <img src="{{ getImageCacheUrl($news->f_image, 262, 145) }}" class="card-img-top"
+                                        alt="news image">
                                     <a href="{{ route('news-and-updates-details', $news->slug) }}" class="">
                                         <div class="card-body">
                                             <h5 class="title-four p-0">
@@ -134,7 +135,8 @@
                             <div class="swiper-slide">
                                 <a href="{{ route('news-and-updates-details', $news->slug) }}">
                                     <div class="gaming-news-card card-smooth hover-fill-horizontal fill-white-muted">
-                                        <img src="{{ getImageUrl($news->f_image) }}" class="card-img-top" alt="news image">
+                                        <img src="{{ getImageCacheUrl($news->f_image, 362, 320) }}" class="card-img-top"
+                                            alt="news image">
                                         <div class="card-body">
                                             <h5 class="title-four">
                                                 {{ truncateText($news->news_title, 40) }}
@@ -194,8 +196,8 @@
                             <div class="swiper-slide">
                                 <a href="{{ route('event-details', $item->slug) }}">
                                     <div class="gaming-news-card running-event-card card-smooth ">
-                                        <img src="{{ getImageUrl($item->featured_image) }}" class="card-img-top"
-                                            alt="news image">
+                                        <img src="{{ getImageCacheUrl($item->featured_image, 262, 230) }}"
+                                            class="card-img-top" alt="news image">
                                         <div class="card-body">
                                             <h5 class="title-four">
                                                 {{ $item->title }}
@@ -253,7 +255,7 @@
                             <div class="swiper-slide ">
                                 <div class="upcoming-event-card card-smooth">
                                     <a href="{{ route('event-details', $item->slug) }}" aria-label="Upcoming Event 1">
-                                        <img src="{{ getImageUrl($item->featured_image) }}"
+                                        <img src="{{ getImageCacheUrl($item->featured_image, 252, 515) }}"
                                             class="card-img-top img-thumbnail" alt="{{ $item->title }}">
                                     </a>
                                 </div>
@@ -299,7 +301,8 @@
         <div class="container">
             <div class="row row-cols-md-2 align-items-center">
                 <div class="text-center mb-md-0 mb-4">
-                    <img class="img-fluid rounded-2" src="{{ getImageUrl($about_mission_vision->data['image']) }}"
+                    <img class="img-fluid rounded-2"
+                        src="{{ getImageCacheUrl($about_mission_vision->data['image'], 476, 375) }}"
                         alt="Mission and Vision">
                 </div>
                 <div class="">
@@ -325,7 +328,8 @@
                         @forelse ($blogs as $blog)
                             <div class="swiper-slide">
                                 <div class="gaming-news-card latest-blog-card card-smooth">
-                                    <img src="{{ getImageUrl($blog->f_image) }}" class="card-img-top" alt="news image">
+                                    <img src="{{ getImageCacheUrl($blog->f_image, 357, 225) }}" class="card-img-top"
+                                        alt="news image">
                                     <div class="card-body">
                                         <p class="content-text d-flex align-items-center"><svg width="24"
                                                 height="24" viewBox="0 0 24 24" fill="none"
@@ -337,7 +341,8 @@
                                             {{ formatDate($blog->publish_date) }}
                                         </p>
                                         <h5 class="title-four mb-3">
-                                            <a href="" class="">{{ truncateText($blog->title, 35) }}</a>
+                                            <a href="{{ route('blogs-details', $blog->slug) }}"
+                                                class="">{{ truncateText($blog->title, 35) }}</a>
                                         </h5>
                                         <a href="{{ route('blogs-details', $blog->slug) }}"
                                             class="btn-primary btn-common">View Details</a>

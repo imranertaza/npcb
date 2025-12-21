@@ -24,10 +24,10 @@ class FrontendController extends Controller
 {
     public function index()
     {
-        $runningEvent         = Event::orderBy("created_at", "desc")->where('type', 1)->paginate(15);
-        $upcomingEvent        = Event::orderBy("created_at", "desc")->where('type', 0)->paginate(15);
+        $runningEvent         = Event::orderBy("created_at", "desc")->where('status', "1")->where('type', 1)->paginate(15);
+        $upcomingEvent        = Event::orderBy("created_at", "desc")->where('status', "1")->where('type', 0)->paginate(15);
         $about_mission_vision = Section::where('name', 'about_mission_vision')->first();
-        $blogs                = Blog::latest()->paginate(7);
+        $blogs                = Blog::where('status', "1")->latest()->paginate(7);
         $topNews              = News::latest()->paginate(5);
         $gamesNews            = News::getGamesNews();
         $slides               = Slider::where('key', 'banner_section')->where('enabled', 1)->get();
@@ -43,8 +43,8 @@ class FrontendController extends Controller
     {
         $page = Page::where('slug', $slug)->firstOrFail();
 
-        $imagePath = 'assets/images/default.jpg';
-        $url       = ImageService::resizeAndCache($imagePath, 80, 80);
+        // $imagePath = 'assets/images/default.jpg';
+        // $url       = ImageService::resizeAndCache($imagePath, 80, 80);
         if ($slug == 'contact-us') {
             return view('contact', compact('page'));
         } else if ($slug == 'sports') {
@@ -99,7 +99,7 @@ class FrontendController extends Controller
     }
     public function blogs()
     {
-        $blogs = Blog::paginate();
+        $blogs = Blog::where('status', "1")->paginate();
         return view('blog.blogs', compact('blogs'));
     }
     public function blogsDetails($slug)
@@ -109,12 +109,12 @@ class FrontendController extends Controller
     }
     public function runningEvents()
     {
-        $events = Event::where('type', 1)->paginate(10);
+        $events = Event::where('type', 1)->where('status', 1)->paginate(10);
         return view('events.running', compact('events'));
     }
     public function upcomingEvents()
     {
-        $events = Event::where('type', 0)->paginate(10);
+        $events = Event::where('type', 0)->where('status', 1)->paginate(10);
         return view('events.upcoming', compact('events'));
     }
     public function runningEventsDetails($slug)

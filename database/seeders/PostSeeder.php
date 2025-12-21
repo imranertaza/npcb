@@ -76,7 +76,7 @@ class PostSeeder extends Seeder
                         'meta_keyword'     => "{$category}, sports, results",
                         'meta_description' => "Detailed coverage and insights about {$category}.",
                         'image'            => 'https://placehold.co/1400x400',
-                        'f_image'          => 'https://placehold.co/200x400',
+                        'f_image'          => 'https://placehold.co/400x200',
                         'alt_name'         => "{$category} image",
                         'publish_date'     => now()->subDays(rand(0, 30)),
                         'status'           => "1",

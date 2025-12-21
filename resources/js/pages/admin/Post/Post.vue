@@ -32,9 +32,9 @@
                   <td class="align-middle">{{ truncateText(post.short_des, 50) }}</td>
                   <td class="align-middle">
                     <img
-                      v-if="post.image"
+                      v-if="post.f_image"
                       draggable="false"
-                      :src="getImageCacheUrl(post.image)"
+                      :src="getImageCacheUrl(post.f_image)"
                       alt="Post Image"
                       height="50"
                       class="rounded"

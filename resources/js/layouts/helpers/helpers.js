@@ -24,7 +24,7 @@ export const generateSlug = (title) => {
         .replace(/\-\-+/g, "-");
 };
 
-export const getImageCacheUrl = (filePath, width = 200, height = 200, format = "jpg") => {
+export const getImageCacheUrl = (filePath, width = 200, height = 200, format = "webp") => {
     const baseUrl = import.meta.env.VITE_APP_URL;
     const relativePath = getImageUrl(filePath);
 

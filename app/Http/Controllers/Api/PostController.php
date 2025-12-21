@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
@@ -28,7 +27,7 @@ class PostController extends Controller
         }
 
         $perPage = $request->input('per_page', 10);
-        $posts = $query->paginate($perPage);
+        $posts   = $query->paginate($perPage);
 
         return ApiResponse::success($posts, 'Posts retrieved successfully');
     }
@@ -41,23 +40,23 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'post_title' => 'required|string|max:155',
-            'slug' => 'required|string|unique:posts,slug',
-            'short_des' => 'required|string|max:155',
-            'description' => 'required|string',
-            'meta_title' => 'nullable|string',
-            'meta_keyword' => 'nullable|string',
+            'post_title'       => 'required|string|max:155',
+            'slug'             => 'required|string|unique:posts,slug',
+            'short_des'        => 'required|string|max:155',
+            'description'      => 'required|string',
+            'meta_title'       => 'nullable|string',
+            'meta_keyword'     => 'nullable|string',
             'meta_description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name' => 'nullable|string|max:255',
-            'publish_date' => 'nullable|date',
-            'status' => ['required', Rule::in(['0', '1'])],
-            'categories' => 'required|array',
-            'categories.*' => 'exists:categories,id',
+            'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'alt_name'         => 'nullable|string|max:255',
+            'publish_date'     => 'nullable|date',
+            'status'           => ['required', Rule::in(['0', '1'])],
+            'categories'       => 'required|array',
+            'categories.*'     => 'exists:categories,id',
         ]);
-        $validated['createdBy'] = Auth::user()->id;
-        $validated['updatedBy'] = Auth::user()->id;
+        $validated['createdBy']    = Auth::user()->id;
+        $validated['updatedBy']    = Auth::user()->id;
         $validated['publish_date'] = $request->input('publish_date', now());
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('posts', 'public');
@@ -65,7 +64,6 @@ class PostController extends Controller
         if ($request->hasFile('f_image')) {
             $validated['f_image'] = $request->file('f_image')->store('posts', 'public');
         }
-
 
         $post = Post::create($validated);
 
@@ -78,25 +76,25 @@ class PostController extends Controller
     // Update an existing post
     public function update(Request $request, $id)
     {
-        $post = Post::findOrFail($id);
+        $post      = Post::findOrFail($id);
         $validated = $request->validate([
-            'post_title' => 'required|string|max:155',
-            'slug' => [
+            'post_title'       => 'required|string|max:155',
+            'slug'             => [
                 'required',
                 'string',
                 Rule::unique('posts', 'slug')->ignore($post->id),
             ],
-            'short_des' => 'required|string|max:155',
-            'description' => 'required|string',
-            'meta_title' => 'nullable|string',
-            'meta_keyword' => 'nullable|string',
+            'short_des'        => 'required|string|max:155',
+            'description'      => 'required|string',
+            'meta_title'       => 'nullable|string',
+            'meta_keyword'     => 'nullable|string',
             'meta_description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name' => 'nullable|string|max:255',
-            'status' => ['required', Rule::in(['0', '1'])],
-            'categories' => 'required|array',
-            'categories.*' => 'exists:categories,id',
+            'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'alt_name'         => 'nullable|string|max:255',
+            'status'           => ['required', Rule::in(['0', '1'])],
+            'categories'       => 'required|array',
+            'categories.*'     => 'exists:categories,id',
         ]);
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
@@ -106,6 +104,11 @@ class PostController extends Controller
             if ($post->image && Storage::disk('public')->exists($post->image)) {
                 Storage::disk('public')->delete($post->image);
             }
+
+            // Store new image
+            $validated['image'] = $request->file('image')->store('posts', 'public');
+        }
+        if ($request->hasFile('f_image')) {
             if ($request->hasFile('f_image')) {
                 // Delete old image if exists
                 if ($post->f_image && Storage::disk('public')->exists($post->f_image)) {
@@ -114,11 +117,6 @@ class PostController extends Controller
                 // Store new image
                 $validated['f_image'] = $request->file('f_image')->store('posts', 'public');
             }
-
-
-
-            // Store new image
-            $validated['image'] = $request->file('image')->store('posts', 'public');
         }
 
         $post->update($validated);
@@ -132,13 +130,13 @@ class PostController extends Controller
 
     public function toggleStatus($slug)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post         = Post::where('slug', $slug)->firstOrFail();
         $post->status = $post->status === '1' ? '0' : '1';
         $post->save();
 
         return response()->json([
             'message' => $post->status === '1' ? 'Post active' : 'Post inactive',
-            'status' => $post->status
+            'status'  => $post->status,
         ]);
     }
 

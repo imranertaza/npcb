@@ -10,7 +10,7 @@
             <div>
                 <a href="{{ route('event-details', $event->slug) }}">
                     <div class="gaming-news-card running-event-card card-smooth">
-                        <img src="{{ getImageUrl($event->featured_image) }}" class="card-img-top" alt="{{ $event->title }}">
+                        <img src="{{ getImageCacheUrl($event->featured_image,262,230) }}" class="card-img-top" alt="{{ $event->title }}">
                         <div class="card-body">
                             <h5 class="title-five">
                                 <a href="{{ route('event-details', $event->slug) }}"

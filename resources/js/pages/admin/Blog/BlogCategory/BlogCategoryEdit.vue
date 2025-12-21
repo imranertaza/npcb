@@ -10,7 +10,12 @@
             <div class="col-md-8">
               <div class="mb-3">
                 <label class="form-label">Category Name</label>
-                <input v-model="form.category_name" type="text" class="form-control" required />
+                <input
+                  v-model="form.category_name"
+                  type="text"
+                  class="form-control"
+                  required
+                />
               </div>
 
               <div class="mb-3">
@@ -20,8 +25,14 @@
 
               <div class="mb-3">
                 <label class="form-label">Parent Category</label>
-                <Multiselect v-model="form.parent_id" :options="categoriesOptions" :reduce="option => option.value"
-                  placeholder="Select parent category" searchable allow-empty />
+                <Multiselect
+                  v-model="form.parent_id"
+                  :options="categoriesOptions"
+                  :reduce="(option) => option.value"
+                  placeholder="Select parent category"
+                  searchable
+                  allow-empty
+                />
               </div>
 
               <div class="mb-3">
@@ -45,9 +56,15 @@
               <div class="mb-3">
                 <label class="form-label">Category Image</label>
                 <div v-if="form.image" class="mb-2">
-                  <img :src="getImageUrl(form.image)" alt="Category Image" height="80" class="rounded" />
+                  <img
+                    :src="getImageUrl(form.image)"
+                    alt="Category Image"
+                    height="80"
+                    class="rounded"
+                  />
                 </div>
                 <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                <small class="text-muted">Recommended: 1140 × 375px</small>
               </div>
 
               <div class="mb-3">
@@ -73,29 +90,31 @@
                   <button type="submit" class="btn btn-primary btn-block">Update</button>
                 </div>
                 <div class="col-md-6">
-                  <router-link :to="{ name: 'BlogCategoryIndex' }"
-                    class="btn btn-secondary btn-block">Cancel</router-link>
+                  <router-link
+                    :to="{ name: 'BlogCategoryIndex' }"
+                    class="btn btn-secondary btn-block"
+                    >Cancel</router-link
+                  >
                 </div>
               </div>
             </div>
           </div>
         </form>
-
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
-import { useRoute } from 'vue-router';
-import DashboardHeader from '@/components/DashboardHeader.vue';
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
+import { useRoute } from "vue-router";
+import DashboardHeader from "@/components/DashboardHeader.vue";
 import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
-import '@jaxtheprime/vue3-dropzone/dist/style.css';
-import { getImageUrl } from '@/layouts/helpers/helpers';
-import { useToast } from '@/composables/useToast';
-import Multiselect from '@vueform/multiselect';
+import "@jaxtheprime/vue3-dropzone/dist/style.css";
+import { getImageUrl } from "@/layouts/helpers/helpers";
+import { useToast } from "@/composables/useToast";
+import Multiselect from "@vueform/multiselect";
 const toast = useToast();
 const route = useRoute();
 const form = ref(null);
@@ -107,26 +126,26 @@ const fetchCategory = async () => {
     const res = await axios.get(`/api/blog-categories/${route.params.id}`);
     form.value = res.data.data;
   } catch (error) {
-    toast.error('Failed to load category');
+    toast.error("Failed to load category");
   }
 };
 
 const fetchCategories = async () => {
   try {
-    const res = await axios.get('/api/blog-categories?all=1');
+    const res = await axios.get("/api/blog-categories?all=1");
     categories.value = res.data.data;
   } catch (error) {
-    toast.error('Failed to load categories');
+    toast.error("Failed to load categories");
   }
 };
 
 const categoriesOptions = computed(() => {
   return [
-    { label: '-- None --', value: '' },
-    ...categories.value.map(cat => ({
+    { label: "-- None --", value: "" },
+    ...categories.value.map((cat) => ({
       label: cat.category_name,
-      value: cat.id
-    }))
+      value: cat.id,
+    })),
   ];
 });
 
@@ -134,21 +153,25 @@ const updateCategory = async () => {
   const payload = new FormData();
 
   for (const key in form.value) {
-    if (key !== 'image') {
-      payload.append(key, form.value[key] ?? '');
+    if (key !== "image") {
+      payload.append(key, form.value[key] ?? "");
     }
   }
 
   if (imageFile.value && imageFile.value[0]) {
-    payload.append('image', imageFile.value[0].file);
+    payload.append("image", imageFile.value[0].file);
   }
 
   try {
-    const res = await axios.post(`/api/blog-categories/${route.params.id}?_method=PUT`, payload, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const res = await axios.post(
+      `/api/blog-categories/${route.params.id}?_method=PUT`,
+      payload,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
     form.value = res.data.data;
-    toast.success('Category updated successfully!');
+    toast.success("Category updated successfully!");
   } catch (error) {
     toast.validationError(error);
   }
@@ -156,8 +179,8 @@ const updateCategory = async () => {
 defineProps({
   id: {
     type: [Number, String],
-    required: false
-  }
+    required: false,
+  },
 });
 onMounted(() => {
   fetchCategory();

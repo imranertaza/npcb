@@ -10,7 +10,8 @@
                 <div>
                     <a href="{{ route('gallery-details', $item->id) }}" class="">
                         <div class="gaming-news-card running-event-card card-smooth">
-                            <img src="{{ getImageUrl($item->thumb) }}" class="card-img-top" alt="{{ $item->alt_name }}">
+                            <img src="{{ getImageCacheUrl($item->thumb, 262, 230) }}" class="card-img-top"
+                                alt="{{ $item->alt_name }}">
                             <div class="card-body">
                                 <h5 class="title-five">
                                     {{ $item->name }}

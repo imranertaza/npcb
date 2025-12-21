@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="">
-            <img class="img-fluid" src="{{ getImageUrl($event->banner_image) }}" alt="">
+            <img class="img-fluid" src="{{ getImageCacheUrl($event->banner_image,1140,375) }}" alt="">
         </div>
         <div class="text-start text-dark-emphasis mt-40">
             {!! $event->description !!}

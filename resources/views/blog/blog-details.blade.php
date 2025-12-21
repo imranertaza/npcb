@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="">
-            <img class="img-fluid" src="{{ getImageUrl($blog->image) }}" alt="{{ $blog->alt_name }}">
+            <img class="img-fluid" src="{{ getImageCacheUrl($blog->image,1140,375,'png') }}" alt="{{ $blog->alt_name }}">
         </div>
         <div class="text-start text-dark-emphasis mt-40">
             {!! $blog->description !!}

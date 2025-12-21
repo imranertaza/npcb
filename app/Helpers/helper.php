@@ -1,9 +1,9 @@
 <?php
 
-
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
-if (!function_exists('getImageUrl')) {
+if (! function_exists('getImageUrl')) {
     function getImageUrl(?string $path): string
     {
         // Debugging (optional)
@@ -32,8 +32,7 @@ if (!function_exists('getImageUrl')) {
     }
 }
 
-
-if (!function_exists('truncateText')) {
+if (! function_exists('truncateText')) {
     /**
      * Truncate text to a given length with optional ellipsis.
      *
@@ -61,11 +60,7 @@ if (!function_exists('truncateText')) {
     }
 }
 
-
-
-use Carbon\Carbon;
-
-if (!function_exists('formatDate')) {
+if (! function_exists('formatDate')) {
     /**
      * Format a given date/time into a human-readable string.
      *
@@ -80,5 +75,50 @@ if (!function_exists('formatDate')) {
         }
 
         return Carbon::parse($date)->format($format);
+    }
+}
+
+if (! function_exists('getImagePath')) {
+    function getImagePath(?string $path): string
+    {
+        if (empty($path)) {
+            return '/assets/images/default.svg'; // fallback image
+        }
+
+        return (str_starts_with($path, 'http://') || str_starts_with($path, 'https://'))
+            ? $path
+            : '/storage/' . ltrim($path, '/');
+    }
+}
+
+if (! function_exists('getImageCacheUrl')) {
+    function getImageCacheUrl(?string $filePath, int $width = 200, int $height = 200, string $format = 'webp'): string
+    {
+        $baseUrl      = config('app.url'); // comes from APP_URL in .env
+        $relativePath = getImagePath($filePath);
+
+        // If already absolute URL, return as-is
+        if (str_starts_with($relativePath, 'http://') || str_starts_with($relativePath, 'https://')) {
+            return $relativePath;
+        }
+
+        // Otherwise build dynamic resize route
+        return rtrim($baseUrl, '/') . "/image/{$width}/{$height}/{$format}/" . ltrim($relativePath, '/');
+    }
+}
+
+if (! function_exists('getImageCacheUrl')) {
+    function getImageCacheUrl(?string $filePath, int $width = 200, int $height = 200, string $format = 'webp'): string
+    {
+        $baseUrl      = config('app.url'); // comes from APP_URL in .env
+        $relativePath = getImageUrl($filePath);
+
+        // If already absolute URL, return as-is
+        if (str_starts_with($relativePath, 'http://') || str_starts_with($relativePath, 'https://')) {
+            return $relativePath;
+        }
+
+        // Otherwise build dynamic resize route
+        return rtrim($baseUrl, '/') . "/image/{$width}/{$height}/{$format}/" . ltrim($relativePath, '/');
     }
 }

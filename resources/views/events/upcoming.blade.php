@@ -10,8 +10,8 @@
                 <div class="">
                     <div class="upcoming-event-card card-smooth">
                         <a href="{{ route('event-details', $event->slug) }}" aria-label="{{ $event->title }}">
-                            <img src="{{ getImageUrl($event->featured_image) }}" class="card-img-top img-thumbnail"
-                                alt="{{ $event->title }}">
+                            <img src="{{ getImageCacheUrl($event->featured_image, 254, 517) }}"
+                                class="card-img-top img-thumbnail" alt="{{ $event->title }}">
                         </a>
                     </div>
                 </div>

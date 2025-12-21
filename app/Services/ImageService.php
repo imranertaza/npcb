@@ -15,7 +15,7 @@ class ImageService
  * @param string $format Output format (jpg|png|webp)
  * @return string        URL to cached image
  */
-    public static function resizeAndCache(string $path, int $width, int $height, string $format = 'jpg'): string
+    public static function resizeAndCache(string $path, int $width, int $height, string $format = 'webp'): string
     {
         // Unique hash for this image + size + format
         $hash           = md5($path . "_{$width}x{$height}_{$format}");
@@ -41,8 +41,8 @@ class ImageService
             File::makeDirectory($cachedDir, 0755, true);
         }
 
-                                                         // Use ImageManager directly (no facade warnings)
-        $manager = new ImageManager(['driver' => 'gd']); // or 'imagick'
+        // Use ImageManager directly (no facade warnings)
+        $manager = new ImageManager(['driver' => 'gd']);
         $image   = $manager->make(public_path($path))
             ->resize($width, $height, function ($constraint) {
                 $constraint->aspectRatio();
@@ -50,7 +50,7 @@ class ImageService
             });
 
         // Save resized image
-        $image->save($cachedPath, 85, $format);
+        $image->save($cachedPath, 100, $format);
 
         // Generate URL and cache it
         $url = asset('cache/' . $cachedFileName);
