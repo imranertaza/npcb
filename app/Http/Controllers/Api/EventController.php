@@ -47,16 +47,20 @@ class EventController extends Controller
             'title'             => 'required|string|max:255',
             'slug'              => 'required|string|unique:events,slug',
             'description'       => 'nullable|string',
-            'file'              => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf|max:4096',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:event_categories,id',
+            'type'              => 'required|integer|in:0,1',
+            'banner_image'              => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'featured_image'             => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
         ]);
 
         $validated['createdBy'] = Auth::id();
         $validated['updatedBy'] = Auth::id();
 
-        if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('events', 'public');
+        if ($request->hasFile('banner_image')) {
+            $validated['banner_image'] = $request->file('banner_image')->store('events', 'public');
+        }
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('events', 'public');
         }
 
         $event = Event::create($validated);
@@ -81,19 +85,25 @@ class EventController extends Controller
                 'string',
                 Rule::unique('events', 'slug')->ignore($event->id),
             ],
+            'type'              => 'required|integer|in:0,1',
             'description'       => 'nullable|string',
-            'file'              => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf|max:4096',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:event_categories,id',
+            'banner_image'             => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'featured_image'             => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
         ]);
 
         $validated['updatedBy'] = Auth::id();
 
-        if ($request->hasFile('file')) {
-            if ($event->file && Storage::disk('public')->exists($event->file)) {
-                Storage::disk('public')->delete($event->file);
+        if ($request->hasFile('banner_image')) {
+            if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
+                Storage::disk('public')->delete($event->banner_image);
             }
-            $validated['file'] = $request->file('file')->store('events', 'public');
+            $validated['banner_image'] = $request->file('banner_image')->store('events', 'public');
+        }
+        if ($request->hasFile('featured_image')) {
+            if ($event->featured_image && Storage::disk('public')->exists($event->featured_image)) {
+                Storage::disk('public')->delete($event->featured_image);
+            }
+            $validated['featured_image'] = $request->file('featured_image')->store('events', 'public');
         }
 
         $event->update($validated);

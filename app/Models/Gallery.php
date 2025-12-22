@@ -12,6 +12,6 @@ class Gallery extends Model
 
     public function details()
     {
-        return $this->hasMany(GalleryDetail::class);
+        return $this->hasMany(GalleryDetail::class, 'gallery_id');
     }
 }

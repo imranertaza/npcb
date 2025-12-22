@@ -39,7 +39,7 @@ class SettingsSeeder extends Seeder
             // Social links
             ['label' => 'fb_url', 'title' => 'Facebook', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'twitter_url', 'title' => 'Twitter', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'tiktok_url', 'title' => 'Tiktok', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'linkedin_url', 'title' => 'Linkedin', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'instagram_url', 'title' => 'Instagram', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
             // SEO
             ['label' => 'meta_title', 'title' => 'Meta Title', 'value' => 'Style mint', 'createdBy' => $userId, 'updatedBy' => $userId],

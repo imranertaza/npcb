@@ -42,10 +42,23 @@
                 <div class="col-md-4">
                   <!-- File Upload -->
                   <div class="form-group">
-                    <label>Upload File (Image/PDF)</label>
+                    <label>Upload Featured Image</label>
+                    <Vue3Dropzone v-model="imageUpload" :allowSelectOnPreview="true" />
+                  </div>
+                  <!-- File Upload -->
+                  <div class="form-group">
+                    <label>Upload Banner Image</label>
                     <Vue3Dropzone v-model="fileUpload" :allowSelectOnPreview="true" />
                   </div>
 
+                  <!-- Event Type -->
+                  <div class="form-group">
+                    <label>Event Type</label>
+                    <select v-model="form.type" class="custom-select">
+                      <option value="1">Running</option>
+                      <option value="0">Upcoming</option>
+                    </select>
+                  </div>
                   <!-- Status -->
                   <div class="form-group">
                     <label>Status</label>
@@ -84,6 +97,7 @@ import { generateSlug } from '../../../layouts/helpers/helpers';
 const toast = useToast();
 const fileUpload = ref(null);
 const categories = ref([]);
+const imageUpload = ref(null);
 
 const form = reactive({
   title: '',
@@ -91,8 +105,11 @@ const form = reactive({
   description: '',
   event_category_id: '',
   status: '1',
-  file: null
+  banner_image: null,
+  featured_image: null,
+  type: 1
 });
+
 const categoriesOptions = computed(() => {
   return [
     { label: '-- None --', value: '' },
@@ -118,13 +135,17 @@ const submitEvent = async () => {
   const payload = new FormData();
 
   for (const key in form) {
-    if (key !== 'file') {
+    if (key !== 'banner_image') {
       payload.append(key, form[key]);
     }
   }
 
   if (fileUpload.value && fileUpload.value[0]) {
-    payload.append('file', fileUpload.value[0].file);
+    payload.append('banner_image', fileUpload.value[0].file);
+  }
+
+  if (imageUpload.value && imageUpload.value[0]) {
+    payload.append('featured_image', imageUpload.value[0].file);
   }
 
   try {

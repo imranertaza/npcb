@@ -53,4 +53,11 @@ class News extends Model
     {
         $this->categories()->sync($categoryIds);
     }
+
+    public static function getGamesNews()
+    {
+        return self::whereHas('categories', function ($query) {
+            $query->where('category_name', 'like', '%game%');
+        })->paginate(10);
+    }
 }

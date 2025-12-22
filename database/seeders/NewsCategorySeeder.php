@@ -11,7 +11,7 @@ class NewsCategorySeeder extends Seeder
     public function run(): void
     {
         // === ROOT NEWS CATEGORIES ===
-        $politics   = $this->createCategory('Politics', null, 1, 'government,elections,policy');
+        $politics   = $this->createCategory('Games', null, 1, 'government,elections,policy');
         $business   = $this->createCategory('Business', null, 2, 'economy,markets,finance');
         $technology = $this->createCategory('Technology', null, 3, 'tech,innovation,startups');
         $sports     = $this->createCategory('Sports', null, 4, 'football,cricket,basketball');

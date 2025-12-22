@@ -17,7 +17,8 @@
                   <!-- Event Title -->
                   <div class="form-group">
                     <label>Event Title</label>
-                    <input v-model="form.title" @input="form.slug = generateSlug(form.title)" type="text" class="form-control" required />
+                    <input v-model="form.title" @input="form.slug = generateSlug(form.title)" type="text"
+                      class="form-control" required />
                   </div>
 
                   <!-- Slug -->
@@ -45,7 +46,13 @@
                 <div class="col-md-4">
                   <!-- File Upload -->
                   <div class="form-group">
-                    <label>Upload File (Image/PDF)</label>
+                    <label>Upload Featured Image</label>
+                    <Vue3Dropzone v-model="imageUpload" v-model:previews="previewsImage" mode="edit"
+                      :allowSelectOnPreview="true" />
+                  </div>
+                  <!-- File Upload -->
+                  <div class="form-group">
+                    <label>Upload Banner Image</label>
                     <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
                       :allowSelectOnPreview="true" />
 
@@ -64,7 +71,14 @@
                       </div>
                     </div>
                   </div>
-
+                  <!-- Type -->
+                  <div class="form-group">
+                    <label>Event Type</label>
+                    <select v-model="form.type" class="custom-select">
+                      <option value="1">Running</option>
+                      <option value="0">Upcoming</option>
+                    </select>
+                  </div>
                   <!-- Status -->
                   <div class="form-group">
                     <label>Status</label>
@@ -106,6 +120,7 @@ const route = useRoute();
 const router = useRouter();
 // const eventId = route.params.id;
 const previews = ref([]);
+const previewsImage = ref([]);
 const previewsPdf = ref([]);
 const categories = ref([]);
 const isPdf = (filename) => /\.pdf$/i.test(filename);
@@ -115,14 +130,17 @@ const form = reactive({
   title: '',
   slug: '',
   description: '',
-  file: '',
+  banner_image: '',
+  featured_image: '',
   event_category_id: '',
   status: '1',
   createdBy: 1,
+  type: 0,
   updatedBy: null
 });
 
 const fileUpload = ref(null);
+const imageUpload = ref(null);
 
 
 const categoriesOptions = computed(() => {
@@ -139,10 +157,11 @@ const fetchEvent = async () => {
   try {
     const res = await axios.get(`/api/events/${route.params.slug}`);
     Object.assign(form, res.data.data);
-    if (form.file && !isPdf(form.file)) {
-      previews.value = [getImageUrl(form.file)];
-    } else if (form.file && isPdf(form.file)) {
-      previewsPdf.value = [getImageUrl(form.file)];
+    if (form.banner_image) {
+      previews.value = [getImageUrl(form.banner_image)];
+    }
+    if (form.featured_image) {
+      previewsImage.value = [getImageUrl(form.featured_image)];
     }
     // console.log({form})
   } catch (err) {
@@ -166,14 +185,16 @@ const updateEvent = async () => {
   const payload = new FormData();
 
   for (const key in form) {
-    if (key !== 'file') {
+    if (key != 'banner_image' && key != 'featured_image') {
       payload.append(key, form[key]);
     }
   }
   if (fileUpload.value && fileUpload.value[0]) {
-    payload.append('file', fileUpload.value[0].file);
+    payload.append('banner_image', fileUpload.value[0].file);
   }
-
+  if (imageUpload.value && imageUpload.value[0]) {
+    payload.append('featured_image', imageUpload.value[0].file);
+  }
   try {
     await axios.post(`/api/events/${form.id}?_method=PUT`, payload, {
       headers: { 'Content-Type': 'multipart/form-data' }

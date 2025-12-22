@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class GalleryDetail extends Model
 {
     protected $guarded = ['id'];
-    
+
 
     public function gallery()
     {
