@@ -64,10 +64,8 @@
         @if (request()->route()->getName() != 'home')
             <!-- Breadcrumb Section Start -->
             <section class="breadcrumb position-relative">
-                <img class="img-fluid" draggable="false" src="{{ asset('storage/web/about/breadcrumb.png') }}"
-                    alt="">
-                <img class="position-absolute bottom-0 w-100" draggable="false"
-                    src="{{ asset('storage/web/about/breadcrumb-gradient.png') }}" alt="">
+                <img class="img-fluid" draggable="false"
+                    src="{{ getImageCacheUrl($settings['breadcrumb'], 1351, 300) }}" alt="">
                 <h6 class="page-title title-one position-absolute text-capitalize">@yield('breadcrumb')</h6>
             </section>
         @endif

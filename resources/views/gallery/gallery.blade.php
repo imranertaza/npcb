@@ -28,24 +28,6 @@
         </div>
         <div class=" text-center mt-60">
             {{ $gallery->links() }}
-            {{-- <nav class="mt-60">
-                <ul class="pagination custom-pagination justify-content-center">
-                    <li class="page-item">
-                        <a class="page-link active" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link text-page" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link text-page" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link arrow-page" href="#">
-                            →
-                    </a>
-                    </li>
-                </ul>
-            </nav> --}}
         </div>
     </section>
     {{-- Event Gallery section End  --}}

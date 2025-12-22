@@ -79,6 +79,7 @@ const routes = [
     { path: "/", name: "home", component: Home },
     {
         path: "/admin",
+        redirect: "/admin/dashboard",
         children: [
             { path: "login", name: "AdminLogin", component: AdminLogin },
             {
@@ -86,13 +87,16 @@ const routes = [
                 prefix: "admin",
                 component: AdminLayout,
                 meta: { requiresAuth: true, role: "admin" },
+
                 children: [
+
                     {
                         path: "",
                         name: "Dashboard",
                         component: Dashboard,
                         meta: { permission: "view-dashboard" },
                     },
+
                     {
                         path: "admin-profile",
                         name: "adminProfile",

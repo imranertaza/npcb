@@ -49,8 +49,8 @@
                                     <div class="form-group">
                                         <label>Upload Thumbnail</label>
                                         <div v-if="form.thumb" class="mb-2">
-                                            <img :src="getImageUrl(form.thumb)" alt="Gallery Thumb" height="80"
-                                                class="rounded" />
+                                            <img :src="getImageCacheUrl(form.thumb, 80, 80)" alt="Gallery Thumb"
+                                                height="80" class="rounded" />
                                         </div>
                                         <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
                                             :allowSelectOnPreview="true" />
@@ -73,13 +73,13 @@
                         <div class="row" v-if="form.details?.length > 0">
                             <div v-for="detail in form.details" :key="detail.id" class="col-md-3 mb-3">
                                 <div class="card h-100 shadow-sm">
-                                    <img v-if="detail.image" :src="getImageUrl(detail.image)"
+                                    <img v-if="detail.image" :src="getImageCacheUrl(detail.image,252,200)"
                                         :alt="detail.alt_name || form.name" class="card-img-top object-fit-cover"
                                         height="200" />
                                     <div class="card-body pt-0">
                                         <div class="d-flex justify-content-between mt-2">
                                             <small class="d-block text-muted">{{ detail.alt_name || 'No alt text'
-                                            }}</small>
+                                                }}</small>
                                             <div class="btn-group" role="group">
                                                 <button class="btn btn-sm btn-outline-info"
                                                     @click="openEditModal(detail)">
@@ -169,7 +169,7 @@ import { ref, reactive, onMounted, inject } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import { getImageUrl } from '@/layouts/helpers/helpers';
+import { getImageUrl,getImageCacheUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { useToast } from '@/composables/useToast';

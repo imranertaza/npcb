@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="">
-            <img class="img-fluid" src="{{ getImageCacheUrl($event->banner_image,1140,375) }}" alt="">
+            <img class="img-fluid" src="{{ getImageCacheUrl($event->banner_image, 1140, 375) }}" alt="">
         </div>
         <div class="text-start text-dark-emphasis mt-40">
             {!! $event->description !!}
@@ -40,8 +40,6 @@
     </section>
     {{-- About section End --}}
     @push('styles')
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
-
         <style>
             .upcoming-event-card img {
                 height: 392px;
@@ -101,10 +99,6 @@
         </style>
     @endpush
     @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
-
         <script>
             $(document).ready(function() {
                 lightbox.option({

@@ -27,7 +27,7 @@
                   <td class="align-middle">{{ index + 1 }}</td>
                   <td class="align-middle">{{ truncateText(gallery.name, 25) }}</td>
                   <td class="align-middle">
-                    <img v-if="gallery.thumb" :src="getImageUrl(gallery.thumb)" alt="Gallery Thumb" height="50"
+                    <img v-if="gallery.thumb" :src="getImageCacheUrl(gallery.thumb,100,100)" alt="Gallery Thumb" height="50"
                       class="rounded" />
                   </td>
                   <td class="align-middle">{{ truncateText(gallery.alt_name, 40) }}</td>
@@ -64,7 +64,7 @@
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
-import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
+import { getImageCacheUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import axios from 'axios';
 import { inject, onMounted, ref } from 'vue';

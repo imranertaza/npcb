@@ -36,6 +36,7 @@ Route::controller(FrontendController::class)->group(function () {
         return redirect($url);
     })->where('path', '.*');
 });
+Route::get('/admin', function () {return redirect('/admin/dashboard');});
 Route::get('admin/{any}', function () {
     return view('welcome');
 })->where('any', '.*');

@@ -11,7 +11,7 @@
             @endphp
             @if ($member1)
                 <div class="profile-card top d-inline-block">
-                    <img draggable="false" src="{{ getImageUrl($member1->image) }}" alt="{{ $member1->name }}">
+                    <img draggable="false" src="{{ getImageCacheUrl($member1->image, 265, 379) }}" alt="{{ $member1->name }}">
                     <div class="card-body">
                         <p class="mb-0 name content-text">{{ $member1->name }}</p>
                         <p class="profession content-text">{{ $member1->designation }}</p>
@@ -27,7 +27,8 @@
                 @endif
                 <div>
                     <div class="profile-card">
-                        <img draggable="false" src="{{ getImageUrl($member->image) }}" alt="{{ $member->name }}">
+                        <img draggable="false" src="{{ getImageCacheUrl($member->image, 265, 379) }}"
+                            alt="{{ $member->name }}">
                         <div class="card-body">
                             <p class="mb-0 name content-text">{{ $member->name }}</p>
                             <p class="profession content-text">{{ $member->designation }}</p>
@@ -48,7 +49,7 @@
                 margin-top: -8%;
             }
 
-            
+
             .profile-card {
                 width: 265px;
                 padding: 0px !important;

@@ -28,7 +28,7 @@ class FrontendController extends Controller
         $upcomingEvent        = Event::orderBy("created_at", "desc")->where('status', "1")->where('type', 0)->paginate(15);
         $about_mission_vision = Section::where('name', 'about_mission_vision')->first();
         $blogs                = Blog::where('status', "1")->latest()->paginate(7);
-        $topNews              = News::latest()->paginate(5);
+        $topNews              = News::where('status',1)->latest()->paginate(5);
         $gamesNews            = News::getGamesNews();
         $slides               = Slider::where('key', 'banner_section')->where('enabled', 1)->get();
 

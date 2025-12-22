@@ -58,7 +58,7 @@
                                         class="rounded" />
                                 </div>
                                 <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
-                                <small class="text-muted">Recommended: 1140 × 375px</small>
+                                <small class="text-muted">Recommended: 1140 × 586px</small>
                             </div>
 
                             <!-- Alt Name -->

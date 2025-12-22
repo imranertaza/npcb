@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
@@ -16,66 +15,66 @@ class SettingsController extends Controller
         return ApiResponse::success(Setting::all(), 'Settings retrieved successfully');
     }
 
-
     public function update(Request $request)
     {
         $validated = $request->validate([
             // Store Info
-            'address'          => 'sometimes|string|max:255',
-            'email'            => 'sometimes|email|max:155',
-            'phone'            => 'sometimes|string|max:50',
-            'state'            => 'sometimes|string|max:50',
+            'address'             => 'sometimes|string|max:255',
+            'email'               => 'sometimes|email|max:155',
+            'phone'               => 'sometimes|string|max:50',
+            'state'               => 'sometimes|string|max:50',
 
             // File Uploads (now including OG and Twitter images)
-            'store_logo'       => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
-            'store_icon'       => 'sometimes|file|mimes:png,jpg,jpeg,ico,webp|max:2048',
-            'footer_logo'      => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
-            'og_image'         => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x630
-            'twitter_image'    => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x628
+            'store_logo'          => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'store_icon'          => 'sometimes|file|mimes:png,jpg,jpeg,ico,webp|max:2048',
+            'footer_logo'         => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'breadcrumb'          => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'og_image'            => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x630
+            'twitter_image'       => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x628
 
             // Mail Settings
-            'mail_protocol'    => 'sometimes|in:smtp,mail,sendmail',
-            'mail_address'     => 'sometimes|email|max:155',
-            'smtp_host'        => 'sometimes|string|max:155',
-            'smtp_username'    => 'sometimes|string|max:155',
-            'smtp_password'    => 'sometimes|string|max:255',
-            'smtp_port'        => 'sometimes|numeric|between:1,65535',
-            'smtp_timeout'     => 'sometimes|numeric|between:1,300',
-            'smtp_crypto'      => 'sometimes|in:ssl,tls,""',
+            'mail_protocol'       => 'sometimes|in:smtp,mail,sendmail',
+            'mail_address'        => 'sometimes|email|max:155',
+            'smtp_host'           => 'sometimes|string|max:155',
+            'smtp_username'       => 'sometimes|string|max:155',
+            'smtp_password'       => 'sometimes|string|max:255',
+            'smtp_port'           => 'sometimes|numeric|between:1,65535',
+            'smtp_timeout'        => 'sometimes|numeric|between:1,300',
+            'smtp_crypto'         => 'sometimes|in:ssl,tls,""',
 
             // Social
-            'fb_url'           => 'sometimes|url|max:255',
-            'twitter_url'      => 'sometimes|url|max:255',
-            'linkedin_url'     => 'sometimes|url|max:255',
-            'instagram_url'    => 'sometimes|url|max:255',
+            'fb_url'              => 'sometimes|url|max:255',
+            'twitter_url'         => 'sometimes|url|max:255',
+            'linkedin_url'        => 'sometimes|url|max:255',
+            'instagram_url'       => 'sometimes|url|max:255',
 
             // SEO Basics
-            'meta_title'       => 'sometimes|string|max:155',
-            'meta_keyword'     => 'sometimes|string|max:255',
-            'meta_description' => 'sometimes|string|max:500',
-            'meta_author'      => 'sometimes|string|max:155',
-            'meta_news_keywords' => 'sometimes|string|max:255',
+            'meta_title'          => 'sometimes|string|max:155',
+            'meta_keyword'        => 'sometimes|string|max:255',
+            'meta_description'    => 'sometimes|string|max:500',
+            'meta_author'         => 'sometimes|string|max:155',
+            'meta_news_keywords'  => 'sometimes|string|max:255',
 
             // Open Graph (non-file fields)
-            'og_type'            => 'sometimes|string|max:50',
-            'og_title'           => 'sometimes|string|max:255',
-            'og_description'     => 'sometimes|string|max:500',
-            'og_image_width'     => 'sometimes|numeric',
-            'og_image_height'    => 'sometimes|numeric',
+            'og_type'             => 'sometimes|string|max:50',
+            'og_title'            => 'sometimes|string|max:255',
+            'og_description'      => 'sometimes|string|max:500',
+            'og_image_width'      => 'sometimes|numeric',
+            'og_image_height'     => 'sometimes|numeric',
 
             // Twitter Card (non-file fields)
-            'twitter_card'       => 'sometimes|string|max:50',
-            'twitter_title'      => 'sometimes|string|max:255',
+            'twitter_card'        => 'sometimes|string|max:50',
+            'twitter_title'       => 'sometimes|string|max:255',
             'twitter_description' => 'sometimes|string|max:500',
-            'twitter_domain'     => 'sometimes|url|max:255',
+            'twitter_domain'      => 'sometimes|url|max:255',
 
             // Brand
-            'brand_name'         => 'sometimes|string|max:255',
+            'brand_name'          => 'sometimes|string|max:255',
 
             // reCAPTCHA
-            'use_recaptcha'     => 'sometimes|nullable|numeric|between:0,1',
-            'nocaptcha_sitekey' => 'sometimes|string|max:255',
-            'nocaptcha_secret'  => 'sometimes|string|max:255',
+            'use_recaptcha'       => 'sometimes|nullable|numeric|between:0,1',
+            'nocaptcha_sitekey'   => 'sometimes|string|max:255',
+            'nocaptcha_secret'    => 'sometimes|string|max:255',
         ]);
 
         $updated = [];
@@ -95,7 +94,7 @@ class SettingsController extends Controller
                     $value = $value ? 'true' : 'false';
                 }
 
-                if ($current !== (string)$value) {
+                if ($current !== (string) $value) {
                     // Only update if changed
                     $this->setEnvValue($envKey, $value);
                     $updated[$label] = $value;
@@ -118,13 +117,13 @@ class SettingsController extends Controller
                 }
 
                 $filename = $label . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('settings', $filename, 'public');
+                $path     = $file->storeAs('settings', $filename, 'public');
                 $newValue = $path;
             } else {
                 $newValue = $value;
             }
 
-            $setting->value = $newValue;
+            $setting->value     = $newValue;
             $setting->updatedBy = Auth::id();
             $setting->save();
 
