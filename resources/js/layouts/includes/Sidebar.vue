@@ -3,7 +3,7 @@
       <!-- Brand Logo -->
       <router-link :to="{ name: 'Dashboard' }" class="brand-link">
         <img :src="adminLogo" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">{{ appName }}</span>
       </router-link>
 
       <!-- Sidebar -->
@@ -141,6 +141,38 @@
                 </li>
               </ul>
             </li>
+
+            <!-- Frontend -->
+            <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')"
+              :class="{ 'menu-is-opening menu-open': isActiveMenu(['Slider', 'Sections']) }">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-desktop"></i>
+                <p>
+                  Frontend
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <!-- Slider -->
+                <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')">
+                  <router-link :to="{ name: 'Sliders' }" :class="{ active: isRouteActive({ name: 'Sliders' }) }"
+                    class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Slider</p>
+                  </router-link>
+                </li>
+
+                <!-- Sections -->
+                <li class="nav-item" v-if="authStore.hasPermission('manage-frontend')">
+                  <router-link :to="{ name: 'Sections' }" :class="{ active: isRouteActive({ name: 'Sections' }) }"
+                    class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Sections</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+
             <!-- Settings -->
             <li class="nav-item" v-if="authStore.hasPermission('view-settings')"
               :class="{ 'menu-is-opening menu-open': isActiveMenu(['GeneralSettings']) }">
@@ -157,8 +189,8 @@
                   </router-link>
                 </li>
                 <li class="nav-item" v-if="authStore.hasPermission('update-settings')">
-                  <router-link :to="{ name: 'MenuManager' }"
-                    :class="{ active: isRouteActive({ name: 'MenuManager' }) }" class="nav-link">
+                  <router-link :to="{ name: 'MenuManager' }" :class="{ active: isRouteActive({ name: 'MenuManager' }) }"
+                    class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Menu Settings</p>
                   </router-link>
@@ -227,4 +259,9 @@ const initTreeview = () => {
 onMounted(() => {
   initTreeview();
 });
+
+defineProps({
+  id: ['string', 'number'],
+})
+
 </script>

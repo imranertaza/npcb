@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('category_name', 255);
             $table->text('description')->nullable();

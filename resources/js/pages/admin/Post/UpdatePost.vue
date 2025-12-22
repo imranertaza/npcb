@@ -84,8 +84,14 @@
 
                   <!-- Image Upload -->
                   <div class="form-group">
-                    <label>Upload Image</label>
+                    <label>Upload Banner Image</label>
                     <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
+                      :allowSelectOnPreview="true" />
+                  </div>
+                  <!-- Featured Image Upload -->
+                  <div class="form-group">
+                    <label>Upload Featured Image</label>
+                    <Vue3Dropzone v-model="fImageFile" v-model:previews="f_previews" mode="edit"
                       :allowSelectOnPreview="true" />
                   </div>
 
@@ -139,6 +145,9 @@ const route = useRoute();
 const router = useRouter();
 const postSlug = route.params.slug;
 const previews = ref();
+const f_previews = ref();
+
+
 
 const form = reactive({
   post_title: '',
@@ -146,6 +155,7 @@ const form = reactive({
   short_des: '',
   description: '',
   image: '',
+  f_image: '',
   alt_name: '',
   publish_date: '',
   status: '1',
@@ -158,6 +168,9 @@ const form = reactive({
 });
 
 const imageFile = ref(null);
+const fImageFile = ref(null);
+
+
 
 const fetchPost = async () => {
   try {
@@ -166,6 +179,7 @@ const fetchPost = async () => {
 
     form.categories = res.data.data.categories.map(c => c.id);
     previews.value = [getImageUrl(form.image)];
+    f_previews.value = [getImageUrl(form.f_image)];
 
   } catch (err) {
     toast.error('Failed to load post');

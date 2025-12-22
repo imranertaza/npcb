@@ -17,14 +17,15 @@ class SettingsSeeder extends Seeder
 
         $settings = [
             // General
-           
+
             ['label' => 'address', 'title' => 'Address', 'value' => '121 King St, Melbourne VIC 3000, United Kingdom', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'email', 'title' => 'Email', 'value' => 'stylemint@gmail.com', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'phone', 'title' => 'Phone', 'value' => '01714070770', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'state', 'title' => 'State', 'value' => '322', 'createdBy' => $userId, 'updatedBy' => $userId],
             // Branding
-            ['label' => 'store_logo', 'title' => 'Store Logo', 'value' => 'logo.png', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'store_icon', 'title' => 'Store Icon', 'value' => 'favicon.png', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'store_logo', 'title' => 'Store Logo', 'value' => 'settings/store_logo_1765197887_6936c83f8814c.png', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'store_icon', 'title' => 'Store Icon', 'value' => 'settings/store_icon_1765195985_6936c0d12bdaf.png', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'footer_logo', 'title' => 'Footer Logo', 'value' => 'settings/footer_logo_1765197832_6936c80849598.svg', 'createdBy' => $userId, 'updatedBy' => $userId],
 
             // Mail settings
             ['label' => 'mail_protocol', 'title' => 'Mail Protocol', 'value' => 'smtp', 'createdBy' => $userId, 'updatedBy' => $userId],
@@ -37,10 +38,10 @@ class SettingsSeeder extends Seeder
             ['label' => 'smtp_crypto', 'title' => 'SMTP Crypto', 'value' => 'ssl', 'createdBy' => $userId, 'updatedBy' => $userId],
 
             // Social links
-            ['label' => 'fb_url', 'title' => 'Facebook', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'twitter_url', 'title' => 'Twitter', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'linkedin_url', 'title' => 'Linkedin', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'instagram_url', 'title' => 'Instagram', 'value' => '#', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'fb_url', 'title' => 'Facebook', 'value' => 'https://www.facebook.com/', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'twitter_url', 'title' => 'Twitter', 'value' => 'https://twitter.com/', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'linkedin_url', 'title' => 'Linkedin', 'value' => 'https://www.linkedin.com/', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'instagram_url', 'title' => 'Instagram', 'value' => 'https://www.instagram.com/', 'createdBy' => $userId, 'updatedBy' => $userId],
             // SEO
             ['label' => 'meta_title', 'title' => 'Meta Title', 'value' => 'Style mint', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'meta_keyword', 'title' => 'Meta Keyword', 'value' => 'Style mint', 'createdBy' => $userId, 'updatedBy' => $userId],

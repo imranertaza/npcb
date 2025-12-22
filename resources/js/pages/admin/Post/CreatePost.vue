@@ -81,10 +81,14 @@
                       </div>
                     </div>
                   </div>
-                  <!-- Image & Alt -->
+                  <!-- Banner Image & Alt -->
                   <div class="form-group">
-                    <label>Upload Image</label>
+                    <label>Upload Banner Image</label>
                     <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                  </div>
+                  <div class="form-group">
+                    <label>Upload Featured Image</label>
+                    <Vue3Dropzone v-model="fImageFile" :allowSelectOnPreview="true" />
                   </div>
                   <div class="form-group">
                     <label>Alt Name</label>
@@ -126,6 +130,7 @@ import { generateSlug } from '../../../layouts/helpers/helpers';
 
 const toast = useToast();
 const imageFile = ref(null);
+const fImageFile = ref(null);
 
 
 const form = reactive({
@@ -140,6 +145,7 @@ const form = reactive({
   meta_keyword: '',
   meta_description: '',
   image: null,
+  f_image: null,
   categories: []
 });
 
@@ -162,7 +168,7 @@ const submitPost = async () => {
 
   // Append form fields
   for (const key in form) {
-    if (key !== 'image') {
+    if (key !== 'image' && key !== 'f_image') {
       payload.append(key, form[key]);
     }
   }
@@ -170,6 +176,14 @@ const submitPost = async () => {
   if (imageFile.value && imageFile.value[0]) {
     payload.append('image', imageFile.value[0].file);
   }
+  // Append featured image file from Dropzone
+  if (fImageFile.value && fImageFile.value[0]) {
+    payload.append('f_image', fImageFile.value[0].file);
+  }
+  form.categories.forEach(catId => {
+    payload.append('categories[]', catId);
+  });
+
   try {
     const response = await axios.post('/api/posts', payload, {
       headers: { 'Content-Type': 'multipart/form-data' }

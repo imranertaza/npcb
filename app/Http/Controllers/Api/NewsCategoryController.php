@@ -8,6 +8,7 @@ use App\Models\NewsCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class NewsCategoryController extends Controller
 {
@@ -63,6 +64,8 @@ class NewsCategoryController extends Controller
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
+
+        $validated['slug'] = Str::slug($validated['category_name']);
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('news_categories', 'public');

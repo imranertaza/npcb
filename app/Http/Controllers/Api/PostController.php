@@ -49,11 +49,12 @@ class PostController extends Controller
             'meta_keyword' => 'nullable|string',
             'meta_description' => 'nullable|string',
             'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name' => 'nullable|string|max:255',
             'publish_date' => 'nullable|date',
             'status' => ['required', Rule::in(['0', '1'])],
             'categories' => 'required|array',
-            'categories.*' => 'exists:news_categories,id',
+            'categories.*' => 'exists:categories,id',
         ]);
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
@@ -61,6 +62,10 @@ class PostController extends Controller
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('posts', 'public');
         }
+        if ($request->hasFile('f_image')) {
+            $validated['f_image'] = $request->file('f_image')->store('posts', 'public');
+        }
+
 
         $post = Post::create($validated);
 
@@ -87,6 +92,7 @@ class PostController extends Controller
             'meta_keyword' => 'nullable|string',
             'meta_description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name' => 'nullable|string|max:255',
             'status' => ['required', Rule::in(['0', '1'])],
             'categories' => 'required|array',
@@ -100,6 +106,16 @@ class PostController extends Controller
             if ($post->image && Storage::disk('public')->exists($post->image)) {
                 Storage::disk('public')->delete($post->image);
             }
+            if ($request->hasFile('f_image')) {
+                // Delete old image if exists
+                if ($post->f_image && Storage::disk('public')->exists($post->f_image)) {
+                    Storage::disk('public')->delete($post->f_image);
+                }
+                // Store new image
+                $validated['f_image'] = $request->file('f_image')->store('posts', 'public');
+            }
+
+
 
             // Store new image
             $validated['image'] = $request->file('image')->store('posts', 'public');
@@ -134,6 +150,9 @@ class PostController extends Controller
         // Delete image from storage if it exists
         if ($post->image && Storage::disk('public')->exists($post->image)) {
             Storage::disk('public')->delete($post->image);
+        }
+        if ($post->f_image && Storage::disk('public')->exists($post->f_image)) {
+            Storage::disk('public')->delete($post->f_image);
         }
 
         $post->delete();

@@ -1,5 +1,5 @@
 <template>
-  <DashboardHeader title="Manage Notice">
+  <DashboardHeader title="Manage Sections">
     <div class="d-flex justify-content-end">
       <SearchBox @search="onSearch" />
     </div>
@@ -8,145 +8,165 @@
   <section>
     <div class="row">
       <div class="col-md-12">
-        <div v-if="notices?.data?.length === 0" class="alert alert-info">No notices found.</div>
+        <!-- Empty State -->
+        <div v-if="!sections || sections?.data?.length === 0" class="alert alert-info">
+          No sections found.
+        </div>
 
+        <!-- Table -->
         <div v-else>
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
               <thead class="thead-light">
                 <tr class="align-middle">
                   <th style="width: 10px">#</th>
+                  <th>Section Name</th>
                   <th>Title</th>
-                  <th>File</th>
-                  <th v-if="authStore.hasPermission('edit-notices')">Status</th>
+                  <th>Has Image</th>
+                  <th>Preview</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(notice, index) in notices?.data" :key="notice.id">
-                  <td class="align-middle">{{ index + 1 }}</td>
-                  <td class="align-middle">{{ truncateText(notice.title, 20) }}</td>
+                <tr v-for="(section, index) in sections?.data" :key="section.id">
+                  <td class="align-middle">{{ index + 1 + (sections.current_page - 1) * sections.per_page }}</td>
                   <td class="align-middle">
-                    <a v-if="notice.file" :href="getImageUrl(notice.file)" target="_blank" class="btn btn-sm btn-outline-primary">
-                      View File
-                    </a>
-                  </td>
-                  <td v-if="authStore.hasPermission('edit-notices')" class="align-middle">
-                    <select v-model="notice.status" @change="updateStatus(notice)" class="custom-select"
-                      :class="notice.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
-                      <option :value="1">Active</option>
-                      <option :value="0">Inactive</option>
-                    </select>
+                    <code class="bg-light px-2 py-1 rounded">{{ section.name }}</code>
                   </td>
                   <td class="align-middle">
-                    <div class="d-flex">
-                      <router-link v-if="authStore.hasPermission('view-notices')"
-                        :to="{ name: 'ShowNotice', params: { slug: notice.slug } }"
-                        class="btn btn-sm btn-outline-dark">
+                    {{ truncateText(section.data.title || '—', 40) }}
+                  </td>
+                  <td class="align-middle text-center">
+                    <i :class="section.data.image ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
+                  </td>
+                  <td class="align-middle">
+                    <button v-if="section.data.image" @click="previewImage(getImageUrl(section.data.image))"
+                      class="btn btn-sm btn-outline-primary">
+                      <i class="fas fa-image"></i> Preview
+                    </button>
+                    <span v-else class="text-muted">—</span>
+                  </td>
+                  <td class="align-middle">
+                    <div class="d-flex gap-2">
+                      <!-- Edit -->
+                      <!-- Edit Sliders -->
+
+                      <router-link v-if="authStore.hasPermission('manage-frontend') && section.name != 'banner_section'"
+                        :to="{ name: 'UpdateSection', params: { id: section.id } }" class="btn btn-sm btn-outline-info"
+                        title="Edit">
                         <i class="fas fa-eye"></i>
                       </router-link>
-                      <router-link v-if="authStore.hasPermission('edit-notices')"
-                        :to="{ name: 'UpdateNotice', params: { slug: notice.slug } }"
-                        class="ml-2 btn btn-sm btn-outline-info">
-                        <i class="fas fa-pencil-alt"></i>
+
+                      <!-- Edit Sliders -->
+                      <router-link v-if="authStore.hasPermission('manage-frontend') && section.name == 'banner_section'"
+                        :to="{ name: 'UpdateSectionSliders', params: { id: section.id } }" class="btn btn-sm btn-outline-info"
+                        title="Edit Sliders">
+                        <i class="fas fa-eye"></i>
                       </router-link>
-                      <button v-if="authStore.hasPermission('delete-notices')"
-                        class="ml-2 btn btn-sm btn-outline-danger"
-                        @click="confirmDelete(notice)">
+
+                      <!-- Delete (optional - you can enable later) -->
+                      <!--
+                      <button
+                        v-if="authStore.hasPermission('delete-sections')"
+                        @click="confirmDelete(section)"
+                        class="btn btn-sm btn-outline-danger"
+                        title="Delete"
+                      >
                         <i class="fas fa-trash-alt"></i>
                       </button>
+                      -->
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <Pagination :pData="notices" @page-change="fetchPage" />
+
+          <!-- Pagination -->
+          <Pagination :pData="sections" @page-change="fetchPage" />
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Image Preview Modal -->
+  <div v-if="previewUrl" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.8);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Image Preview</h5>
+          <button type="button" class="close" @click="previewUrl = null">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <img :src="previewUrl" class="img-fluid" style="max-height: 80vh;" alt="Preview" />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import { inject, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import SearchBox from '@/components/SearchBox.vue';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
 import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
-import SearchBox from '@/components/SearchBox.vue';
 
 const router = useRouter();
 const route = useRoute();
-const notices = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
-const $swal = inject('$swal');
 
-// Fetch notices with pagination + search
-const fetchPage = async (page = 1, term = "") => {
+const sections = ref([]);
+const previewUrl = ref(null);
+
+// Fetch sections with pagination + search
+const fetchPage = async (page = 1, term = '') => {
   try {
-    const res = await axios.get(`/api/notices?page=${page}&search=${term || ''}`);
-    notices.value = res.data.data;
+    const res = await axios.get(`/api/sections`);
+    sections.value = res.data.data;
   } catch (error) {
     console.error(error);
-    toast.error('Failed to load notices.');
+    toast.error('Failed to load sections.');
   }
 };
 
-const onSearch = async (term) => {
+const onSearch = (term) => {
   fetchPage(1, term);
+};
+
+const previewImage = (url) => {
+  previewUrl.value = url;
 };
 
 onMounted(() => {
   fetchPage();
+
   if (route.query.toast) {
     toast.success(route.query.toast);
     setTimeout(() => {
       const q = { ...route.query };
       delete q.toast;
+
       router.replace({ query: q });
     }, 2000);
   }
 });
-
-// Update notice status
-const updateStatus = async (notice) => {
-  try {
-    const response = await axios.patch(`/api/notices/${notice.slug}/toggle-status`);
-    notice.status = response.data.status;
-    toast.success(response.data.message);
-  } catch (error) {
-    toast.error('Failed to update status');
-    console.error(error);
-  }
-};
-
-// Delete notice
-const confirmDelete = async (notice) => {
-  const result = await $swal({
-    title: `Delete "${notice.title}"?`,
-    text: 'This action cannot be undone.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete',
-    cancelButtonText: 'Cancel',
-    reverseButtons: true
-  });
-
-  if (result.isConfirmed) {
-    try {
-      await axios.delete(`/api/notices/${notice.slug}`);
-      toast.success('Notice deleted successfully!');
-      notices.value.data = notices.value.data.filter(n => n.id !== notice.id);
-    } catch (error) {
-      toast.validationError(error);
-    }
-  } else {
-    toast.info('Deletion cancelled.');
-  }
-};
 </script>
+
+<style scoped>
+code {
+  font-size: 0.85em;
+}
+
+.modal {
+  display: block;
+}
+</style>

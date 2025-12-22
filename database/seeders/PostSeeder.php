@@ -19,7 +19,7 @@ class PostSeeder extends Seeder
 
         for ($i = 1; $i <= 20; $i++) {
             $title = $faker->sentence(6);
-            Post::create([
+            Post::updateOrCreate(["post_title"=> $title], [
                 'post_title'       => $title,
                 'slug'             => Str::slug($title),
                 'short_des'        => $faker->sentence(15),
@@ -28,9 +28,10 @@ class PostSeeder extends Seeder
                 'meta_keyword'     => implode(', ', $faker->words(6)),
                 'meta_description' => $faker->sentence(20),
                 'image'            => 'https://placehold.co/1400x400',
+                'f_image'          => 'https://placehold.co/200x400',
                 'alt_name'         => $faker->words(3, true),
                 'publish_date'     => now()->subDays(rand(0, 30)),
-                'status'           => $faker->randomElement(['0', '1']),
+                'status'           => 1,
                 'createdBy'        => 1, // assuming admin ID = 1
                 'updatedBy'        => null,
             ]);

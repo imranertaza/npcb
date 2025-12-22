@@ -57,6 +57,13 @@ class RolePermissionSeeder extends Seeder
             'edit-news-categories',
             'delete-news-categories',
 
+
+            // ✅ Blog Categories CRUD
+            'view-blog-categories',
+            'create-blog-categories',
+            'edit-blog-categories',
+            'delete-blog-categories',
+
             // ✅ Galleries CRUD
             'view-galleries',
             'create-galleries',
@@ -95,9 +102,20 @@ class RolePermissionSeeder extends Seeder
             'delete-news',
             'publish-news',
 
+            // ✅ Blog
+            'view-blog',
+            'create-blog',
+            'edit-blog',
+            'delete-blog',
+            'publish-blog',
+
             // Settings
             'view-settings',
             'update-settings',
+
+            // Section
+            'manage-frontend',
+            'manage-committee-members',
 
             'manage-menus',
 
@@ -157,6 +175,12 @@ class RolePermissionSeeder extends Seeder
                         'edit-news-categories',
                         'delete-news-categories',
 
+                        // ✅ News Categories CRUD
+                        'view-blog-categories',
+                        'create-blog-categories',
+                        'edit-blog-categories',
+                        'delete-blog-categories',
+
                         // ✅ Results CRUD
                         'view-results',
                         'create-results',
@@ -195,6 +219,17 @@ class RolePermissionSeeder extends Seeder
                         'delete-news',
                         'publish-news',
 
+                        // ✅ News
+                        'view-blog',
+                        'create-blog',
+                        'edit-blog',
+                        'delete-blog',
+                        'publish-blog',
+
+
+                        'manage-frontend',
+                        'manage-committee-members',
+
                         // Settings
                         'view-settings',
                         'update-settings',
@@ -230,6 +265,11 @@ class RolePermissionSeeder extends Seeder
                         'create-news-categories',
                         'edit-news-categories',
 
+                        // ✅ News Categories (editor can manage but not delete)
+                        'view-blog-categories',
+                        'create-blog-categories',
+                        'edit-blog-categories',
+
                         // ✅ Galleries (editor can manage but not delete)
                         'view-galleries',
                         'create-galleries',
@@ -257,6 +297,12 @@ class RolePermissionSeeder extends Seeder
                         'edit-news',
                         'delete-news',
 
+                        // ✅ News
+                        'view-blog',
+                        'create-blog',
+                        'edit-blog',
+                        'delete-blog',
+
                         // ✅ Results CRUD
                         'view-results',
                         'create-results',
@@ -275,6 +321,7 @@ class RolePermissionSeeder extends Seeder
                         'view-settings',
 
                         'view-news-categories',
+                        'view-blog-categories',
 
                         'view-galleries',
 
@@ -287,6 +334,8 @@ class RolePermissionSeeder extends Seeder
 
                         // ✅ News
                         'view-news',
+                        // ✅ Blog
+                        'view-blog',
 
                         // ✅ Results CRUD
                         'view-results',

@@ -100,6 +100,66 @@ class MenuItemSeeder extends Seeder
                 'order'     => 3,
             ]
         );
+         MenuItem::updateOrCreate(
+            ['name' => 'Athletics'],
+            [
+                'menu_id'   => $headerMenu->id,
+                'parent_id' => $sports->id,
+                'name'      => 'Athletics',
+                'link_type' => 'url',
+                'url'       => '/post-categories/athletics',
+                'enabled'   => true,
+                'order'     => 1,
+            ]
+        );
+         MenuItem::updateOrCreate(
+            ['name' => 'Football'],
+            [
+                'menu_id'   => $headerMenu->id,
+                'parent_id' => $sports->id,
+                'name'      => 'Football',
+                'link_type' => 'url',
+                'url'       => '/post-categories/football',
+                'enabled'   => true,
+                'order'     => 2,
+            ]
+        );
+         MenuItem::updateOrCreate(
+            ['name' => 'Cricket'],
+            [
+                'menu_id'   => $headerMenu->id,
+                'parent_id' => $sports->id,
+                'name'      => 'Cricket',
+                'link_type' => 'url',
+                'url'       => '/post-categories/cricket',
+                'enabled'   => true,
+                'order'     => 3,
+            ]
+        );
+         MenuItem::updateOrCreate(
+            ['name' => 'Badminton'],
+            [
+                'menu_id'   => $headerMenu->id,
+                'parent_id' => $sports->id,
+                'name'      => 'Badminton',
+                'link_type' => 'url',
+                'url'       => '/post-categories/badminton',
+                'enabled'   => true,
+                'order'     => 4,
+            ]
+        );
+         MenuItem::updateOrCreate(
+            ['name' => 'Swimming'],
+            [
+                'menu_id'   => $headerMenu->id,
+                'parent_id' => $sports->id,
+                'name'      => 'Swimming',
+                'link_type' => 'url',
+                'url'       => '/post-categories/swimming',
+                'enabled'   => true,
+                'order'     => 5,
+            ]
+        );
         // Events & Fixtures dropdown
         $events = MenuItem::updateOrCreate(
             ['name' => 'Events & Fixtures'],

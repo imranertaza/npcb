@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\Api\AdminRoleController;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
+use App\Http\Controllers\Api\BlogCategoryController;
+use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CommitteeMemberController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\MediaController;
@@ -16,6 +19,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ResultController;
 use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\EventCategoryController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
@@ -65,11 +69,20 @@ Route::middleware('auth:user')->prefix('pages')->controller(PageController::clas
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-pages');
 });
 
-Route::prefix('sections')->middleware('auth:user')->controller(SectionController::class)->group(function () {
+Route::prefix('sections')->middleware(['auth:user', 'permission:manage-frontend'])->controller(SectionController::class)->group(function () {
     Route::get('/', 'index');
-    Route::get('{name}', 'show')->name('sections.show');
-    Route::post('{name}', 'update')->name('sections.update');
-    Route::post('{name}/key', 'updateKey')->name('sections.updateKey');
+    Route::get('{id}', 'show')->name('sections.show');
+    Route::put('{id}', 'update')->name('sections.update');
+    Route::put('/slider/{id}', 'updateSlider')->name('sections.updateSlider');
+    // Route::post('{id}/key', 'updateKey')->name('sections.updateKey');
+});
+Route::prefix('sliders')->middleware(['auth:user', 'permission:manage-frontend'])->controller(SliderController::class)->group(function () {
+    Route::get('/{key}', 'bannerSliders');
+    Route::get('/{id}/show', 'show');
+    Route::post('/', 'store');
+    Route::post('/{id}', 'update');
+    Route::patch('/{id}/toggle', 'toggle')->name('sliders.toggle');
+    Route::delete('/{id}', 'destroy');
 });
 
 Route::middleware('auth:user')->prefix('settings')->controller(SettingsController::class)->group(function () {
@@ -84,7 +97,7 @@ Route::prefix('categories')->middleware(['auth:user'])->controller(CategoryContr
     Route::prefix('{category}')->group(function () {
         Route::get('/', 'show')->middleware('permission:view-categories');
         Route::put('/', 'update')->middleware('permission:edit-categories');
-        Route::patch('/', 'updateStatus')->middleware('permission:edit-news-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-categories');
         Route::delete('/', 'destroy')->middleware('permission:delete-categories');
     });
 });
@@ -108,6 +121,27 @@ Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCate
         Route::put('/', 'update')->middleware('permission:edit-news-categories');
         Route::patch('/', 'updateStatus')->middleware('permission:edit-news-categories');
         Route::delete('/', 'destroy')->middleware('permission:delete-news-categories');
+    });
+});
+Route::middleware('auth:user')->prefix('blogs')->controller(BlogController::class)->group(function () {
+    Route::get('/', 'index')->middleware('permission:view-blog');
+    Route::post('/', 'store')->middleware('permission:create-blog');
+    Route::get('{slug}', 'show')->middleware('permission:view-blog');
+    Route::put('{id}', 'update')->middleware('permission:edit-blog');
+    Route::delete('{slug}', 'destroy')->middleware('permission:delete-blog');
+    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-blog');
+});
+
+
+Route::prefix('blog-categories')->middleware(['auth:user'])->controller(BlogCategoryController::class)->group(function () {
+    Route::get('/', 'index')->middleware('permission:view-blog-categories');
+    Route::post('/', 'store')->middleware('permission:create-blog-categories');
+
+    Route::prefix('{category}')->group(function () {
+        Route::get('/', 'show')->middleware('permission:view-blog-categories');
+        Route::put('/', 'update')->middleware('permission:edit-blog-categories');
+        Route::patch('/', 'updateStatus')->middleware('permission:edit-blog-categories');
+        Route::delete('/', 'destroy')->middleware('permission:delete-blog-categories');
     });
 });
 
@@ -187,6 +221,18 @@ Route::prefix('results')->middleware(['auth:user'])->controller(ResultController
     Route::patch('{slug}/toggle-status', 'toggleStatus')->name('results.toggle')->middleware('permission:edit-results');
     Route::delete('{slug}', 'destroy')->name('results.destroy')->middleware('permission:delete-results');
 });
+
+Route::prefix('committee-members')
+    ->middleware(['auth:user', 'permission:manage-committee-members'])
+    ->controller(CommitteeMemberController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('committee-members.index');
+        Route::post('/', 'store')->name('committee-members.store');
+        Route::get('{id}', 'show')->name('committee-members.show');
+        Route::put('{id}', 'update')->name('committee-members.update');
+        Route::patch('{id}/toggle-status', 'toggleStatus')->name('committee-members.toggle');
+        Route::delete('{id}', 'destroy')->name('committee-members.destroy');
+    });
 
 Route::middleware(['auth:user'])->get('templates', function () {
     $path = resource_path('views/layouts/frontend');

@@ -2,19 +2,15 @@
 
 @section('title', 'Home')
 @section('content')
-    @php
-        $bannerSection = App\Models\Section::where('name', 'banner_section')->first();
-        $slides = $bannerSection?->data['slides'] ?? [];
-    @endphp
+
     {{-- Banner section start --}}
     <section class="banner">
         <div class="swiper mySwiperBg">
             <div class="swiper-wrapper">
                 @foreach ($slides as $slide)
-                    @if ($slide['enabled'])
+                    @if ($slide->enabled)
                         <div class="swiper-slide justify-content-start">
-                            <img draggable="false" src="{{ asset('storage/web/banner/' . $slide['image']) }}"
-                                alt="{{ $slide['title'] }}">
+                            <img draggable="false" src="{{ getImageUrl($slide->image) }}" alt="{{ $slide->title }}">
                         </div>
                     @endif
                 @endforeach
@@ -24,13 +20,13 @@
             <div class="swiper mySwiper d-flex">
                 <div class="swiper-wrapper w-75 bg-common banner-main-content-area">
                     @foreach ($slides as $slide)
-                        @if ($slide['enabled'])
+                        @if ($slide->enabled)
                             <div class="swiper-slide">
                                 <div class="slider-content">
-                                    <h1 class="title-one">{{ $slide['title'] }}</h1>
-                                    <p class="content-text mt-16">{{ $slide['description'] }}</p>
-                                    @if (!empty($slide['link']))
-                                        <a href="{{ $slide['link'] }}" class="read-more mt-16 btn-1 slower">Read More</a>
+                                    <h1 class="title-one">{{ $slide->title }}</h1>
+                                    <p class="content-text mt-16">{{ $slide->description }}</p>
+                                    @if (!empty($slide->link))
+                                        <a href="{{ $slide->link }}" class="read-more mt-16 btn-1 slower">Read More</a>
                                     @endif
                                 </div>
                             </div>
@@ -78,75 +74,44 @@
             </div>
             <div class="row px-md-0 row-cols-xl-2 justify-content-center justify-content-between g-4">
                 <div class="">
+                    @php
+                        $firstTopNews = $topNews->first();
+                    @endphp
                     <div class="top-news-card highlight card-smooth">
-                        <img src="{{ asset('storage/web/top-news/1.jpg') }}" class="card-img-top" alt="news image">
+                        <img src="{{ getImageUrl($firstTopNews->f_image) }}" class="card-img-top" alt="news image">
 
                         <a href="news-details.html" class="">
                             <div class="card-body">
                                 <h5 class="title-four mb-2 p-0">
-                                    Amputee Football Festival
+                                    {{ $firstTopNews->news_title }}
                                 </h5>
-                                <p class="content-text-sm">A spirited celebration of amputee football brought
-                                    together
-                                    45
-                                    players</p>
+                                <p class="content-text-sm">
+                                    {{ truncateText($firstTopNews->short_des, 120) }}
+                                </p>
                             </div>
                         </a>
                     </div>
                 </div>
                 <div class="">
                     <div class="row px-md-0 row-cols-sm-2 justify-content-center g-4">
-                        <div class="">
-                            <div class="top-news-card hover-fill-horizontal">
-                                <img src="{{ asset('storage/web/top-news/2.jpg') }}" class="card-img-top" alt="news image">
-                                <a href="news-details.html" class="">
-                                    <div class="card-body">
-                                        <h5 class="title-four p-0">
-                                            National Youth Para Games concluded
-                                        </h5>
-                                    </div>
-                                </a>
+                        @foreach ($topNews as $key => $news)
+                            @if ($key == 0)
+                                @continue
+                            @endif
+                            <div class="">
+                                <div class="top-news-card hover-fill-horizontal">
+                                    <img src="{{ getImageUrl($news->f_image) }}" class="card-img-top" alt="news image">
+                                    <a href="news-details.html" class="">
+                                        <div class="card-body">
+                                            <h5 class="title-four p-0">
+                                                {{ truncateText($news->news_title, 40) }}
+                                            </h5>
+                                        </div>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="">
+                        @endforeach
 
-                            <div class="top-news-card mb-md-0 hover-fill-horizontal">
-                                <img src="{{ asset('storage/web/top-news/3.jpg') }}" class="card-img-top" alt="news image">
-                                <a href="news-details.html" class="">
-                                    <div class="card-body">
-                                        <h5 class="title-four p-0">
-                                            National Para Table Tennis Championship
-                                            Begins
-                                        </h5>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="">
-
-                            <div class="top-news-card mb-md-0 hover-fill-horizontal">
-                                <img src="{{ asset('storage/web/top-news/4.jpg') }}" class="card-img-top" alt="news image">
-                                <a href="news-details.html" class="">
-                                    <div class="card-body">
-                                        <h5 class="title-four p-0">
-                                            UNB, Dhaka
-                                        </h5>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="">
-                            <div class="top-news-card mb-md-0 hover-fill-horizontal">
-                                <img src="{{ asset('storage/web/top-news/5.jpg') }}" class="card-img-top" alt="news image">
-                                <a href="news-details.html" class="">
-                                    <div class="card-body">
-                                        <h5 class="title-four p-0">
-                                            National Youth Para Games concluded
-                                        </h5>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -167,10 +132,9 @@
                     <div class="swiper-wrapper mb-5">
                         @foreach ($gamesNews as $news)
                             <div class="swiper-slide">
-                                <a href="news-details.html">
+                                <a href="{{ route('news-and-updates-details', $news->slug) }}">
                                     <div class="gaming-news-card card-smooth hover-fill-horizontal fill-white-muted">
-                                        <img src="{{ getImageUrl($news->image) }}" class="card-img-top"
-                                            alt="news image">
+                                        <img src="{{ getImageUrl($news->f_image) }}" class="card-img-top" alt="news image">
                                         <div class="card-body">
                                             <h5 class="title-four">
                                                 {{ truncateText($news->news_title, 40) }}
@@ -358,152 +322,31 @@
             <div class="gaming-news-slider position-relative">
                 <div class="swiper myLatestBlogSwiper">
                     <div class="swiper-wrapper mb-5">
-                        <div class="swiper-slide ">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/latest-blog/1.png') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">Amputee Football Festival showcases rising talent
-                                            in
-                                            Dhaka</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
+                        @forelse ($blogs as $blog)
+                            <div class="swiper-slide ">
+                                <div class="gaming-news-card latest-blog-card card-smooth">
+                                    <img src="{{ getImageUrl($blog->f_image) }}" class="card-img-top" alt="news image">
+                                    <div class="card-body">
+                                        <p class="content-text d-flex align-items-center"><svg width="24"
+                                                height="24" viewBox="0 0 24 24" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
+                                                    fill="black" />
+                                            </svg>
+                                            {{ formatDate($blog->publish_date) }}
+                                        </p>
+                                        <h5 class="title-four mb-3">
+                                            <a href="" class="">{{ truncateText($blog->title, 40) }}</a>
+                                        </h5>
+                                        <a href="{{ route('blogs-details', $blog->slug) }}"
+                                            class="btn-primary btn-common">View Details</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/latest-blog/2.png') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">Amputee Football Festival showcases rising talent
-                                            in
-                                            Dhaka</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/latest-blog/3.png') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">Amputee Football Festival showcases rising talent
-                                            in
-                                            Dhaka</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/running-event/3.jpg') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">'BCB meetings won’t count without action'</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/running-event/2.jpg') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">'BCB meetings won’t count without action'</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/running-event/1.jpg') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">'BCB meetings won’t count without action'</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gaming-news-card latest-blog-card card-smooth">
-                                <img src="{{ asset('storage/web/running-event/4.png') }}" class="card-img-top"
-                                    alt="news image">
-                                <div class="card-body">
-                                    <p class="content-text d-flex align-items-center"><svg width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M17 5.49844L12.9965 5.49845V4.50195C12.9965 4.2257 12.7727 4.00195 12.4965 4.00195C12.2203 4.00195 11.9965 4.2257 11.9965 4.50195V5.4982H7.9965V4.50195C7.9965 4.2257 7.77275 4.00195 7.4965 4.00195C7.22025 4.00195 6.9965 4.2257 6.9965 4.50195V5.4982H3C2.44775 5.4982 2 5.94595 2 6.4982V18.9982C2 19.5504 2.44775 19.9982 3 19.9982H17C17.5522 19.9982 18 19.5504 18 18.9982V6.4982C18 5.94619 17.5522 5.49844 17 5.49844ZM17 18.9982H3V6.4982H6.9965V7.00195C6.9965 7.27819 7.22025 7.50195 7.4965 7.50195C7.77275 7.50195 7.9965 7.27819 7.9965 7.00195V6.49845H11.9965V7.0022C11.9965 7.27845 12.2203 7.5022 12.4965 7.5022C12.7727 7.5022 12.9965 7.27845 12.9965 7.0022V6.49845H17V18.9982ZM13.5 11.9984H14.5C14.776 11.9984 15 11.7744 15 11.4984V10.4984C15 10.2224 14.776 9.99844 14.5 9.99844H13.5C13.224 9.99844 13 10.2224 13 10.4984V11.4984C13 11.7744 13.224 11.9984 13.5 11.9984ZM13.5 15.9982H14.5C14.776 15.9982 15 15.7744 15 15.4982V14.4982C15 14.2222 14.776 13.9982 14.5 13.9982H13.5C13.224 13.9982 13 14.2222 13 14.4982V15.4982C13 15.7747 13.224 15.9982 13.5 15.9982ZM10.5 13.9982H9.5C9.224 13.9982 9 14.2222 9 14.4982V15.4982C9 15.7744 9.224 15.9982 9.5 15.9982H10.5C10.776 15.9982 11 15.7744 11 15.4982V14.4982C11 14.2224 10.776 13.9982 10.5 13.9982ZM10.5 9.99844H9.5C9.224 9.99844 9 10.2224 9 10.4984V11.4984C9 11.7744 9.224 11.9984 9.5 11.9984H10.5C10.776 11.9984 11 11.7744 11 11.4984V10.4984C11 10.2222 10.776 9.99844 10.5 9.99844ZM6.5 9.99844H5.5C5.224 9.99844 5 10.2224 5 10.4984V11.4984C5 11.7744 5.224 11.9984 5.5 11.9984H6.5C6.776 11.9984 7 11.7744 7 11.4984V10.4984C7 10.2222 6.776 9.99844 6.5 9.99844ZM6.5 13.9982H5.5C5.224 13.9982 5 14.2222 5 14.4982V15.4982C5 15.7744 5.224 15.9982 5.5 15.9982H6.5C6.776 15.9982 7 15.7744 7 15.4982V14.4982C7 14.2224 6.776 13.9982 6.5 13.9982Z"
-                                                fill="black" />
-                                        </svg>
-                                        15 Nov 2025
-                                    </p>
-                                    <h5 class="title-four mb-3">
-                                        <a href="" class="">'BCB meetings won’t count without action'</a>
-                                    </h5>
-                                    <a href="/blog-details.html" class="btn-primary btn-common">View Details</a>
-                                </div>
-                            </div>
-                        </div>
+                        @empty
+                        @endforelse
+
                     </div>
                     <div class="right-0">
                         <div class="d-flex gap-2 mb-md-2 justify-content-end">

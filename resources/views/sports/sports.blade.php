@@ -1,0 +1,34 @@
+@extends('layouts.master')
+
+@section('title', $category->category_name)
+@section('breadcrumb', $category->category_name)
+@section('content')
+    {{-- Event Gallery section start  --}}
+    <!-- News & Updates section start -->
+    <section class="py-100 container">
+        <div class="mb-4">
+            <img class="img-fluid w-100" src="{{ getImageUrl($category->image) }}" alt="">
+        </div>
+        <div class="row  row-cols-xl-4 row-cols-md-3 row-cols-sm-2 g-4">
+            @foreach ($posts as $post)
+                <div class="">
+                    <a href="{{ route('sports-details', $post->slug) }}" class="">
+                        <div class="gaming-news-card running-event-card card-smooth">
+                            <img src="{{ getImageUrl($post->f_image) }}" class="card-img-top" alt="news image">
+                            <div class="card-body">
+                                <h5 class="title-five">
+                                    {{ truncateText($post->post_title, 20) }}
+                                </h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
+        </div>
+        <div class="text-center mt-60">
+            {{ $posts->links() }}
+        </div>
+    </section>
+    <!-- News & Updates contact section End -->
+    {{-- Event Gallery section End  --}}
+@endsection

@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class News extends Model
 {
     protected $guarded = ['id'];
-
+    protected $casts = [
+        'status' => 'integer',
+    ];
     /**
      * Relationship: A news item can belong to many categories.
      */
@@ -43,7 +45,7 @@ class News extends Model
      */
     public function scopePublished($query)
     {
-        return $query->where('status', '1');
+        return $query->where('status', 1);
     }
 
     /**
@@ -58,6 +60,12 @@ class News extends Model
     {
         return self::whereHas('categories', function ($query) {
             $query->where('category_name', 'like', '%game%');
+        })->paginate(10);
+    }
+    public static function getSpotlightNews()
+    {
+        return self::whereHas('categories', function ($query) {
+            $query->where('category_name', 'like', '%spotlight%');
         })->paginate(10);
     }
 }

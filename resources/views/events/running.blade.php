@@ -8,12 +8,12 @@
         <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2 g-4">
             @forelse ($events as $event)
             <div>
-                <a href="{{ route('running-events-details', $event->slug) }}">
+                <a href="{{ route('event-details', $event->slug) }}">
                     <div class="gaming-news-card running-event-card card-smooth">
                         <img src="{{ getImageUrl($event->featured_image) }}" class="card-img-top" alt="{{ $event->title }}">
                         <div class="card-body">
                             <h5 class="title-five">
-                                <a href="{{ route('running-events-details', $event->slug) }}"
+                                <a href="{{ route('event-details', $event->slug) }}"
                                     class="">{{ $event->title }}</a>
                             </h5>
                         </div>

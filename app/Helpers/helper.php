@@ -60,3 +60,25 @@ if (!function_exists('truncateText')) {
         return $truncated . $suffix;
     }
 }
+
+
+
+use Carbon\Carbon;
+
+if (!function_exists('formatDate')) {
+    /**
+     * Format a given date/time into a human-readable string.
+     *
+     * @param  string|\DateTimeInterface|null  $date
+     * @param  string  $format
+     * @return string
+     */
+    function formatDate($date, string $format = 'd M Y'): string
+    {
+        if (empty($date)) {
+            return '';
+        }
+
+        return Carbon::parse($date)->format($format);
+    }
+}
