@@ -38,7 +38,7 @@ class SectionSeeder extends Seeder
                         International Paralympic Committee\'s mission & vision. NPCB promotes the Paralympic movement
                         within the country, enabling Para athletes to achieve sporting excellence.
                     </p>',
-                    'home-content' => '<p class="content-text text-dark-emphasis">
+                    'home_content' => '<p class="content-text text-dark-emphasis">
                         The mission & vision of the National Paralympic Committee of Bangladesh (NPCB) is aligned with
                         International Paralympic Committee\'s mission & vision. NPCB promotes the Paralympic movement
                         within the country, enabling Para athletes to achieve sporting excellence.
@@ -80,7 +80,7 @@ class SectionSeeder extends Seeder
                         <li class=" t mb-4"><strong>2004: </strong>Bangladesh makes its first appearance at the 2004 Athens Summer Paralympics, sending a single athlete to compete in the men\'s 400m T46 event.</li>
 
                         <li class="mb-4"><strong>2004: </strong>The National Paralympic Committee of Bangladesh is officially established.</li>
-                        
+
                         <li class="mb-4"><strong>2008: </strong>Abdul Quader Suman represents Bangladesh at the Beijing Paralympics, competing in the men\'s 100m T12.</li>
 
                         <li class="mb-4"><strong>2012-2024: </strong>Bangladesh continues its participation in the Summer Paralympics.</li>

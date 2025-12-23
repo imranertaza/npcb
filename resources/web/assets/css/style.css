@@ -808,6 +808,9 @@ ul.dropdown-menu.show {
     color: var(--common-text-black);
 }
 
+.min-h-38 {
+    min-height: 38 !important;
+}
 
 /* ================================================== */
 /*                  RUNNING EVENT CSS                    */

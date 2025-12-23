@@ -14,7 +14,6 @@ use App\Models\Result;
 use App\Models\Section;
 use App\Models\Setting;
 use App\Models\Slider;
-use App\Services\ImageService;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,23 +27,21 @@ class FrontendController extends Controller
         $upcomingEvent        = Event::orderBy("created_at", "desc")->where('status', "1")->where('type', 0)->paginate(15);
         $about_mission_vision = Section::where('name', 'about_mission_vision')->first();
         $blogs                = Blog::where('status', "1")->latest()->paginate(7);
-        $topNews              = News::where('status',1)->latest()->paginate(5);
+        $topNews              = News::where('status', 1)->latest()->paginate(5);
         $gamesNews            = News::getGamesNews();
         $slides               = Slider::where('key', 'banner_section')->where('enabled', 1)->get();
 
         return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews', 'blogs', 'topNews', 'slides'));
     }
-    public function pages()
-    {
-        $pages = Page::all();
-        return view('pages.index', compact('pages'));
-    }
+    // public function pages()
+    // {
+    //     $pages = Page::all();
+    //     return view('pages.index', compact('pages'));
+    // }
     public function pageDetails($slug)
     {
         $page = Page::where('slug', $slug)->firstOrFail();
 
-        // $imagePath = 'assets/images/default.jpg';
-        // $url       = ImageService::resizeAndCache($imagePath, 80, 80);
         if ($slug == 'contact-us') {
             return view('contact', compact('page'));
         } else if ($slug == 'sports') {
@@ -61,17 +58,17 @@ class FrontendController extends Controller
     }
     public function noticeBoard()
     {
-        $notice = Notice::paginate();
+        $notice = Notice::where('type', 0)->where('status', 1)->paginate();
         return view('notice-board', compact('notice'));
     }
     public function tournamentResult()
     {
-        $results = Result::paginate();
+        $results = Result::where('status',1)->paginate();
         return view('tournament-result', compact('results'));
     }
     public function gallery()
     {
-        $gallery = Gallery::paginate(10);
+        $gallery = Gallery::where('status',1)->paginate(10);
         return view('gallery.gallery', compact('gallery'));
     }
     public function galleryDetails($id)

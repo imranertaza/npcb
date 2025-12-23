@@ -199,7 +199,7 @@
                                         <img src="{{ getImageCacheUrl($item->featured_image, 262, 230) }}"
                                             class="card-img-top" alt="news image">
                                         <div class="card-body">
-                                            <h5 class="title-four">
+                                            <h5 class="title-four min-h-38">
                                                 {{ $item->title }}
                                             </h5>
                                         </div>
@@ -307,7 +307,7 @@
                 </div>
                 <div class="">
                     <h3 class="title-two mb-3">{{ $about_mission_vision->data['title'] }}</h3>
-                    {!! $about_mission_vision->data['home-content'] !!}
+                    {!! $about_mission_vision->data['home_content'] !!}
                     <a href="{{ route('page.details', 'about-us') }}" class="btn-primary btn-common btn-1 slower">Read
                         More</a>
                 </div>
@@ -340,7 +340,7 @@
                                             </svg>
                                             {{ formatDate($blog->publish_date) }}
                                         </p>
-                                        <h5 class="title-four mb-3">
+                                        <h5 class="title-four mb-3 min-h-38">
                                             <a href="{{ route('blogs-details', $blog->slug) }}"
                                                 class="">{{ truncateText($blog->title, 35) }}</a>
                                         </h5>

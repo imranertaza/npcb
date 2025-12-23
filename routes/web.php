@@ -2,8 +2,16 @@
 
 use App\Http\Controllers\FrontendController;
 use App\Services\ImageService;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/clear', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return "Application cache cleared!";
+});
 Route::controller(FrontendController::class)->group(function () {
     Route::get('/', 'index')->name('home');
     Route::get('match-fixtures', 'matchFixtures')->name('match-fixtures');

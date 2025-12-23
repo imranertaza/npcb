@@ -58,14 +58,14 @@
                       :allowSelectOnPreview="true" />
                   </div>
 
-                  <!-- Page Type -->
+                  <!-- Page Type
                   <div class="form-group">
                     <label>Select Template</label>
                     <select v-model="form.temp" class="custom-select" required>
                       <option class="text-capitalize" v-for="template in templates" :key="template"
                         :selected="form.temp === template" :value="template">{{ template }}</option>
                     </select>
-                  </div>
+                  </div> -->
 
                   <!-- Status -->
                   <div class="form-group">

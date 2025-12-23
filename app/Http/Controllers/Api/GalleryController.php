@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
@@ -30,7 +29,7 @@ class GalleryController extends Controller
         if ($request->filled('all')) {
             $galleries = $query->select(['id', 'name'])->get();
         } else {
-            $perPage = $request->input('per_page', 10);
+            $perPage   = $request->input('per_page', 10);
             $galleries = $query->paginate($perPage);
         }
 
@@ -49,7 +48,7 @@ class GalleryController extends Controller
             'alt_name'   => 'nullable|string|max:255',
         ]);
         if ($request->hasFile('thumb')) {
-            $path = $request->file('thumb')->store('gallery/thumbs', 'public');
+            $path               = $request->file('thumb')->store('gallery/thumbs', 'public');
             $validated['thumb'] = $path;
         }
         $gallery = Gallery::create($validated);
@@ -83,13 +82,26 @@ class GalleryController extends Controller
                 Storage::disk('public')->delete($gallery->thumb);
             }
 
-            $path = $request->file('thumb')->store('gallery/thumbs', 'public');
+            $path               = $request->file('thumb')->store('gallery/thumbs', 'public');
             $validated['thumb'] = $path;
         }
 
         $gallery->update($validated);
 
         return ApiResponse::success($gallery, 'Gallery updated successfully');
+    }
+
+    // Toggle active/inactive status
+    public function toggleStatus($id)
+    {
+        $gallery         = Gallery::findOrFail($id);
+        $gallery->status = $gallery->status === 1 ? 0 : 1;
+        $gallery->save();
+
+        return response()->json([
+            'message' => $gallery->status == 1 ? 'Gallery active' : 'Gallery inactive',
+            'status'  => $gallery->status,
+        ]);
     }
 
     /**
@@ -121,8 +133,8 @@ class GalleryController extends Controller
 
         $request->validate([
             'gallery_id' => 'required|exists:gallery,id',
-            'image' => 'required|image|max:2048',
-            'alt_name' => 'nullable|string|max:255',
+            'image'      => 'required|image|max:2048',
+            'alt_name'   => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
         ]);
 
@@ -130,10 +142,10 @@ class GalleryController extends Controller
 
         $detail = GalleryDetail::create([
             'gallery_id' => $request->gallery_id,
-            'image' => $path,
-            'alt_name' => $request->alt_name,
+            'image'      => $path,
+            'alt_name'   => $request->alt_name,
             'sort_order' => $request->sort_order ?? 0,
-            'createdBy' => Auth::user()->id,
+            'createdBy'  => Auth::user()->id,
         ]);
 
         return ApiResponse::success($detail, 'Gallery image added successfully');
@@ -159,7 +171,7 @@ class GalleryController extends Controller
     public function updateDetail(Request $request, GalleryDetail $detail)
     {
         $detail->update([
-            'alt_name' => $request->input('alt_name'),
+            'alt_name'   => $request->input('alt_name'),
             'sort_order' => $request->input('sort_order', $detail->sort_order),
         ]);
         return ApiResponse::success($detail, 'Alt text updated successfully');

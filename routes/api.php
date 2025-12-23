@@ -22,8 +22,8 @@ use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\EventCategoryController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 Route::prefix('admin')->controller(AdminAuthController::class)->group(function () {
@@ -35,7 +35,6 @@ Route::prefix('admin')->controller(AdminAuthController::class)->group(function (
         Route::post('logout', 'logout')->name('admin.logout');
     });
 });
-
 
 Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(function () {
 
@@ -113,7 +112,6 @@ Route::middleware('auth:user')->prefix('news')->controller(NewsController::class
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-news');
 });
 
-
 Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCategoryController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-news-categories');
     Route::post('/', 'store')->middleware('permission:create-news-categories');
@@ -133,7 +131,6 @@ Route::middleware('auth:user')->prefix('blogs')->controller(BlogController::clas
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-blog');
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-blog');
 });
-
 
 Route::prefix('blog-categories')->middleware(['auth:user'])->controller(BlogCategoryController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-blog-categories');
@@ -179,6 +176,8 @@ Route::middleware(['auth:user'])->prefix('gallery')->controller(GalleryControlle
     Route::put('{gallery}', 'update')->name('gallery.update')->middleware('permission:edit-galleries');
     Route::delete('{gallery}', 'destroy')->name('gallery.destroy')->middleware('permission:delete-galleries');
     // Gallery Details
+    Route::patch('{id}/toggle-status', 'toggleStatus')->name('gallery.toggle')->middleware('permission:edit-galleries');
+
     Route::post('details', 'storeDetail')->name('gallery.details.store')->middleware('permission:edit-galleries');
     Route::patch('details/{detail}', 'updateDetail')->name('gallery.details.update')->middleware('permission:edit-galleries');
     Route::delete('details/{detail}', 'destroyGalleryDetail')->name('gallery.details.destroy')->middleware('permission:delete-galleries');
@@ -244,16 +243,16 @@ Route::prefix('committee-members')
     });
 
 Route::middleware(['auth:user'])->get('templates', function () {
-    $path = resource_path('views/layouts/frontend');
+    $path  = resource_path('views/layouts/frontend');
     $files = [];
     if (File::exists($path)) {
         $files = collect(File::files($path))
             ->filter(function ($file) {
                 return Str::endsWith($file->getFilename(), '.blade.php');
             })->map(function ($file) {
-                $name = pathinfo($file->getFilename(), PATHINFO_FILENAME);
-                return Str::replaceLast('.blade', '', $name);
-            })->values()->toArray();
+            $name = pathinfo($file->getFilename(), PATHINFO_FILENAME);
+            return Str::replaceLast('.blade', '', $name);
+        })->values()->toArray();
     }
 
     return response()->json($files);
