@@ -63,12 +63,12 @@ class FrontendController extends Controller
     }
     public function tournamentResult()
     {
-        $results = Result::where('status',1)->paginate();
+        $results = Result::where('status', 1)->paginate();
         return view('tournament-result', compact('results'));
     }
     public function gallery()
     {
-        $gallery = Gallery::where('status',1)->paginate(10);
+        $gallery = Gallery::where('status', 1)->paginate(10);
         return view('gallery.gallery', compact('gallery'));
     }
     public function galleryDetails($id)
@@ -80,7 +80,7 @@ class FrontendController extends Controller
     public function newsAndUpdates()
     {
         $pageTitle = 'News and Updates';
-        $news      = News::paginate();
+        $news      = News::where('status', 1)->paginate();
         return view('news.news-and-updates', compact('news', 'pageTitle'));
     }
     public function spotlightNews()
@@ -91,7 +91,7 @@ class FrontendController extends Controller
     }
     public function newsAndUpdatesDetails($slug)
     {
-        $news = News::where('slug', $slug)->firstOrFail();
+        $news = News::where('status', 1)->where('slug', $slug)->firstOrFail();
         return view('news.news-and-updates-details', compact('news'));
     }
     public function blogs()
@@ -101,7 +101,7 @@ class FrontendController extends Controller
     }
     public function blogsDetails($slug)
     {
-        $blog = Blog::where('slug', $slug)->first();
+        $blog = Blog::where('status', "1")->where('slug', $slug)->first();
         return view('blog.blog-details', compact('blog'));
     }
     public function runningEvents()
@@ -116,7 +116,7 @@ class FrontendController extends Controller
     }
     public function runningEventsDetails($slug)
     {
-        $event = Event::where('slug', $slug)->firstOrFail();
+        $event = Event::where('status', 1)->where('slug', $slug)->firstOrFail();
         return view('events.running-details', compact('event'));
     }
     public function committeeMembers()
@@ -128,12 +128,12 @@ class FrontendController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         // paginate directly on the relationship
-        $posts = $category->posts()->paginate(12);
+        $posts = $category->posts()->where('status','1')->paginate(12);
         return view('sports.sports', compact('category', 'posts'));
     }
     public function postDetails($slug)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post = Post::where('status', "1")->where('slug', $slug)->firstOrFail();
         return view('sports.sports-details', compact('post'));
     }
 
@@ -190,7 +190,6 @@ class FrontendController extends Controller
 
             ToastMagic::success('Message sent successfully!');
         } catch (Exception $e) {
-
             ToastMagic::error('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
         }
 
