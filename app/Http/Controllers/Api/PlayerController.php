@@ -23,9 +23,9 @@ class PlayerController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sport', 'like', "%{$search}%")
-                  ->orWhere('position', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('sport', 'like', "%{$search}%")
+                    ->orWhere('position', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
@@ -44,66 +44,47 @@ class PlayerController extends Controller
         return ApiResponse::success($player, 'Player retrieved successfully');
     }
 
-    /**
-     * Store new player
-     */
+    /** * Store new player */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'      => 'required|string|max:255',
-            'sport'     => 'required|string|max:255',
-            'position'  => 'nullable|string|max:255',
-            'team'      => 'nullable|string|max:255',
-            'age'       => 'nullable|integer',
-            'image'     => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
-            'status'    => ['required', Rule::in(['0', '1'])],
-        ]);
-
-        // Generate slug from name + position + sport + age
-        $validated['slug'] = Str::slug(
-            $validated['name'].'-'.$validated['position'].'-'.$validated['sport'].'-'.$validated['age']
-        );
-
+        $validated = $request->validate(['name' => 'required|string|max:255', 'sport' => 'required|string|max:255', 'position' => 'nullable|string|max:255', 'team' => 'nullable|string|max:255', 'country' => 'nullable|string|max:255', 'birthdate' => 'nullable|date', 'height' => 'nullable|string|max:50', 'weight' => 'nullable|string|max:50', 'hometown' => 'nullable|string|max:255', 'asian_ranking' => 'nullable|string|max:50', 'national_ranking' => 'nullable|string|max:50', 'image' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096', 'status' => ['required', Rule::in(['0', '1'])]]);
+        // Generate slug from name + sport + country
+        $validated['slug'] = Str::slug($validated['name'] . '-' . $validated['sport'] . '-' . $validated['country']);
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('players', 'public');
         }
-
         $player = Player::create($validated);
 
         return ApiResponse::success($player, 'Player created successfully');
     }
-
-    /**
-     * Update existing player
-     */
+    /** * Update existing player */
     public function update(Request $request, $id)
     {
         $player = Player::findOrFail($id);
-
         $validated = $request->validate([
-            'name'      => 'required|string|max:255',
-            'sport'     => 'required|string|max:255',
-            'position'  => 'nullable|string|max:255',
-            'team'      => 'nullable|string|max:255',
-            'age'       => 'nullable|integer',
-            'image'     => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
-            'status'    => ['required', Rule::in(['0', '1'])],
+            'name' => 'required|string|max:255',
+            'sport' => 'required|string|max:255',
+            'position' => 'nullable|string|max:255',
+            'team' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'birthdate' => 'nullable|date',
+            'height' => 'nullable|string|max:50',
+            'weight' => 'nullable|string|max:50',
+            'hometown' => 'nullable|string|max:255',
+            'asian_ranking' => 'nullable|string|max:50',
+            'national_ranking' => 'nullable|string|max:50',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'status' => ['required', Rule::in(['0', '1'])]
         ]);
-
         // Regenerate slug
-        $validated['slug'] = Str::slug(
-            $validated['name'].'-'.$validated['position'].'-'.$validated['sport'].'-'.$validated['age']
-        );
-
+        $validated['slug'] = Str::slug($validated['name'] . '-' . $validated['sport'] . '-' . $validated['country']);
         if ($request->hasFile('image')) {
             if ($player->image && Storage::disk('public')->exists($player->image)) {
                 Storage::disk('public')->delete($player->image);
             }
             $validated['image'] = $request->file('image')->store('players', 'public');
         }
-
         $player->update($validated);
-
         return ApiResponse::success($player, 'Player updated successfully');
     }
 
@@ -112,7 +93,7 @@ class PlayerController extends Controller
      */
     public function toggleStatus($slug)
     {
-        $player = Player::where('slug', $slug)->firstOrFail();
+        $player         = Player::where('slug', $slug)->firstOrFail();
         $player->status = $player->status == 1 ? 0 : 1;
         $player->save();
 

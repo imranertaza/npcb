@@ -9,6 +9,7 @@ use App\Models\Gallery;
 use App\Models\News;
 use App\Models\Notice;
 use App\Models\Page;
+use App\Models\Player;
 use App\Models\Post;
 use App\Models\Result;
 use App\Models\Section;
@@ -33,11 +34,6 @@ class FrontendController extends Controller
 
         return view('home', compact('runningEvent', 'upcomingEvent', 'about_mission_vision', 'gamesNews', 'blogs', 'topNews', 'slides'));
     }
-    // public function pages()
-    // {
-    //     $pages = Page::all();
-    //     return view('pages.index', compact('pages'));
-    // }
     public function pageDetails($slug)
     {
         $page = Page::where('slug', $slug)->firstOrFail();
@@ -104,6 +100,23 @@ class FrontendController extends Controller
         $blog = Blog::where('status', "1")->where('slug', $slug)->first();
         return view('blog.blog-details', compact('blog'));
     }
+    /** * Display a paginated list of players. */
+    public function players()
+    {
+        $pageTitle = "Players";
+        // Only active players, 12 per page
+        $players = Player::where('status', 1)->orderBy('created_at', 'desc')->paginate(12);
+        return view('players.index', compact('players', 'pageTitle'));
+    }
+    /** * Display details for a single player by slug. */
+    public function playerDetails($slug)
+    {
+        $pageTitle = "Player Details";
+
+        $player = Player::where('slug', $slug)->where('status', 1)->firstOrFail();
+        // only show active players
+        return view('players.details', compact('player', 'pageTitle'));
+    }
     public function runningEvents()
     {
         $events = Event::where('type', 1)->where('status', 1)->paginate(10);
@@ -128,9 +141,14 @@ class FrontendController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         // paginate directly on the relationship
-        $posts = $category->posts()->where('status','1')->paginate(12);
+        $posts = $category->posts()->where('status', '1')->paginate(12);
         return view('sports.sports', compact('category', 'posts'));
     }
+
+/**
+ * Display details for a single post by slug.
+ * @param string $slug
+ */
     public function postDetails($slug)
     {
         $post = Post::where('status', "1")->where('slug', $slug)->firstOrFail();

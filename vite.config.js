@@ -1,4 +1,6 @@
-import { defineConfig } from "vite";
+import {
+    defineConfig
+} from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 
@@ -17,17 +19,6 @@ export default defineConfig({
                 "resources/web/assets/css/style.css",
                 "resources/web/assets/js/main.js",
                 "resources/web/assets/js/home.js",
-
-                // "resources/js/assets/dist/js/pages/dashboard2.js",
-                // "resources/js/assets/plugins/jquery/jquery.min.js",
-                // "resources/js/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js",
-                // "resources/js/assets/dist/js/adminlte.js",
-                // "resources/js/assets/plugins/bootstrap/js/bootstrap.bundle.min.js",
-                // "resources/js/assets/plugins/jquery-mousewheel/jquery.mousewheel.js",
-                // "resources/js/assets/plugins/raphael/raphael.min.js",
-                // "resources/js/assets/plugins/jquery-mapael/jquery.mapael.min.js",
-                // "resources/js/assets/plugins/jquery-mapael/maps/usa_states.min.js",
-                // "resources/js/assets/plugins/chart.js/Chart.min.js",
             ],
             refresh: true,
         }),
@@ -39,7 +30,3 @@ export default defineConfig({
         },
     },
 });
-
-//bato top button
-//footer menu animation
-//white vue all button fix

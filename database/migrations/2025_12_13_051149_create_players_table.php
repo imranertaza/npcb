@@ -14,13 +14,17 @@ return new class extends Migration
         Schema::create('players', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('sport');          // e.g. Football, Cricket, etc.
-            $table->string('position')->nullable(); // e.g. Striker, Bowler
-            $table->string('team')->nullable();
+            $table->string('sport');
             $table->string('image')->nullable();
-            $table->integer('age')->nullable();
+            $table->string('country')->nullable();
+            $table->string('asian_ranking')->nullable();
+            $table->string('national_ranking')->nullable();
+            $table->date('birthdate')->nullable();
+            $table->string('height')->nullable();
+            $table->string('weight')->nullable();
+            $table->string('hometown')->nullable();
             $table->string('slug')->unique();
-            $table->tinyInteger('status')->default(1)->comment('0=inactive, 1=active');
+            $table->tinyInteger('status')->default(1); // 0=inactive, 1=active
             $table->timestamps();
         });
     }

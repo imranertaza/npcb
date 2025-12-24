@@ -138,8 +138,8 @@
                                         <img src="{{ getImageCacheUrl($news->f_image, 362, 320) }}" class="card-img-top"
                                             alt="news image">
                                         <div class="card-body">
-                                            <h5 class="title-four">
-                                                {{ truncateText($news->news_title, 40) }}
+                                            <h5 class="title-four min-h-38">
+                                                {{ truncateText($news->news_title, 45) }}
                                             </h5>
                                         </div>
                                     </div>
@@ -200,7 +200,7 @@
                                             class="card-img-top" alt="news image">
                                         <div class="card-body">
                                             <h5 class="title-four min-h-38">
-                                                {{ $item->title }}
+                                                {{ truncateText($item->title,45) }}
                                             </h5>
                                         </div>
                                     </div>

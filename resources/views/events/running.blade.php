@@ -14,7 +14,7 @@
                         <div class="card-body">
                             <h5 class="title-five">
                                 <a href="{{ route('event-details', $event->slug) }}"
-                                    class="">{{ $event->title }}</a>
+                                    class="">{{ truncateText($event->title,40) }}</a>
                             </h5>
                         </div>
                     </div>

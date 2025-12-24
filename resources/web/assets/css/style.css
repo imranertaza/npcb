@@ -809,7 +809,7 @@ ul.dropdown-menu.show {
 }
 
 .min-h-38 {
-    min-height: 38 !important;
+    min-height: 38px !important;
 }
 
 /* ================================================== */

@@ -3,6 +3,8 @@
 use App\Http\Controllers\FrontendController;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/clear', function () {
@@ -10,6 +12,11 @@ Route::get('/clear', function () {
     Artisan::call('config:clear');
     Artisan::call('route:clear');
     Artisan::call('view:clear');
+// Remove the public/cache directory
+    $cacheDir = public_path('cache');
+    if (File::exists($cacheDir)) {
+        File::deleteDirectory($cacheDir);
+    }
     return "Application cache cleared!";
 });
 Route::controller(FrontendController::class)->group(function () {
@@ -24,6 +31,8 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('news-and-updates/{slug}', 'newsAndUpdatesDetails')->name('news-and-updates-details');
     Route::get('blogs', 'blogs')->name('blogs');
     Route::get('blogs/{slug}', 'blogsDetails')->name('blogs-details');
+    Route::get('players', 'players')->name('player.index');
+    Route::get('players/{slug}', 'playerDetails')->name('player.details');
     Route::get('post-categories/{slug}', 'postCategoryDetails')->name('post-categories');
     Route::get('sports/{slug}', 'postDetails')->name('sports-details');
 
@@ -37,6 +46,15 @@ Route::controller(FrontendController::class)->group(function () {
         Route::get('/{slug}', 'pageDetails')->name('details');
     });
     Route::get('/image/{width}/{height}/{format}/{path}', function ($width, $height, $format, $path) {
+
+        $fullPath = $path; $url = ImageService::resizeAndCache($fullPath, (int) $width, (int) $height, $format);
+        // Convert URL back to actual file path
+        $filePath = public_path(str_replace(asset(''), '', $url));
+        // Return raw file with correct headers
+        return Response::file($filePath, ['Content-Type' => 'image/' . $format, 'Cache-Control' => 'public, max-age=604800']);
+    })->where('path', '.*');
+
+    Route::get('/image_url/{width}/{height}/{format}/{path}', function ($width, $height, $format, $path) {
         $fullPath = $path;
 
         $url = ImageService::resizeAndCache($fullPath, (int) $width, (int) $height, $format);
