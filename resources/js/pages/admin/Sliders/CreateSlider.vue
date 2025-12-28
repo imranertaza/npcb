@@ -115,7 +115,7 @@ const submitSlide = async () => {
         });
         toast.success('Slide created successfully!');
     } catch (error) {
-        toast.error('Failed to create slide');
+        toast.validationError(error);
         console.error(error);
     }
 };

@@ -159,7 +159,7 @@ const fileUpload = ref(null);
 // Fetch player
 const fetchPlayer = async () => {
   try {
-    const res = await axios.get(`/api/players/${route.params.slug}`);
+    const res = await axios.get(`/api/players/${route.params.id}`);
     Object.assign(form, res.data.data);
     if (form.image) {
       previews.value = [getImageUrl(form.image)];
@@ -194,7 +194,7 @@ const updatePlayer = async () => {
 };
 
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],
   },
 });

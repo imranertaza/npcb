@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->json('data')->nullable();
+            $table->unsignedBigInteger('createdBy')->nullable();
+            $table->unsignedBigInteger('updatedBy')->nullable();
             $table->timestamps();
         });
     }

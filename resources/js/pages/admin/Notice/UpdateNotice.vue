@@ -125,7 +125,7 @@ const fileUpload = ref(null);
 // Fetch notice
 const fetchNotice = async () => {
   try {
-    const res = await axios.get(`/api/notices/${route.params.slug}`);
+    const res = await axios.get(`/api/notices/${route.params.id}`);
     Object.assign(form, res.data.data);
     if (form.file && !isPdf(form.file)) {
       previews.value = [getImageUrl(form.file)];
@@ -162,7 +162,7 @@ const updateNotice = async () => {
 };
 
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],
   }
 });

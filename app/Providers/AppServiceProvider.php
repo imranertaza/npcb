@@ -20,7 +20,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $settings = $settings = Setting::allCached();
-        // dd($settings);
         View::share('settings', $settings);
         \Illuminate\Pagination\Paginator::useBootstrapFive();
     }

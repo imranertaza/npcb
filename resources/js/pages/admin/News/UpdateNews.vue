@@ -233,7 +233,7 @@ import { generateSlug } from "../../../layouts/helpers/helpers";
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
-const newsSlug = route.params.slug;
+const newsId = route.params.id;
 const previews = ref();
 const f_previews = ref();
 
@@ -263,7 +263,7 @@ const isVideo = (file) => {
 };
 const fetchNews = async () => {
   try {
-    const res = await axios.get(`/api/news/${newsSlug}`);
+    const res = await axios.get(`/api/news/${newsId}`);
     Object.assign(form, res.data.data);
 
     form.categories = res.data.data.categories.map((c) => c.id);
@@ -307,7 +307,7 @@ const categories = ref([]);
 
 const fetchCategories = async () => {
   try {
-    const res = await axios.get("/api/news-categories?per_page=0"); // your category index API
+    const res = await axios.get("/api/news-categories?all=1"); // your category index API
     categories.value = res.data.data;
   } catch (err) {
     toast.error("Failed to load categories");
@@ -320,7 +320,7 @@ const formattedDate = computed({
 });
 
 defineProps({
-  slug: {
+  id: {
     type: [Number, String],
     required: false,
   },

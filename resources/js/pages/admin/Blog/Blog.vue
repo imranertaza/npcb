@@ -46,7 +46,7 @@
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-blog')"
-                        :to="{ name: 'UpdateBlog', params: { slug: item.slug } }"
+                        :to="{ name: 'UpdateBlog', params: { id: item.id } }"
                         class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
@@ -74,7 +74,7 @@ import { inject, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
-import { getImageUrl,getImageCacheUrl, truncateText } from '@/layouts/helpers/helpers';
+import { getImageCacheUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
 

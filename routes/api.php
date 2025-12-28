@@ -54,7 +54,7 @@ Route::middleware(['auth:user'])->controller(AdminRoleController::class)->group(
 Route::middleware('auth:user')->prefix('posts')->controller(PostController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-posts');
     Route::post('/', 'store')->middleware('permission:create-posts');
-    Route::get('{slug}', 'show')->middleware('permission:view-posts');
+    Route::get('{id}', 'show')->middleware('permission:view-posts');
     Route::put('{id}', 'update')->middleware('permission:edit-posts');
     Route::delete('{slug}', 'destroy')->middleware('permission:delete-posts');
     Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-posts');

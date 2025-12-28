@@ -166,7 +166,7 @@ const routes = [
                         meta: { permission: "view-posts" },
                     },
                     {
-                        path: "edit-posts/:slug",
+                        path: "edit-posts/:id",
                         name: "UpdatePost",
                         component: UpdatePost,
                         props: true,
@@ -236,7 +236,7 @@ const routes = [
                         meta: { permission: "view-news" },
                     },
                     {
-                        path: "edit-news/:slug",
+                        path: "edit-news/:id",
                         name: "UpdateNews",
                         component: UpdateNews,
                         props: true,
@@ -298,7 +298,7 @@ const routes = [
                         meta: { permission: "view-blog" },
                     },
                     {
-                        path: "edit-blogs/:slug",
+                        path: "edit-blogs/:id",
                         name: "UpdateBlog",
                         component: UpdateBlog,
                         props: true,
@@ -403,7 +403,7 @@ const routes = [
                         meta: { permission: "view-events" },
                     },
                     {
-                        path: "edit-events/:slug",
+                        path: "edit-events/:id",
                         name: "UpdateEvent",
                         component: UpdateEvent,
                         props: true,
@@ -463,7 +463,7 @@ const routes = [
                         meta: { permission: "view-notices" },
                     },
                     {
-                        path: "edit-notices/:slug",
+                        path: "edit-notices/:id",
                         name: "UpdateNotice",
                         component: UpdateNotice,
                         props: true,
@@ -489,7 +489,7 @@ const routes = [
                         meta: { permission: "view-players" },
                     },
                     {
-                        path: "edit-players/:slug",
+                        path: "edit-players/:id",
                         name: "UpdatePlayer",
                         component: UpdatePlayer,
                         props: true,
@@ -515,7 +515,7 @@ const routes = [
                         meta: { permission: "view-results" },
                     },
                     {
-                        path: "edit-results/:slug",
+                        path: "edit-results/:id",
                         name: "UpdateResult",
                         component: UpdateResult,
                         props: true,

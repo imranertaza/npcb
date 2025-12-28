@@ -69,7 +69,7 @@
                       </router-link>
                       <router-link
                         v-if="authStore.hasPermission('edit-posts')"
-                        :to="{ name: 'UpdatePost', params: { slug: post.slug } }"
+                        :to="{ name: 'UpdatePost', params: { id: post.id } }"
                         class="ml-2 btn btn-sm btn-outline-info"
                       >
                         <i class="fas fa-pencil-alt"></i>

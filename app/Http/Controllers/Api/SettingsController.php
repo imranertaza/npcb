@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
@@ -8,13 +9,34 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * API Controller for managing global application settings.
+ *
+ * Settings are stored in the `settings` table as key-value pairs.
+ * Supports updating text values, file uploads (logos, images), and
+ * selective modification of .env values for reCAPTCHA configuration.
+ */
 class SettingsController extends Controller
 {
+    /**
+     * Retrieve all application settings.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         return ApiResponse::success(Setting::all(), 'Settings retrieved successfully');
     }
 
+    /**
+     * Update one or more application settings.
+     *
+     * Handles text fields, file uploads, and special .env updates
+     * for reCAPTCHA-related keys.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         $validated = $request->validate([
@@ -24,13 +46,13 @@ class SettingsController extends Controller
             'phone'               => 'sometimes|string|max:50',
             'state'               => 'sometimes|string|max:50',
 
-            // File Uploads (now including OG and Twitter images)
-            'store_logo'          => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
-            'store_icon'          => 'sometimes|file|mimes:png,jpg,jpeg,ico,webp|max:2048',
-            'footer_logo'         => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
-            'breadcrumb'          => 'sometimes|file|mimes:png,jpg,jpeg,svg,webp|max:4096',
-            'og_image'            => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x630
-            'twitter_image'       => 'sometimes|file|mimes:png,jpg,jpeg,webp|max:5120', // Recommended: 1200x628
+            // File Uploads
+            'store_logo'          => 'sometimes|image|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'store_icon'          => 'sometimes|image|mimes:png,jpg,jpeg,ico,webp|max:2048',
+            'footer_logo'         => 'sometimes|image|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'breadcrumb'          => 'sometimes|image|mimes:png,jpg,jpeg,svg,webp|max:4096',
+            'og_image'            => 'sometimes|image|mimes:png,jpg,jpeg,webp|max:5120',
+            'twitter_image'       => 'sometimes|image|mimes:png,jpg,jpeg,webp|max:5120',
 
             // Mail Settings
             'mail_protocol'       => 'sometimes|in:smtp,mail,sendmail',
@@ -42,27 +64,27 @@ class SettingsController extends Controller
             'smtp_timeout'        => 'sometimes|numeric|between:1,300',
             'smtp_crypto'         => 'sometimes|in:ssl,tls,""',
 
-            // Social
+            // Social Links
             'fb_url'              => 'sometimes|url|max:255',
             'twitter_url'         => 'sometimes|url|max:255',
             'linkedin_url'        => 'sometimes|url|max:255',
             'instagram_url'       => 'sometimes|url|max:255',
 
-            // SEO Basics
+            // SEO & Meta
             'meta_title'          => 'sometimes|string|max:155',
             'meta_keyword'        => 'sometimes|string|max:255',
             'meta_description'    => 'sometimes|string|max:500',
             'meta_author'         => 'sometimes|string|max:155',
             'meta_news_keywords'  => 'sometimes|string|max:255',
 
-            // Open Graph (non-file fields)
+            // Open Graph
             'og_type'             => 'sometimes|string|max:50',
             'og_title'            => 'sometimes|string|max:255',
             'og_description'      => 'sometimes|string|max:500',
             'og_image_width'      => 'sometimes|numeric',
             'og_image_height'     => 'sometimes|numeric',
 
-            // Twitter Card (non-file fields)
+            // Twitter Card
             'twitter_card'        => 'sometimes|string|max:50',
             'twitter_title'       => 'sometimes|string|max:255',
             'twitter_description' => 'sometimes|string|max:500',
@@ -71,60 +93,59 @@ class SettingsController extends Controller
             // Brand
             'brand_name'          => 'sometimes|string|max:255',
 
-            // reCAPTCHA
-            'use_recaptcha'       => 'sometimes|nullable|numeric|between:0,1',
+            // reCAPTCHA (these will update .env)
+            'use_recaptcha'       => 'sometimes|in:0,1',
             'nocaptcha_sitekey'   => 'sometimes|string|max:255',
             'nocaptcha_secret'    => 'sometimes|string|max:255',
         ]);
 
         $updated = [];
-
         $envKeys = ['use_recaptcha', 'nocaptcha_sitekey', 'nocaptcha_secret'];
 
         foreach ($validated as $label => $value) {
-
             if (in_array($label, $envKeys)) {
                 $envKey = strtoupper($label);
-
-                // Get current value from env
                 $current = env($envKey);
 
-                // Normalize booleans (since use_recaptcha may be true/false or "1"/"0")
-                if (is_bool($value)) {
-                    $value = $value ? 'true' : 'false';
-                }
+                $normalizedValue = $value === '1' || $value === 1 || $value === true ? 'true' : 'false';
 
-                if ($current !== (string) $value) {
-                    // Only update if changed
+                if ((string) $current !== $normalizedValue && !in_array($label, ['nocaptcha_sitekey', 'nocaptcha_secret'])) {
+                    $this->setEnvValue($envKey, $normalizedValue);
+                } elseif ($label !== 'use_recaptcha' && $current !== $value) {
                     $this->setEnvValue($envKey, $value);
-                    $updated[$label] = $value;
-                } else {
-                    // No change, just return current
-                    $updated[$label] = $current;
                 }
 
+                $updated[$label] = $value;
                 continue;
             }
-            $setting = Setting::where('label', $label)->firstOrNew(['label' => $label]);
 
-            // Handle file uploads
+            $setting = Setting::firstOrCreate(['label' => $label]);
+
             if ($request->hasFile($label)) {
                 $file = $request->file($label);
 
-                // Delete old file if exists
-                if ($setting->exists && $setting->value && Storage::disk('public')->exists($setting->value)) {
+                // Delete old file
+                if ($setting->value && Storage::disk('public')->exists($setting->value)) {
                     Storage::disk('public')->delete($setting->value);
+
+                    // Clean up empty directory
+                    $dir = dirname($setting->value);
+                    if (empty(Storage::disk('public')->files($dir))) {
+                        Storage::disk('public')->deleteDirectory($dir);
+                    }
                 }
 
+                // Build unique filename and folder path
                 $filename = $label . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $path     = $file->storeAs('settings', $filename, 'public');
+                $path = $file->storeAs("settings/{$label}", $filename, 'public');
+
                 $newValue = $path;
             } else {
                 $newValue = $value;
             }
 
             $setting->value     = $newValue;
-            $setting->updatedBy = Auth::id();
+            $setting->updatedBy = Auth::id() ?? null;
             $setting->save();
 
             $updated[$label] = $newValue;
@@ -133,6 +154,14 @@ class SettingsController extends Controller
         return ApiResponse::success($updated, 'Settings updated successfully');
     }
 
+
+    /**
+     * Update a specific key in the .env file.
+     *
+     * @param string $key
+     * @param string $value
+     * @return void
+     */
     private function setEnvValue($key, $value)
     {
         $envPath = base_path('.env');
@@ -150,6 +179,12 @@ class SettingsController extends Controller
 
         file_put_contents($envPath, $content);
     }
+
+    /**
+     * Retrieve current reCAPTCHA security settings from config.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSecuritySettings()
     {
         return response()->json([

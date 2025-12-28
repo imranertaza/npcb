@@ -48,7 +48,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </router-link>
                                             <router-link v-if="authStore.hasPermission('edit-news')"
-                                                :to="{ name: 'UpdateNews', params: { slug: item.slug } }"
+                                                :to="{ name: 'UpdateNews', params: { id: item.id } }"
                                                 class="ml-2 btn btn-sm btn-outline-info">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </router-link>

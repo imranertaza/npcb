@@ -158,7 +158,7 @@ const categoriesOptions = computed(() => {
 // Fetch event
 const fetchEvent = async () => {
     try {
-        const res = await axios.get(`/api/events/${route.params.slug}`);
+        const res = await axios.get(`/api/events/${route.params.id}`);
         Object.assign(form, res.data.data);
         if (form.banner_image) {
             previews.value = [getImageUrl(form.banner_image)];
@@ -208,7 +208,7 @@ const updateEvent = async () => {
     }
 };
 defineProps({
-    slug: {
+    id: {
         type: [String, Number],
     }
 });

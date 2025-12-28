@@ -46,7 +46,7 @@
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-events')"
-                        :to="{ name: 'UpdateEvent', params: { slug: event.slug } }"
+                        :to="{ name: 'UpdateEvent', params: { id: event.id } }"
                         class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>

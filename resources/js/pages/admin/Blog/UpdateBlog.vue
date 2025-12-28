@@ -152,7 +152,7 @@ import { generateSlug } from '../../../layouts/helpers/helpers';
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
-const newsSlug = route.params.slug;
+const blogId = route.params.id;
 const previews = ref();
 const f_previews = ref();
 
@@ -179,7 +179,7 @@ const f_imageFile = ref(null);
 
 const fetchNews = async () => {
     try {
-        const res = await axios.get(`/api/blogs/${newsSlug}`);
+        const res = await axios.get(`/api/blogs/${blogId}`);
         Object.assign(form, res.data.data);
 
         form.categories = res.data.data.categories.map(c => c.id);
@@ -231,13 +231,8 @@ const fetchCategories = async () => {
     }
 };
 
-const formattedDate = computed({
-    get: () => form.publish_date?.slice(0, 10) || '',
-    set: (val) => form.publish_date = val
-});
-
 defineProps({
-    slug: {
+    id: {
         type: [Number, String],
         required: false
     }

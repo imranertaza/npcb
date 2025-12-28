@@ -8,9 +8,6 @@ class Blog extends Model
 {
     protected $guarded = ['id'];
 
-    /**
-     * Relationship: A news item can belong to many categories.
-     */
     public function categories()
     {
         return $this->belongsToMany(
@@ -46,9 +43,6 @@ class Blog extends Model
         return $query->where('status', '1');
     }
 
-    /**
-     * Helper: Sync categories.
-     */
     public function syncCategories(array $categoryIds)
     {
         $this->categories()->sync($categoryIds);

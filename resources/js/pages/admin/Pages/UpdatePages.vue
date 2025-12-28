@@ -16,11 +16,7 @@
                   <!-- Title & Slug -->
                   <div class="form-group">
                     <label>Page Title</label>
-                    <input v-model="form.page_title" @input="form.slug = generateSlug(form.page_title)" type="text" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label>Slug</label>
-                    <input v-model="form.slug" type="text" class="form-control" required />
+                    <input v-model="form.page_title" type="text" class="form-control" required />
                   </div>
 
                   <!-- Short Description -->
@@ -99,7 +95,6 @@ import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { useToast } from '@/composables/useToast';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
-import { generateSlug } from '../../../layouts/helpers/helpers';
 
 const toast = useToast();
 const previews = ref();

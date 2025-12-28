@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('hometown')->nullable();
             $table->string('slug')->unique();
             $table->tinyInteger('status')->default(1); // 0=inactive, 1=active
+            $table->unsignedBigInteger('createdBy')->nullable();
+            $table->unsignedBigInteger('updatedBy')->nullable();
             $table->timestamps();
         });
     }

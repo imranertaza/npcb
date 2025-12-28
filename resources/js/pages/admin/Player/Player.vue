@@ -56,7 +56,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </router-link>
                                             <router-link v-if="authStore.hasPermission('edit-players')"
-                                                :to="{ name: 'UpdatePlayer', params: { slug: player.slug } }"
+                                                :to="{ name: 'UpdatePlayer', params: { id: player.id } }"
                                                 class="ml-2 btn btn-sm btn-outline-info">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </router-link>

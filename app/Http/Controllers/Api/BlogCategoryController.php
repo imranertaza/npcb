@@ -7,15 +7,32 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
+/**
+ * API Controller for managing blog categories.
+ *
+ * Provides CRUD operations, status updates, and hierarchical listing of blog categories
+ * (supports parent-child relationships).
+ */
 class BlogCategoryController extends Controller
 {
-    /*  List categories with optional search and pagination */
+    /**
+     * Retrieve a list of blog categories.
+     *
+     * Supports optional search, pagination, and different modes:
+     * - ?all=1 : Return all categories with children (hierarchical tree)
+     * - ?per_page=0 : Return only top-level categories (id + category_name only)
+     * - Default: Paginated list with children
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $all = $request->query('all', false);
-
         $search = $request->query('search');
 
         $query = BlogCategory::with(['children'])->orderBy('sort_order');
@@ -41,14 +58,26 @@ class BlogCategoryController extends Controller
         return ApiResponse::success($categories, 'Blog categories fetched successfully');
     }
 
-    /*  Get single category details */
+    /**
+     * Retrieve a single blog category with its parent and children relationships.
+     *
+     * @param BlogCategory $category The category model instance (resolved via route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(BlogCategory $category)
     {
         $category->load(['children.parent', 'parent']);
         return ApiResponse::success($category, 'Blog category fetched successfully');
     }
 
-    /*  Create new category */
+    /**
+     * Create a new blog category.
+     *
+     * Handles optional image upload and assigns the authenticated user as creator.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -64,22 +93,45 @@ class BlogCategoryController extends Controller
             'status'           => 'in:0,1',
         ]);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('blog_categories', 'public');
-            $validated['image'] = $path;
+        $validated['createdBy'] = Auth::id();
+        $baseSlug = Str::slug($validated['category_name']);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (DB::table('blog_categories')->where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
         }
 
-        $validated['createdBy'] = Auth::id();
-
+        $validated['slug'] = $slug;
+        // Create category first (without image)
         $category = BlogCategory::create($validated);
+
+        // Handle image upload if present
+        if ($request->hasFile('image')) {
+            $filename = uniqid('cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $path = $request->file('image')
+                ->storeAs("blogs/category/{$category->id}", $filename, 'public');
+
+            $category->update(['image' => $path]);
+        }
 
         return ApiResponse::success($category, 'Blog category created successfully');
     }
 
-    /*  Update existing category */
+    /**
+     * Update an existing blog category.
+     *
+     * Replaces the image only if a new one is uploaded (deletes the old image).
+     * Preserves the existing image if no new file is provided.
+     *
+     * @param Request $request
+     * @param BlogCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, BlogCategory $category)
     {
-
         $validated = $request->validate([
             'parent_id'        => 'nullable|exists:blog_categories,id',
             'category_name'    => 'required|string|max:255',
@@ -98,7 +150,11 @@ class BlogCategoryController extends Controller
                 Storage::disk('public')->delete($category->image);
             }
 
-            $path = $request->file('image')->store('blog_categories', 'public');
+            $filename = uniqid('cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $path = $request->file('image')
+                ->storeAs("blogs/category/{$category->id}", $filename, 'public');
+
             $validated['image'] = $path;
         } else {
             $validated['image'] = $category->image;
@@ -111,19 +167,32 @@ class BlogCategoryController extends Controller
         return ApiResponse::success($category, 'Blog category updated successfully');
     }
 
-    /*  Update category status */
+
+    /**
+     * Update only the status (active/inactive) of a blog category.
+     *
+     * @param Request $request
+     * @param BlogCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateStatus(Request $request, BlogCategory $category)
     {
         $request->validate([
             'status' => 'required|in:0,1',
         ]);
+
         $category->status = (string)$request->input('status');
         $category->save();
 
         return ApiResponse::success($category, 'Blog category status updated successfully');
     }
 
-    /*  Delete category */
+    /**
+     * Permanently delete a blog category and its associated image (if any).
+     *
+     * @param BlogCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(BlogCategory $category)
     {
         if ($category->image && Storage::disk('public')->exists($category->image)) {

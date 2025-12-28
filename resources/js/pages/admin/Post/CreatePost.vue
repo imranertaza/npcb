@@ -160,7 +160,7 @@ const categories = ref([]);
 
 const fetchCategories = async () => {
     try {
-        const res = await axios.get('/api/categories?per_page=0'); // your category index API
+        const res = await axios.get('/api/categories?all=1');
         categories.value = res.data.data;
     } catch (err) {
         toast.error('Failed to load categories');
