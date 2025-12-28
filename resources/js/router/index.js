@@ -70,11 +70,16 @@ import UpdateSlider from "../pages/admin/Sliders/UpdateSlider.vue";
 import CommitteeMembers from "../pages/admin/CommitteeMember/CommitteeMembers.vue";
 import UpdateCommitteeMembers from "../pages/admin/CommitteeMember/UpdateCommitteeMembers.vue";
 import CreateCommitteeMembers from "../pages/admin/CommitteeMember/CreateCommitteeMembers.vue";
+import CreatePlayer from "../pages/admin/Player/CreatePlayer.vue";
+import UpdatePlayer from "../pages/admin/Player/UpdatePlayer.vue";
+import ShowPlayer from "../pages/admin/Player/ShowPlayer.vue";
+import Player from "../pages/admin/Player/Player.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
     {
         path: "/admin",
+        redirect: "/admin/dashboard",
         children: [
             { path: "login", name: "AdminLogin", component: AdminLogin },
             {
@@ -82,13 +87,16 @@ const routes = [
                 prefix: "admin",
                 component: AdminLayout,
                 meta: { requiresAuth: true, role: "admin" },
+
                 children: [
+
                     {
                         path: "",
                         name: "Dashboard",
                         component: Dashboard,
                         meta: { permission: "view-dashboard" },
                     },
+
                     {
                         path: "admin-profile",
                         name: "adminProfile",
@@ -158,7 +166,7 @@ const routes = [
                         meta: { permission: "view-posts" },
                     },
                     {
-                        path: "edit-posts/:slug",
+                        path: "edit-posts/:id",
                         name: "UpdatePost",
                         component: UpdatePost,
                         props: true,
@@ -228,7 +236,7 @@ const routes = [
                         meta: { permission: "view-news" },
                     },
                     {
-                        path: "edit-news/:slug",
+                        path: "edit-news/:id",
                         name: "UpdateNews",
                         component: UpdateNews,
                         props: true,
@@ -290,7 +298,7 @@ const routes = [
                         meta: { permission: "view-blog" },
                     },
                     {
-                        path: "edit-blogs/:slug",
+                        path: "edit-blogs/:id",
                         name: "UpdateBlog",
                         component: UpdateBlog,
                         props: true,
@@ -395,7 +403,7 @@ const routes = [
                         meta: { permission: "view-events" },
                     },
                     {
-                        path: "edit-events/:slug",
+                        path: "edit-events/:id",
                         name: "UpdateEvent",
                         component: UpdateEvent,
                         props: true,
@@ -455,7 +463,7 @@ const routes = [
                         meta: { permission: "view-notices" },
                     },
                     {
-                        path: "edit-notices/:slug",
+                        path: "edit-notices/:id",
                         name: "UpdateNotice",
                         component: UpdateNotice,
                         props: true,
@@ -466,6 +474,32 @@ const routes = [
                         name: "CreateNotice",
                         component: CreateNotice,
                         meta: { permission: "create-notices" },
+                    },
+                    {
+                        path: "manage-players",
+                        name: "Players",
+                        component: Player,
+                        meta: { permission: "view-players" },
+                    },
+                    {
+                        path: "players/:slug",
+                        name: "ShowPlayer",
+                        component: ShowPlayer,
+                        props: true,
+                        meta: { permission: "view-players" },
+                    },
+                    {
+                        path: "edit-players/:id",
+                        name: "UpdatePlayer",
+                        component: UpdatePlayer,
+                        props: true,
+                        meta: { permission: "edit-players" },
+                    },
+                    {
+                        path: "create-players",
+                        name: "CreatePlayer",
+                        component: CreatePlayer,
+                        meta: { permission: "create-players" },
                     },
                     {
                         path: "manage-results",
@@ -481,7 +515,7 @@ const routes = [
                         meta: { permission: "view-results" },
                     },
                     {
-                        path: "edit-results/:slug",
+                        path: "edit-results/:id",
                         name: "UpdateResult",
                         component: UpdateResult,
                         props: true,

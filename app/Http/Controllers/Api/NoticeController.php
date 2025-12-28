@@ -9,11 +9,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * API Controller for managing notices.
+ *
+ * Handles CRUD operations, status toggling, and file management (images/documents)
+ * for notices.
+ */
 class NoticeController extends Controller
 {
     /**
-     * List notices with optional search + pagination
+     * Retrieve a paginated list of notices with optional search.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -35,16 +45,25 @@ class NoticeController extends Controller
     }
 
     /**
-     * Show single notice by slug
+     * Retrieve a single notice by its slug.
+     *
+     * @param string $slug The unique slug of the notice
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
      */
-    public function show($slug)
+    public function show($id)
     {
-        $notice = Notice::where('slug', $slug)->firstOrFail();
+        $notice = Notice::findOrFail($id);
         return ApiResponse::success($notice, 'Notice retrieved successfully');
     }
 
     /**
-     * Store new notice
+     * Store a new notice.
+     *
+     * Handles optional file upload (image or document) and assigns creator/updater.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -53,23 +72,38 @@ class NoticeController extends Controller
             'slug'        => 'required|string|unique:notices,slug',
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
-            'status'      => ['required', Rule::in(['0', '1'])],
+            'status'      => 'required|in:0,1',
+            'type'        => 'required|in:0,1',
         ]);
 
         $validated['createdBy'] = Auth::id();
         $validated['updatedBy'] = Auth::id();
 
-        if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('notices', 'public');
-        }
-
+        // Create notice first (without file)
         $notice = Notice::create($validated);
+
+        // Handle file upload if present
+        if ($request->hasFile('file')) {
+            $filename = uniqid('notice_file_') . '.' . $request->file('file')->getClientOriginalExtension();
+
+            $path = $request->file('file')
+                ->storeAs("notices/{$notice->id}", $filename, 'public');
+
+            $notice->update(['file' => $path]);
+        }
 
         return ApiResponse::success($notice, 'Notice created successfully');
     }
 
+
     /**
-     * Update existing notice
+     * Update an existing notice.
+     *
+     * Replaces the attached file only if a new one is uploaded (deletes the old file).
+     *
+     * @param Request $request
+     * @param int $id The ID of the notice to update
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -84,7 +118,8 @@ class NoticeController extends Controller
             ],
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
-            'status'      => ['required', Rule::in(['0', '1'])],
+            'status'      => 'required|in:0,1',
+            'type'        => 'required|in:0,1',
         ]);
 
         $validated['updatedBy'] = Auth::id();
@@ -93,7 +128,11 @@ class NoticeController extends Controller
             if ($notice->file && Storage::disk('public')->exists($notice->file)) {
                 Storage::disk('public')->delete($notice->file);
             }
-            $validated['file'] = $request->file('file')->store('notices', 'public');
+
+            $filename = uniqid('notice_file_') . '.' . $request->file('file')->getClientOriginalExtension();
+
+            $validated['file'] = $request->file('file')
+                ->storeAs("notices/{$notice->id}", $filename, 'public');
         }
 
         $notice->update($validated);
@@ -101,8 +140,13 @@ class NoticeController extends Controller
         return ApiResponse::success($notice, 'Notice updated successfully');
     }
 
+
     /**
-     * Toggle active/inactive status
+     * Toggle the publication status (active/inactive) of a notice.
+     *
+     * @param string $slug The slug of the notice
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
      */
     public function toggleStatus($slug)
     {
@@ -117,7 +161,11 @@ class NoticeController extends Controller
     }
 
     /**
-     * Delete notice
+     * Permanently delete a notice along with its associated file (if any).
+     *
+     * @param string $slug The slug of the notice to delete
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
      */
     public function destroy($slug)
     {

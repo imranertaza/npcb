@@ -10,13 +10,6 @@
             <h1 class="header-one text-blue mb-4">{{ $post->post_title }}</h1>
             <div class="d-flex gap-4 mb-40 text-dark-emphasis">
                 <div class="d-flex gap-2">
-                    <div class="user">
-                        <img class="rounded-circle" height="19" width="19"
-                            src="{{ asset('storage/web/news-details/user.jpg') }}" alt="user profile">
-                    </div>
-                    <span class="name">Syed irfan</span>
-                </div>
-                <div class="d-flex gap-2">
                     <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_1037_3358)">
@@ -36,7 +29,7 @@
             </div>
         </div>
         <div class="">
-            <img class="img-fluid" src="{{ getImageUrl($post->image) }}" alt="{{ $post->alt_name }}">
+            <img class="img-fluid" src="{{ getImageCacheUrl($post->image, 1140, 375) }}" alt="{{ $post->alt_name }}">
         </div>
         <div class="text-start text-dark-emphasis mt-40">
             {!! $post->description !!}

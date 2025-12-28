@@ -29,7 +29,7 @@
                   <td class="align-middle">{{ truncateText(item.title, 20) }}</td>
                   <td class="align-middle">{{ truncateText(item.short_des, 50) }}</td>
                   <td class="align-middle">
-                    <img v-if="item.image" draggable="false" :src="getImageUrl(item.image)" alt="Blog Image" height="50"
+                    <img v-if="item.image" draggable="false" :src="getImageCacheUrl(item.f_image,100,100)" alt="Blog Image" height="50"
                       class="rounded" />
                   </td>
                   <td v-if="authStore.hasPermission('publish-blog')" class="align-middle">
@@ -46,7 +46,7 @@
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-blog')"
-                        :to="{ name: 'UpdateBlog', params: { slug: item.slug } }"
+                        :to="{ name: 'UpdateBlog', params: { id: item.id } }"
                         class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
@@ -74,7 +74,7 @@ import { inject, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Pagination from '@/components/Paginations/Pagination.vue';
 import { useToast } from '@/composables/useToast';
-import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
+import { getImageCacheUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
 

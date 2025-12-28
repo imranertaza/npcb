@@ -10,11 +10,12 @@
             <h2 class="header-one text-blue mb-60">{{ $gallery->name }}</h2>
             <div class="row row-cols-lg-3 row-cols-md-2 g-4">
                 @forelse ($details as $item)
-                    <div>   
+                    <div>
                         <div class="upcoming-event-card card-smooth">
                             <a href="{{ getImageUrl($item->image) }}" data-lightbox="event-gallery"
                                 data-title="Upcoming Event 1">
-                                <img src="{{ getImageUrl($item->image) }}" class="card-img-top" alt="Upcoming Event 1">
+                                <img src="{{ getImageCacheUrl($item->image, 400, 300) }}" class="card-img-top"
+                                    alt="Upcoming Event 1">
                                 <div class="img-overlay">
                                     <span class="overlay-text fs-1"><svg xmlns="http://www.w3.org/2000/svg" width="60"
                                             height="60" viewBox="0 0 30 30">

@@ -8,18 +8,30 @@ use App\Models\MenuItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
+/**
+ * API Controller for managing menu items (hierarchical navigation links).
+ *
+ * Supports nested menu structure with parent-child relationships,
+ * custom link types (page, category, external URL), ordering, and bulk reordering.
+ */
 class MenuItemController extends Controller
 {
     /**
-     * List menu items (optionally filter by menu_id).
+     * Retrieve hierarchical menu items (top-level only) optionally filtered by menu_id.
+     *
+     * Returns nested structure ready for frontend tree components.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         $query = MenuItem::with('children');
 
         if ($request->has('menu_id')) {
-            $query->where('menu_id', $request->menu_id);
+            $query->where('menu_id', $request->input('menu_id'));
         }
 
         $query->whereNull('parent_id');
@@ -32,120 +44,141 @@ class MenuItemController extends Controller
                 'name'          => $item->name,
                 'icon'          => $item->icon,
                 'link'          => $item->url,
-                'link_type'   => $item->link_type,
+                'link_type'     => $item->link_type,
                 'category_id'   => $item->category_id,
                 'page_id'       => $item->page_id,
                 'order'         => $item->order,
                 'enabled'       => (bool) $item->enabled,
-                '_newChildName' => '',
-                'elements'      => $item->children->map(fn($child) => $transform($child))->toArray(),
+                '_newChildName' => '', // Helper for frontend (e.g., adding new child inline)
+                'elements'      => $item->children->map($transform)->toArray(),
             ];
         };
 
-        $data = $items->map(fn($item) => $transform($item));
+        $data = $items->map($transform)->toArray();
 
-        return apiResponse::success($data, 'Menu items fetched successfully');
+        return ApiResponse::success($data, 'Menu items fetched successfully');
     }
-
 
     /**
      * Store a new menu item.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'menu_id'     => 'required|exists:menus,id',
-            'name'        => 'required|string|max:255',
-            'icon'        => 'nullable|string|max:255',
-            'link_type'   => 'required|in:page,category,url',
-            'page_id'     => 'nullable|exists:pages,id',
-            'category_id' => 'nullable|exists:categories,id',
-            'url'         => 'nullable|string',
-            'enabled'     => 'boolean',
-            'parent_id'   => 'nullable|exists:menu_items,id',
-            'order'       => 'integer'
+            'menu_id'       => 'required|exists:menus,id',
+            'name'          => 'required|string|max:255',
+            'icon'          => 'nullable|string|max:255',
+            'link_type'     => 'required|in:page,category,url',
+            'page_id'       => 'nullable|required_if:link_type,page|exists:pages,id',
+            'category_id'   => 'nullable|required_if:link_type,category|exists:categories,id',
+            'url'           => 'nullable|required_if:link_type,url|url|max:500',
+            'enabled'       => 'boolean',
+            'parent_id'     => 'nullable|exists:menu_items,id',
+            'order'         => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
-            return apiResponse::error($validator->errors(), 'Validation failed', 422);
+            return ApiResponse::error($validator->errors(), 'Validation failed', 422);
         }
 
-        $item = MenuItem::create($validator->validated());
+        $validated = $validator->validated();
+        $validated['enabled'] = $validated['enabled'] ?? true;
 
-        return apiResponse::success($item, 'Menu item created successfully', 201);
+        $item = MenuItem::create($validated);
+
+        return ApiResponse::success($item, 'Menu item created successfully', 201);
     }
 
     /**
-     * Show a single menu item.
+     * Display a single menu item with its children.
+     *
+     * @param MenuItem $menuItem
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(MenuItem $menuItem)
     {
-        return apiResponse::success(
-            $menuItem->load('children'),
-            'Menu item fetched successfully'
-        );
+        $menuItem->load('children');
+
+        return ApiResponse::success($menuItem, 'Menu item fetched successfully');
     }
 
     /**
-     * Update a menu item.
+     * Update an existing menu item.
+     *
+     * @param Request $request
+     * @param MenuItem $menuItem
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, MenuItem $menuItem)
     {
         $validator = Validator::make($request->all(), [
-            'name'        => 'sometimes|required|string|max:255',
-            'icon'        => 'nullable|string|max:255',
-            'link_type'   => 'sometimes|required|in:page,category,url',
-            'page_id'     => 'nullable|exists:pages,id',
-            'category_id' => 'nullable|exists:categories,id',
-            'url'         => 'nullable|string',
-            'enabled'     => 'boolean',
-            'parent_id'   => 'nullable|exists:menu_items,id',
-            'order'       => 'integer'
+            'name'          => 'sometimes|required|string|max:255',
+            'icon'          => 'nullable|string|max:255',
+            'link_type'     => 'sometimes|required|in:page,category,url',
+            'page_id'       => 'nullable|required_if:link_type,page|exists:pages,id',
+            'category_id'   => 'nullable|required_if:link_type,category|exists:categories,id',
+            'url'           => 'nullable|required_if:link_type,url|url|max:500',
+            'enabled'       => 'boolean',
+            'parent_id'     => 'nullable|exists:menu_items,id',
+            'order'         => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
-            return apiResponse::error($validator->errors(), 'Validation failed', 422);
+            return ApiResponse::error($validator->errors(), 'Validation failed', 422);
         }
 
         $menuItem->update($validator->validated());
 
-        return apiResponse::success($menuItem, 'Menu item updated successfully');
+        return ApiResponse::success($menuItem, 'Menu item updated successfully');
     }
+
     /**
-     * Reorder menu items.
+     * Reorder menu items (supports nested structure).
+     *
+     * Accepts an array of items with id, order, and optional parent_id.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function reorder(Request $request)
     {
         $validated = $request->validate([
-            'menu_id' => 'required|exists:menus,id',
-            'items' => 'required|array',
-            'items.*.id' => 'required|exists:menu_items,id',
-            'items.*.order' => 'required|integer|min:1',
-            'items.*.parent_id' => 'nullable|integer',
+            'menu_id'          => 'required|exists:menus,id',
+            'items'            => 'required|array|min:1',
+            'items.*.id'       => 'required|exists:menu_items,id',
+            'items.*.order'    => 'required|integer|min:0',
+            'items.*.parent_id' => 'nullable|exists:menu_items,id',
         ]);
 
         DB::transaction(function () use ($validated) {
-            foreach ($validated['items'] as $item) {
-                MenuItem::where('id', $item['id'])
+            foreach ($validated['items'] as $itemData) {
+                MenuItem::where('id', $itemData['id'])
                     ->where('menu_id', $validated['menu_id'])
                     ->update([
-                        'order' => $item['order'],
-                        'parent_id' => $item['parent_id'],
+                        'order'     => $itemData['order'],
+                        'parent_id' => $itemData['parent_id'] ?? null,
                     ]);
             }
         });
 
-        return apiResponse::success(null, 'Menu items reordered successfully');
+        return ApiResponse::success(null, 'Menu items reordered successfully');
     }
 
-
     /**
-     * Delete a menu item.
+     * Delete a menu item (and optionally its children).
+     *
+     * @param MenuItem $menuItem
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(MenuItem $menuItem)
     {
+        $menuItem->children()->delete();
+
         $menuItem->delete();
 
-        return apiResponse::success(null, 'Menu item deleted successfully');
+        return ApiResponse::success(null, 'Menu item deleted successfully');
     }
 }

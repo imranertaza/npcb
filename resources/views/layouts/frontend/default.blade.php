@@ -21,7 +21,8 @@
                         </div>
                     </div>
                     <div class="">
-                        <img class="img-fluid" src="{{ getImageUrl($about_mission_vision->data['image']) }}" alt="">
+                        <img class="img-fluid" src="{{ getImageCacheUrl($about_mission_vision->data['image'], 467,375) }}"
+                            alt="">
                     </div>
                 </div>
             </div>
@@ -36,7 +37,7 @@
             <div
                 class="row row-cols-md-2 flex-column-reverse flex-md-row justify-content-between align-items-center g-md-5">
                 <div class="">
-                    <img src="{{ getImageUrl($vision->data['image']) }}" class="img-fluid" alt="">
+                    <img src="{{ getImageCacheUrl($vision->data['image'], 467,375) }}" class="img-fluid" alt="">
                 </div>
                 <div class="mb-4 mb-md-0">
                     <div class="d-inline-flex flex-column gap-2">
@@ -64,7 +65,7 @@
                     {!! $mission->data['content'] !!}
                 </div>
                 <div class="text-md-end text-center">
-                    <img src="{{ getImageUrl($mission->data['image']) }}" class="img-fluid" alt="">
+                    <img src="{{ getImageCacheUrl($mission->data['image'], 467,375) }}" class="img-fluid" alt="">
                 </div>
 
             </div>
@@ -91,7 +92,7 @@
                     </div>
                     <div class="">
                         <div class="ps-md-3">
-                            <img src="{{ getImageUrl($history->data['image']) }}" class="img-fluid w-100" alt="">
+                            <img src="{{ getImageCacheUrl($history->data['image'],520,507) }}" class="img-fluid w-100" alt="">
                         </div>
                     </div>
                 </div>

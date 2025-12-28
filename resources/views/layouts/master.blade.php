@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - {{ config('app.name', 'Laravel Vue App') }}</title>
-
+    @include('layouts.partial.seo')
     {{-- google font --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +16,46 @@
     @vite(['resources/web/assets/bootstrap-5.3.8-dist/css/bootstrap.min.css', 'resources/web/assets/css/style.css'])
     {{-- Page-specific styles --}}
     @stack('styles')
+    <style>
+        :root {
+            --bs-pagination-border-radius: none !important;
+        }
+
+
+        .page-item:first-child .page-link {
+            border-top-left-radius: 4px !important;
+            border-bottom-left-radius: 4px !important;
+        }
+
+        .page-item:last-child .page-link {
+            border-top-right-radius: 4px !important;
+            border-bottom-right-radius: 4px !important;
+        }
+
+
+
+        .page-item {
+            padding-left: 16px
+        }
+
+        .page-link {
+            color: var(--common-color) !important;
+            border: none !important;
+            background-color: transparent !important;
+            {{-- padding-left: 16px !important; --}} border-radius: 4px !important;
+        }
+
+        .active>.page-link,
+        .page-link.active {
+            background-color: var(--common-color) !important;
+            border-color: var(--common-color) !important;
+            color: #fff !important;
+        }
+
+        li.page-item.disabled {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -24,9 +64,8 @@
         @if (request()->route()->getName() != 'home')
             <!-- Breadcrumb Section Start -->
             <section class="breadcrumb position-relative">
-                <img class="img-fluid" src="{{ asset('storage/web/about/breadcrumb.png') }}" alt="">
-                <img class="position-absolute bottom-0 w-100" draggable="false"
-                    src="{{ asset('storage/web/about/breadcrumb-gradient.png') }}" alt="">
+                <img class="img-fluid" draggable="false"
+                    src="{{ getImageCacheUrl($settings['breadcrumb'], 1351, 300) }}" alt="">
                 <h6 class="page-title title-one position-absolute text-capitalize">@yield('breadcrumb')</h6>
             </section>
         @endif

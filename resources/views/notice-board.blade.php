@@ -29,7 +29,8 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
-                        <a href="{{ getImageUrl($item->file) }}" class="d-flex align-items-center gap-3">
+                        <a href="{{ getImageUrl($item->file) }}" download="{{ $item->title }}" target="_blank"
+                            class="d-flex align-items-center gap-3">
                             <p class="my-0 content-text">Download</p>
                             <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -59,7 +60,7 @@
             @endforelse
         </div>
         <div class=" text-center mt-60">
-                {{ $notice->links() }}
+            {{ $notice->links() }}
         </div>
     </section>
     {{-- Notice Board section End  --}}

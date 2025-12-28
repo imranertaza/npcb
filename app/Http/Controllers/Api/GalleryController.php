@@ -9,11 +9,23 @@ use App\Models\GalleryDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * API Controller for managing galleries and their detail images.
+ *
+ * Handles CRUD operations for galleries (with thumbnail), gallery detail images,
+ * and toggling status. Supports pagination, search, and file management.
+ */
 class GalleryController extends Controller
 {
     /**
-     * Display a listing of the galleries.
+     * Retrieve a paginated list of galleries with optional search.
+     *
+     * Supports an 'all' query parameter to return all galleries (id + name only).
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -30,7 +42,7 @@ class GalleryController extends Controller
         if ($request->filled('all')) {
             $galleries = $query->select(['id', 'name'])->get();
         } else {
-            $perPage = $request->input('per_page', 10);
+            $perPage   = $request->input('per_page', 10);
             $galleries = $query->paginate($perPage);
         }
 
@@ -38,7 +50,12 @@ class GalleryController extends Controller
     }
 
     /**
-     * Store a newly created gallery in storage.
+     * Store a new gallery.
+     *
+     * Handles optional thumbnail upload.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -48,17 +65,23 @@ class GalleryController extends Controller
             'sort_order' => 'nullable|integer',
             'alt_name'   => 'nullable|string|max:255',
         ]);
-        if ($request->hasFile('thumb')) {
-            $path = $request->file('thumb')->store('gallery/thumbs', 'public');
-            $validated['thumb'] = $path;
-        }
+
         $gallery = Gallery::create($validated);
+
+        if ($request->hasFile('thumb')) {
+            $path               = $request->file('thumb')->store('gallery/' . $gallery->id . '/thumbs', 'public');
+            $gallery->update(['thumb' => $path]);
+        }
+
 
         return ApiResponse::success($gallery, 'Gallery created successfully');
     }
 
     /**
-     * Display the specified gallery along with its details.
+     * Display a single gallery along with all its detail images.
+     *
+     * @param Gallery $gallery The gallery instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Gallery $gallery)
     {
@@ -67,7 +90,13 @@ class GalleryController extends Controller
     }
 
     /**
-     * Update gallery details.
+     * Update an existing gallery.
+     *
+     * Replaces thumbnail only if a new file is uploaded.
+     *
+     * @param Request $request
+     * @param Gallery $gallery The gallery instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, Gallery $gallery)
     {
@@ -83,8 +112,8 @@ class GalleryController extends Controller
                 Storage::disk('public')->delete($gallery->thumb);
             }
 
-            $path = $request->file('thumb')->store('gallery/thumbs', 'public');
-            $validated['thumb'] = $path;
+            $path = $request->file('thumb')->store('gallery/' . $gallery->id . '/thumbs', 'public');
+            $gallery->update(['thumb' => $path]);
         }
 
         $gallery->update($validated);
@@ -93,7 +122,28 @@ class GalleryController extends Controller
     }
 
     /**
-     * Delete a gallery and its associated details.
+     * Toggle the active/inactive status of a gallery.
+     *
+     * @param int $id The ID of the gallery
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
+     */
+    public function toggleStatus($id)
+    {
+        $gallery         = Gallery::findOrFail($id);
+        $gallery->status = $gallery->status === 1 ? 0 : 1;
+        $gallery->save();
+
+        return ApiResponse::success([
+            'status' => $gallery->status,
+        ], $gallery->status == 1 ? 'Gallery active' : 'Gallery inactive');
+    }
+
+    /**
+     * Permanently delete a gallery and all its associated detail images and files.
+     *
+     * @param Gallery $gallery The gallery instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Gallery $gallery)
     {
@@ -114,33 +164,39 @@ class GalleryController extends Controller
     }
 
     /**
-     * Store a new gallery detail image.
+     * Store a new detail image for a gallery.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function storeDetail(Request $request)
     {
-
         $request->validate([
             'gallery_id' => 'required|exists:gallery,id',
-            'image' => 'required|image|max:2048',
-            'alt_name' => 'nullable|string|max:255',
+            'image'      => 'required|image|max:2048',
+            'alt_name'   => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
         ]);
 
-        $path = $request->file('image')->store('gallery/details', 'public');
-
         $detail = GalleryDetail::create([
             'gallery_id' => $request->gallery_id,
-            'image' => $path,
-            'alt_name' => $request->alt_name,
+            'image'      => '',
+            'alt_name'   => $request->alt_name,
             'sort_order' => $request->sort_order ?? 0,
-            'createdBy' => Auth::user()->id,
+            'createdBy'  => Auth::id(),
         ]);
+        $path = $request->file('image')->store('gallery/' . $request->gallery_id . "/details\/".$detail->id, 'public');
+
+        $detail->update(['image' => $path]);
 
         return ApiResponse::success($detail, 'Gallery image added successfully');
     }
 
     /**
-     * Delete a gallery detail image.
+     * Delete a single gallery detail image.
+     *
+     * @param GalleryDetail $detail The detail instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroyGalleryDetail(GalleryDetail $detail)
     {
@@ -154,14 +210,19 @@ class GalleryController extends Controller
     }
 
     /**
-     * Update the alt text and sort order of a gallery detail.
+     * Update alt text and/or sort order of a gallery detail image.
+     *
+     * @param Request $request
+     * @param GalleryDetail $detail The detail instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
      */
     public function updateDetail(Request $request, GalleryDetail $detail)
     {
         $detail->update([
-            'alt_name' => $request->input('alt_name'),
+            'alt_name'   => $request->input('alt_name'),
             'sort_order' => $request->input('sort_order', $detail->sort_order),
         ]);
+
         return ApiResponse::success($detail, 'Alt text updated successfully');
     }
 }

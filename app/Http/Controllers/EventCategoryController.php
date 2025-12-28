@@ -3,16 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use App\Models\Event;
 use App\Models\EventCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * Controller for managing event categories (non-API version).
+ *
+ * Provides CRUD operations, status updates, and hierarchical listing of event categories
+ * (supports parent-child relationships).
+ */
 class EventCategoryController extends Controller
 {
-    /*  List categories with optional search and pagination */
+    /**
+     * Retrieve a list of event categories.
+     *
+     * Supports optional search, pagination, and different modes:
+     * - ?all=1 : Return basic list of all categories (id + category_name only)
+     * - ?per_page=0 : Return only top-level categories (id + category_name)
+     * - Default: Paginated list with children and parent relationships
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $all = $request->query('all', false);
@@ -41,14 +56,27 @@ class EventCategoryController extends Controller
         return ApiResponse::success($categories, 'Categories fetched successfully');
     }
 
-    /*  Get single category details */
+    /**
+     * Retrieve a single event category with its parent and children relationships.
+     *
+     * @param EventCategory $category The category model instance (resolved via route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(EventCategory $category)
     {
         $category->load(['children.parent', 'parent']);
         return ApiResponse::success($category, 'Category fetched successfully');
     }
 
-    /*  Create new category */
+    /**
+     * Create a new event category.
+     *
+     * Automatically generates a slug from the category name.
+     * Handles optional image upload and assigns the authenticated user as creator.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -65,23 +93,37 @@ class EventCategoryController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($validated['category_name']);
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('event_categories', 'public');
-            $validated['image'] = $path;
-        }
-
         $validated['createdBy'] = Auth::id();
 
+        // Create category first (without image)
         $category = EventCategory::create($validated);
+
+        // Handle image upload if present
+        if ($request->hasFile('image')) {
+            $filename = uniqid('event_cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $path = $request->file('image')
+                ->storeAs("events/category/{$category->id}", $filename, 'public');
+
+            $category->update(['image' => $path]);
+        }
 
         return ApiResponse::success($category, 'Category created successfully');
     }
 
-    /*  Update existing category */
+
+    /**
+     * Update an existing event category.
+     *
+     * Replaces the image if a new one is uploaded (deletes old image).
+     * Preserves existing image if none is provided.
+     *
+     * @param Request $request
+     * @param EventCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, EventCategory $category)
     {
-
         $validated = $request->validate([
             'parent_id'        => 'nullable|exists:event_categories,id',
             'category_name'    => 'required|string|max:255',
@@ -96,14 +138,18 @@ class EventCategoryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
 
-            $path = $request->file('image')->store('event_categories', 'public');
+            $filename = uniqid('event_cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $path = $request->file('image')
+                ->storeAs("events/category/{$category->id}", $filename, 'public');
+
             $validated['image'] = $path;
         } else {
-
             $validated['image'] = $category->image;
         }
 
@@ -114,19 +160,32 @@ class EventCategoryController extends Controller
         return ApiResponse::success($category, 'Category updated successfully');
     }
 
-    /*  Update category status */
+
+    /**
+     * Update only the status (active/inactive) of an event category.
+     *
+     * @param Request $request
+     * @param EventCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateStatus(Request $request, EventCategory $category)
     {
         $request->validate([
             'status' => 'required|in:0,1',
         ]);
+
         $category->status = (string)$request->input('status');
         $category->save();
 
         return ApiResponse::success($category, 'Category status updated successfully');
     }
 
-    /*  Delete category */
+    /**
+     * Permanently delete an event category and its associated image (if any).
+     *
+     * @param EventCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(EventCategory $category)
     {
         if ($category->image && Storage::disk('public')->exists($category->image)) {

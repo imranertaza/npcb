@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('image');
             $table->integer('order');
             $table->tinyInteger('status')->default(0)->comment('0=inactive, 1=active');
+            $table->unsignedBigInteger('createdBy')->nullable();
+            $table->unsignedBigInteger('updatedBy')->nullable();
             $table->timestamps();
         });
     }

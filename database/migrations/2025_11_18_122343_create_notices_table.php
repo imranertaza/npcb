@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('file')->nullable();
             $table->enum('status', ['1', '0'])->default('1');
+            $table->tinyInteger('type')->default('0')->comment('0 = General Notice, 1 = Match Fixtures');
             $table->foreignId('createdBy')->nullable()->constrained('users');
             $table->foreignId('updatedBy')->nullable()->constrained('users');
             $table->timestamps();

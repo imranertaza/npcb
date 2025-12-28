@@ -7,14 +7,14 @@
     <!-- News & Updates section start -->
     <section class="py-100 container">
         <div class="mb-4">
-            <img class="img-fluid w-100" src="{{ getImageUrl($category->image) }}" alt="">
+            <img class="img-fluid w-100" src="{{ getImageCacheUrl($category->image,1140,586) }}" alt="">
         </div>
         <div class="row  row-cols-xl-4 row-cols-md-3 row-cols-sm-2 g-4">
             @foreach ($posts as $post)
                 <div class="">
                     <a href="{{ route('sports-details', $post->slug) }}" class="">
                         <div class="gaming-news-card running-event-card card-smooth">
-                            <img src="{{ getImageUrl($post->f_image) }}" class="card-img-top" alt="news image">
+                            <img src="{{ getImageCacheUrl($post->f_image,262,230) }}" class="card-img-top" alt="news image">
                             <div class="card-body">
                                 <h5 class="title-five">
                                     {{ truncateText($post->post_title, 20) }}

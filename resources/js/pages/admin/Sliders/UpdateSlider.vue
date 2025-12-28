@@ -16,7 +16,12 @@
                   <!-- Title -->
                   <div class="form-group">
                     <label>Slide Title</label>
-                    <input v-model="form.title" type="text" class="form-control" required />
+                    <input
+                      v-model="form.title"
+                      type="text"
+                      class="form-control"
+                      required
+                    />
                   </div>
 
                   <!-- Link -->
@@ -28,14 +33,23 @@
                   <!-- Description -->
                   <div class="form-group">
                     <label>Description</label>
-                    <textarea v-model="form.description" class="form-control" rows="5"
-                      placeholder="Write slide description here..."></textarea>
+                    <textarea
+                      v-model="form.description"
+                      class="form-control"
+                      rows="5"
+                      placeholder="Write slide description here..."
+                    ></textarea>
                   </div>
 
                   <!-- Order -->
                   <div class="form-group">
                     <label>Order</label>
-                    <input v-model="form.order" type="number" class="form-control" min="1" />
+                    <input
+                      v-model="form.order"
+                      type="number"
+                      class="form-control"
+                      min="1"
+                    />
                   </div>
 
                   <!-- Enabled -->
@@ -53,19 +67,30 @@
                   <!-- File Upload -->
                   <div class="form-group">
                     <label>Upload Image</label>
-                    <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
-                      :allowSelectOnPreview="true" />
+                    <Vue3Dropzone
+                      v-model="fileUpload"
+                      v-model:previews="previews"
+                      mode="edit"
+                      :allowSelectOnPreview="true"
+                    />
+                    <small class="text-muted">Recommended:1351 × 617px</small>
                   </div>
 
                   <div>
-                    <button type="submit" class="btn btn-success btn-block">Update</button>
-                    <RouterLink :to="{ name: 'Sliders' }" class="btn btn-secondary btn-block mt-2">Cancel</RouterLink>
+                    <button type="submit" class="btn btn-success btn-block">
+                      Update
+                    </button>
+                    <RouterLink
+                      :to="{ name: 'Sliders' }"
+                      class="btn btn-secondary btn-block mt-2"
+                    >
+                      Cancel</RouterLink
+                    >
                   </div>
                 </div>
               </div>
             </div>
           </form>
-
         </div>
       </div>
     </div>
@@ -73,28 +98,28 @@
 </template>
 
 <script setup>
-import DashboardHeader from '@/components/DashboardHeader.vue';
+import DashboardHeader from "@/components/DashboardHeader.vue";
 import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
-import '@jaxtheprime/vue3-dropzone/dist/style.css';
-import axios from 'axios';
-import { onMounted, reactive, ref } from 'vue';
-import { useToast } from '@/composables/useToast';
-import { useRoute } from 'vue-router';
-import { getImageUrl } from '../../../layouts/helpers/helpers';
+import "@jaxtheprime/vue3-dropzone/dist/style.css";
+import axios from "axios";
+import { onMounted, reactive, ref } from "vue";
+import { useToast } from "@/composables/useToast";
+import { useRoute } from "vue-router";
+import { getImageUrl } from "../../../layouts/helpers/helpers";
 
 const toast = useToast();
 const fileUpload = ref(null);
 const previews = ref();
 
 const form = reactive({
-  id: '',
-  key: 'banner_section',
-  title: '',
-  description: '',
-  link: '',
+  id: "",
+  key: "banner_section",
+  title: "",
+  description: "",
+  link: "",
   order: 1,
   enabled: 1,
-  image: ''
+  image: "",
 });
 
 const route = useRoute();
@@ -111,7 +136,7 @@ const getSlider = async () => {
 
     previews.value = [getImageUrl(form.image)];
   } catch (error) {
-    toast.error('Failed to fetch slide details');
+    toast.error("Failed to fetch slide details");
     console.error(error);
   }
 };
@@ -120,20 +145,20 @@ const updateSlide = async () => {
   const payload = new FormData();
 
   for (const key in form) {
-    if (key !== 'image') {
-      payload.append(key, String(form[key] ?? ''));
+    if (key !== "image") {
+      payload.append(key, String(form[key] ?? ""));
     }
   }
 
   if (fileUpload.value && fileUpload.value[0]) {
-    payload.append('image', fileUpload.value[0].file);
+    payload.append("image", fileUpload.value[0].file);
   }
 
   try {
     await axios.post(`/api/sliders/${form.id}`, payload, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    toast.success('Slide updated successfully!');
+    toast.success("Slide updated successfully!");
   } catch (error) {
     toast.validationError(error);
     console.error(error);
@@ -142,7 +167,7 @@ const updateSlide = async () => {
 defineProps({
   id: {
     type: [String, Number],
-    required: true
-  }
+    required: true,
+  },
 });
 </script>

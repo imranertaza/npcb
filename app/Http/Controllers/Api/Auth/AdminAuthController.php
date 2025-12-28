@@ -8,9 +8,25 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
+/**
+ * API Controller for admin authentication.
+ *
+ * Handles admin login, profile retrieval, current user role/permissions,
+ * and logout using Laravel Sanctum with Spatie permissions integration.
+ */
 class AdminAuthController extends Controller
 {
+    /**
+     * Authenticate an admin user and issue a Sanctum token.
+     *
+     * Revokes all existing tokens before issuing a new one.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ValidationException
+     */
     public function login(Request $request)
     {
         $request->validate(['email' => 'required|email', 'password' => 'required']);
@@ -22,13 +38,25 @@ class AdminAuthController extends Controller
         $admin->tokens()->delete();
         $token = $admin->createToken('admin-token', ['*'])->plainTextToken;
         return ApiResponse::success(['admin' => $admin, 'token' => $token], 'Login successful');
-        // return response()->json(['admin' => $admin, 'token' => $token]);
     }
 
+    /**
+     * Get the authenticated admin user's full profile.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function profile(Request $request)
     {
         return response()->json($request->user());
     }
+
+    /**
+     * Get the current authenticated admin's role and permissions.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function me(Request $request)
     {
         $admin = $request->user();
@@ -38,6 +66,12 @@ class AdminAuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout the authenticated admin by revoking all tokens.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();

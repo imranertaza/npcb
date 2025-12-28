@@ -15,26 +15,76 @@ class PostSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        $categories = [
+            'athletics' => [
+                'Athletics Championship Results',
+                'Training Tips for Sprinters',
+                'Marathon Preparation Guide',
+                'Top 10 Long Jump Techniques',
+                'Relay Race Team Strategies',
+                'Nutrition Tips for Runners',
+                'Athletics Meet Highlights',
+            ],
+            'football' => [
+                'Football League Semi-Final Highlights',
+                'Top 10 Football Skills to Master',
+                'World Cup Qualifier Match Review',
+                'Best Goalkeepers of the Season',
+                'Football Training Drills for Beginners',
+                'Tactical Analysis of Modern Football',
+                'Legendary Football Matches Remembered',
+            ],
+            'cricket' => [
+                'Cricket World Cup Match Report',
+                'Best Bowling Performances of the Season',
+                'Top 10 Batting Partnerships',
+                'Cricket T20 League Highlights',
+                'Spin Bowling Masterclass',
+                'Fitness Tips for Cricketers',
+                'Historic Cricket Matches Revisited',
+            ],
+            'badminton' => [
+                'Badminton Doubles Tournament Recap',
+                'Improving Your Smash Technique',
+                'Singles vs Doubles Strategy',
+                'Badminton Footwork Drills',
+                'Top Badminton Players of the Year',
+                'Badminton Championship Highlights',
+                'How to Choose the Right Racket',
+            ],
+            'swimming' => [
+                'Swimming Gala Results',
+                'How to Perfect Your Butterfly Stroke',
+                'Freestyle Training Techniques',
+                'Top 10 Swimming Records Broken',
+                'Breathing Exercises for Swimmers',
+                'Swimming Relay Team Strategies',
+                'Olympic Swimming Highlights',
+            ],
+        ];
 
-        for ($i = 1; $i <= 20; $i++) {
-            $title = $faker->sentence(6);
-            Post::updateOrCreate(["post_title"=> $title], [
-                'post_title'       => $title,
-                'slug'             => Str::slug($title),
-                'short_des'        => $faker->sentence(15),
-                'description' => collect($faker->paragraphs(3))->map(fn($p) => "<p>$p</p>")->implode("\n"),
-                'meta_title'       => $faker->sentence(5),
-                'meta_keyword'     => implode(', ', $faker->words(6)),
-                'meta_description' => $faker->sentence(20),
-                'image'            => 'https://placehold.co/1400x400',
-                'f_image'          => 'https://placehold.co/200x400',
-                'alt_name'         => $faker->words(3, true),
-                'publish_date'     => now()->subDays(rand(0, 30)),
-                'status'           => 1,
-                'createdBy'        => 1, // assuming admin ID = 1
-                'updatedBy'        => null,
-            ]);
+        foreach ($categories as $category => $titles) {
+            foreach ($titles as $title) {
+                Post::updateOrCreate(
+                    ['post_title' => $title],
+                    [
+                        'post_title'       => $title,
+                        'slug'             => Str::slug($title),
+                        'short_des'        => "Latest update in {$category}.",
+                        'description'      => "<p>This post covers {$category} related news and updates.</p>",
+                        'meta_title'       => $title,
+                        'meta_keyword'     => "{$category}, sports, results",
+                        'meta_description' => "Detailed coverage and insights about {$category}.",
+                        'image'            => 'https://placehold.co/1400x400',
+                        'f_image'          => 'https://placehold.co/400x200',
+                        'alt_name'         => "{$category} image",
+                        'publish_date'     => now()->subDays(rand(0, 30)),
+                        'status'           => "1",
+                        'createdBy'        => 1,
+                        'updatedBy'        => null,
+                    ]
+                );
+            }
         }
     }
 }

@@ -1,105 +1,108 @@
 <template>
-  <DashboardHeader title="Update Event" />
+    <DashboardHeader title="Update Event" />
 
-  <section class="content">
-    <div class="container-fluid">
-      <div class="row row-cols-1">
-        <div class="card card-purple">
-          <div class="card-header">
-            <h3 class="card-title">Edit Event</h3>
-          </div>
-
-          <form @submit.prevent="updateEvent">
-            <div class="card-body">
-              <div class="row">
-                <!-- Left Column -->
-                <div class="col-md-8">
-                  <!-- Event Title -->
-                  <div class="form-group">
-                    <label>Event Title</label>
-                    <input v-model="form.title" @input="form.slug = generateSlug(form.title)" type="text"
-                      class="form-control" required />
-                  </div>
-
-                  <!-- Slug -->
-                  <div class="form-group">
-                    <label>Slug</label>
-                    <input v-model="form.slug" type="text" class="form-control" required />
-                  </div>
-
-                  <!-- Description -->
-                  <div class="form-group">
-                    <label>Description</label>
-                    <RichTextEditor v-model="form.description" placeholder="Write event details here..."
-                      class="editor" />
-                  </div>
-
-                  <!-- Category -->
-                  <div class="form-group">
-                    <label>Event Category</label>
-                    <Multiselect v-model="form.event_category_id" :options="categoriesOptions"
-                      :reduce="option => option.value" placeholder="Select Event category" searchable allow-empty />
-                  </div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="col-md-4">
-                  <!-- File Upload -->
-                  <div class="form-group">
-                    <label>Upload Featured Image</label>
-                    <Vue3Dropzone v-model="imageUpload" v-model:previews="previewsImage" mode="edit"
-                      :allowSelectOnPreview="true" />
-                  </div>
-                  <!-- File Upload -->
-                  <div class="form-group">
-                    <label>Upload Banner Image</label>
-                    <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
-                      :allowSelectOnPreview="true" />
-
-                    <!-- Custom Preview -->
-                    <div v-if="previewsPdf && previewsPdf.length" class="mt-3">
-                      <div v-for="(preview, idx) in previewsPdf" :key="idx">
-                        <!-- If PDF -->
-                        <div v-if="isPdf(preview)" class="d-flex align-items-center">
-                          <i class="fas fa-file-pdf fa-3x text-danger mr-2"></i>
-                          <a :href="preview" target="_blank">View PDF Document</a>
-                        </div>
-
-                        <!-- If Image -->
-                        <img v-else :src="preview" alt="Preview" class="img-fluid rounded border"
-                          style="max-height:120px" />
-                      </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row row-cols-1">
+                <div class="card card-purple">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Event</h3>
                     </div>
-                  </div>
-                  <!-- Type -->
-                  <div class="form-group">
-                    <label>Event Type</label>
-                    <select v-model="form.type" class="custom-select">
-                      <option value="1">Running</option>
-                      <option value="0">Upcoming</option>
-                    </select>
-                  </div>
-                  <!-- Status -->
-                  <div class="form-group">
-                    <label>Status</label>
-                    <select v-model="form.status" class="custom-select">
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
-                    </select>
-                  </div>
 
-                  <div>
-                    <button type="submit" class="btn btn-success btn-block">Update</button>
-                    <RouterLink :to="{ name: 'Events' }" class="btn btn-secondary btn-block mt-2">Cancel</RouterLink>
-                  </div>
+                    <form @submit.prevent="updateEvent">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Left Column -->
+                                <div class="col-md-8">
+                                    <!-- Event Title -->
+                                    <div class="form-group">
+                                        <label>Event Title</label>
+                                        <input v-model="form.title" @input="form.slug = generateSlug(form.title)"
+                                            type="text" class="form-control" required />
+                                    </div>
+
+                                    <!-- Slug -->
+                                    <div class="form-group">
+                                        <label>Slug</label>
+                                        <input v-model="form.slug" type="text" class="form-control" required />
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <RichTextEditor v-model="form.description"
+                                            placeholder="Write event details here..." class="editor" />
+                                    </div>
+
+                                    <!-- Category -->
+                                    <div class="form-group">
+                                        <label>Event Category</label>
+                                        <Multiselect v-model="form.event_category_id" :options="categoriesOptions"
+                                            :reduce="option => option.value" placeholder="Select Event category"
+                                            searchable allow-empty />
+                                    </div>
+                                </div>
+
+                                <!-- Right Column -->
+                                <div class="col-md-4">
+                                    <!-- File Upload -->
+                                    <div class="form-group">
+                                        <label>Upload Featured Image</label>
+                                        <Vue3Dropzone v-model="imageUpload" v-model:previews="previewsImage" mode="edit"
+                                            :allowSelectOnPreview="true" />
+                                    </div>
+                                    <!-- File Upload -->
+                                    <div class="form-group">
+                                        <label>Upload Banner Image</label>
+                                        <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
+                                            :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Recommended: 1140 × 375px</small>
+
+                                        <!-- Custom Preview -->
+                                        <div v-if="previewsPdf && previewsPdf.length" class="mt-3">
+                                            <div v-for="(preview, idx) in previewsPdf" :key="idx">
+                                                <!-- If PDF -->
+                                                <div v-if="isPdf(preview)" class="d-flex align-items-center">
+                                                    <i class="fas fa-file-pdf fa-3x text-danger mr-2"></i>
+                                                    <a :href="preview" target="_blank">View PDF Document</a>
+                                                </div>
+
+                                                <!-- If Image -->
+                                                <img v-else :src="preview" alt="Preview"
+                                                    class="img-fluid rounded border" style="max-height:120px" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Type -->
+                                    <div class="form-group">
+                                        <label>Event Type</label>
+                                        <select v-model="form.type" class="custom-select">
+                                            <option value="1">Running</option>
+                                            <option value="0">Upcoming</option>
+                                        </select>
+                                    </div>
+                                    <!-- Status -->
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select v-model="form.status" class="custom-select">
+                                            <option value="1">Active</option>
+                                            <option value="0">Inactive</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <button type="submit" class="btn btn-success btn-block">Update</button>
+                                        <RouterLink :to="{ name: 'Events' }" class="btn btn-secondary btn-block mt-2">
+                                            Cancel</RouterLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-              </div>
             </div>
-          </form>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 </template>
 
 <script setup>
@@ -126,17 +129,17 @@ const categories = ref([]);
 const isPdf = (filename) => /\.pdf$/i.test(filename);
 
 const form = reactive({
-  id: null,
-  title: '',
-  slug: '',
-  description: '',
-  banner_image: '',
-  featured_image: '',
-  event_category_id: '',
-  status: '1',
-  createdBy: 1,
-  type: 0,
-  updatedBy: null
+    id: null,
+    title: '',
+    slug: '',
+    description: '',
+    banner_image: '',
+    featured_image: '',
+    event_category_id: '',
+    status: '1',
+    createdBy: 1,
+    type: 0,
+    updatedBy: null
 });
 
 const fileUpload = ref(null);
@@ -144,74 +147,74 @@ const imageUpload = ref(null);
 
 
 const categoriesOptions = computed(() => {
-  return [
-    { label: '-- None --', value: '' },
-    ...categories.value.map(cat => ({
-      label: cat.category_name,
-      value: cat.id
-    }))
-  ];
+    return [
+        { label: '-- None --', value: '' },
+        ...categories.value.map(cat => ({
+            label: cat.category_name,
+            value: cat.id
+        }))
+    ];
 });
 // Fetch event
 const fetchEvent = async () => {
-  try {
-    const res = await axios.get(`/api/events/${route.params.slug}`);
-    Object.assign(form, res.data.data);
-    if (form.banner_image) {
-      previews.value = [getImageUrl(form.banner_image)];
+    try {
+        const res = await axios.get(`/api/events/${route.params.id}`);
+        Object.assign(form, res.data.data);
+        if (form.banner_image) {
+            previews.value = [getImageUrl(form.banner_image)];
+        }
+        if (form.featured_image) {
+            previewsImage.value = [getImageUrl(form.featured_image)];
+        }
+        // console.log({form})
+    } catch (err) {
+        toast.error('Failed to load event');
+        console.error(err);
     }
-    if (form.featured_image) {
-      previewsImage.value = [getImageUrl(form.featured_image)];
-    }
-    // console.log({form})
-  } catch (err) {
-    toast.error('Failed to load event');
-    console.error(err);
-  }
 };
 
 // Fetch categories
 const fetchCategories = async () => {
-  try {
-    const res = await axios.get('/api/events-categories?all=1');
-    categories.value = res.data.data;
-  } catch (err) {
-    toast.error('Failed to load categories');
-  }
+    try {
+        const res = await axios.get('/api/events-categories?all=1');
+        categories.value = res.data.data;
+    } catch (err) {
+        toast.error('Failed to load categories');
+    }
 };
 
 // Update event
 const updateEvent = async () => {
-  const payload = new FormData();
+    const payload = new FormData();
 
-  for (const key in form) {
-    if (key != 'banner_image' && key != 'featured_image') {
-      payload.append(key, form[key]);
+    for (const key in form) {
+        if (key != 'banner_image' && key != 'featured_image') {
+            payload.append(key, form[key]);
+        }
     }
-  }
-  if (fileUpload.value && fileUpload.value[0]) {
-    payload.append('banner_image', fileUpload.value[0].file);
-  }
-  if (imageUpload.value && imageUpload.value[0]) {
-    payload.append('featured_image', imageUpload.value[0].file);
-  }
-  try {
-    await axios.post(`/api/events/${form.id}?_method=PUT`, payload, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    router.push({ name: 'Events', query: { toast: 'Event updated successfully' } });
-  } catch (err) {
-    toast.validationError(err);
-  }
+    if (fileUpload.value && fileUpload.value[0]) {
+        payload.append('banner_image', fileUpload.value[0].file);
+    }
+    if (imageUpload.value && imageUpload.value[0]) {
+        payload.append('featured_image', imageUpload.value[0].file);
+    }
+    try {
+        await axios.post(`/api/events/${form.id}?_method=PUT`, payload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        router.push({ name: 'Events', query: { toast: 'Event updated successfully' } });
+    } catch (err) {
+        toast.validationError(err);
+    }
 };
 defineProps({
-  slug: {
-    type: [String, Number],
-  }
+    id: {
+        type: [String, Number],
+    }
 });
 
 onMounted(() => {
-  fetchEvent();
-  fetchCategories();
+    fetchEvent();
+    fetchCategories();
 });
 </script>

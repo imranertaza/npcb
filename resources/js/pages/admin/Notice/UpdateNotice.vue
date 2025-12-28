@@ -66,6 +66,14 @@
                       <option value="0">Inactive</option>
                     </select>
                   </div>
+                  <!-- Type -->
+                  <div class="form-group">
+                    <label>Type</label>
+                    <select v-model="form.type" class="custom-select">
+                      <option value="0">Notice</option>
+                      <option value="1">Match Fixtures</option>
+                    </select>
+                  </div>
 
                   <div>
                     <button type="submit" class="btn btn-success btn-block">Update</button>
@@ -103,6 +111,7 @@ const isPdf = (filename) => /\.pdf$/i.test(filename);
 const form = reactive({
   id: null,
   title: '',
+  type: '0',
   slug: '',
   description: '',
   file: '',
@@ -116,7 +125,7 @@ const fileUpload = ref(null);
 // Fetch notice
 const fetchNotice = async () => {
   try {
-    const res = await axios.get(`/api/notices/${route.params.slug}`);
+    const res = await axios.get(`/api/notices/${route.params.id}`);
     Object.assign(form, res.data.data);
     if (form.file && !isPdf(form.file)) {
       previews.value = [getImageUrl(form.file)];
@@ -153,7 +162,7 @@ const updateNotice = async () => {
 };
 
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],
   }
 });

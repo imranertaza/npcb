@@ -5,7 +5,7 @@
     <div class="container-fluid">
       <div v-if="gallery" class="card shadow-sm">
         <!-- Gallery Thumbnail -->
-        <img v-if="gallery.thumb" height="300" :src="getImageUrl(gallery.thumb)" class="card-img-top object-fit-cover"
+        <img v-if="gallery.thumb" height="300" :src="getImageCacheUrl(gallery.thumb,300,300)" class="card-img-top object-fit-cover"
           loading="lazy" :alt="gallery.alt_name || gallery.name" />
 
         <div class="card-body">
@@ -19,7 +19,7 @@
           <h6 class="mb-3">Gallery Images</h6>
           <div v-if="gallery.details?.length > 0" class="row">
             <div v-for="detail in gallery.details" :key="detail.id" class="col-md-3 mb-3">
-              <img v-if="detail.image" :src="getImageUrl(detail.image)" :alt="detail.alt_name || gallery.name"
+              <img v-if="detail.image" :src="getImageCacheUrl(detail.image,400,300)" :alt="detail.alt_name || gallery.name"
                 class="img-fluid rounded shadow-sm" />
               <small class="d-block text-muted mt-1">{{ detail.alt_name }}</small>
             </div>
@@ -41,7 +41,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import { getImageUrl } from '@/layouts/helpers/helpers';
+import { getImageCacheUrl } from '@/layouts/helpers/helpers';
 
 const route = useRoute();
 const gallery = ref(null);

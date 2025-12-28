@@ -14,7 +14,7 @@
                 @forelse ($blogs as $item)
                     <div>
                         <div class="gaming-news-card latest-blog-card card-smooth">
-                            <img src="{{ getImageUrl($item->f_image) }}" class="card-img-top" alt="news image">
+                            <img src="{{ getImageCacheUrl($item->f_image, 357, 225)}}" class="card-img-top" alt="news image">
                             <div class="card-body">
                                 <p class="content-text d-flex align-items-center"><svg width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

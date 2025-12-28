@@ -3,172 +3,238 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
-use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * API Controller for managing admin users, roles, and permissions.
+ *
+ * Provides full CRUD for admin users (with role assignment),
+ * role/permission management, and safe guards for super-admin.
+ */
 class AdminRoleController extends Controller
 {
+    /**
+     * Retrieve a list of all admin users with their current role.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $admins = User::with('roles')->get()->map(function ($admin) {
             return [
-                'id' => $admin->id,
-                'name' => $admin->name,
+                'id'    => $admin->id,
+                'name'  => $admin->name,
                 'email' => $admin->email,
-                'role' => $admin->roles->pluck('name')->first() ?? 'none',
+                'role'  => $admin->roles->pluck('name')->first() ?? 'none',
             ];
         });
 
-        return ApiResponse::success($admins, 'User list retrieved');
+        return ApiResponse::success($admins, 'User list retrieved successfully');
     }
 
+    /**
+     * Retrieve details of a specific admin user.
+     *
+     * @param User $admin
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(User $admin)
     {
         $admin->load('roles');
 
         return ApiResponse::success([
-            'id' => $admin->id,
-            'name' => $admin->name,
+            'id'    => $admin->id,
+            'name'  => $admin->name,
             'email' => $admin->email,
-            'role' => $admin->roles->pluck('name')->first() ?? 'none',
+            'role'  => $admin->roles->pluck('name')->first() ?? 'none',
         ], 'User fetched successfully');
     }
 
-    // 📋 List all available roles
+    /**
+     * List all available roles (for user guard).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function roles()
     {
         $roles = Role::where('guard_name', 'user')->pluck('name');
-        return ApiResponse::success($roles, 'Available roles retrieved');
+
+        return ApiResponse::success($roles, 'Available roles retrieved successfully');
     }
 
+    /**
+     * Create a new admin user with role assignment.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|exists:roles,name',
+            'role'     => 'required|string|exists:roles,name,guard_name,user',
         ]);
 
         $admin = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        $admin->assignRole($request->role);
+        $admin->assignRole($validated['role']);
 
         return ApiResponse::success([
-            'id' => $admin->id,
-            'name' => $admin->name,
+            'id'    => $admin->id,
+            'name'  => $admin->name,
             'email' => $admin->email,
-            'role' => $request->role,
-        ], 'User created successfully');
+            'role'  => $validated['role'],
+        ], 'User created successfully', 201);
     }
 
-
+    /**
+     * Update an existing admin user (name, email, password, role).
+     *
+     * Password update revokes all existing tokens.
+     *
+     * @param Request $request
+     * @param User $admin
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateUser(Request $request, User $admin)
     {
-        // ✅ Validate input
         $validated = $request->validate([
-            'name'     => 'required|string|max:155',
-            'email'    => 'required|email|max:155|unique:users,email,' . $admin->id,
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $admin->id,
             'password' => 'nullable|string|min:6',
-            'role'     => 'required|string|exists:roles,name',
+            'role'     => 'required|string|exists:roles,name,guard_name,user',
         ]);
 
-        // ✅ Update basic fields
+        // Prevent changes to super-admin
+        if ($admin->hasRole('super-admin')) {
+            return ApiResponse::error('Cannot modify a super-admin user', 403);
+        }
+
         $admin->name  = $validated['name'];
         $admin->email = $validated['email'];
 
-        // ✅ Update password only if provided
         if (!empty($validated['password'])) {
             $admin->password = Hash::make($validated['password']);
-            $admin->tokens()->delete();
+            $admin->tokens()->delete(); // Revoke all sessions on password change
         }
 
         $admin->save();
 
-        // ✅ Sync role (Spatie Permission)
-        if (!empty($validated['role'])) {
-            $admin->syncRoles([$validated['role']]);
-        }
+        $admin->syncRoles([$validated['role']]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User updated successfully',
-            'data'    => $admin->load('roles'),
-        ]);
-        return ApiResponse::success([
-            $admin->load('roles')
-        ], 'User updated successfully');
+        return ApiResponse::success($admin->fresh('roles'), 'User updated successfully');
     }
-    // 🔄 Update an admin’s role
+
+    /**
+     * Update only the role of an admin user.
+     *
+     * @param Request $request
+     * @param User $admin
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateUserRole(Request $request, User $admin)
     {
-        $request->validate([
-            'role' => 'required|string|exists:roles,name',
+        $validated = $request->validate([
+            'role' => 'required|string|exists:roles,name,guard_name,user',
         ]);
+
         if ($admin->hasRole('super-admin')) {
             return ApiResponse::error('Cannot modify role of a super-admin', 403);
         }
-        $admin->syncRoles([$request->role]);
+
+        $admin->syncRoles([$validated['role']]);
 
         return ApiResponse::success([
-            'id' => $admin->id,
-            'role' => $request->role,
-        ], 'User role updated');
+            'id'   => $admin->id,
+            'role' => $validated['role'],
+        ], 'User role updated successfully');
     }
 
-    // 🔍 List all roles with their permissions
+    /**
+     * List all roles with their assigned permissions.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function rolesWithPermissions()
     {
-        $roles = Role::with('permissions')->get()->map(function ($role) {
-            return [
-                'name' => $role->name,
-                'permissions' => $role->permissions->pluck('name'),
-            ];
-        });
+        $roles = Role::with('permissions')
+            ->where('guard_name', 'user')
+            ->get()
+            ->map(function ($role) {
+                return [
+                    'name'        => $role->name,
+                    'permissions' => $role->permissions->pluck('name'),
+                ];
+            });
 
-        return ApiResponse::success($roles, 'Roles with permissions retrieved');
+        return ApiResponse::success($roles, 'Roles with permissions retrieved successfully');
     }
 
+    /**
+     * Update permissions for a specific role (except super-admin).
+     *
+     * @param Request $request
+     * @param string $role
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
+     */
     public function updatePermissions(Request $request, $role)
     {
-        $role = Role::where('name', $role)->where('guard_name', 'user')->firstOrFail();
+        $roleModel = Role::where('name', $role)
+            ->where('guard_name', 'user')
+            ->firstOrFail();
 
-        if ($role->name === 'super-admin') {
-            return ApiResponse::error('Cannot update permissions for super-admin', 403);
+        if ($roleModel->name === 'super-admin') {
+            return ApiResponse::error('Cannot update permissions for super-admin role', 403);
         }
 
-        $request->validate([
-            'permissions' => 'array',
-            'permissions.*' => 'string|exists:permissions,name',
+        $validated = $request->validate([
+            'permissions'   => 'required|array',
+            'permissions.*' => 'string|exists:permissions,name,guard_name,user',
         ]);
 
-        $role->syncPermissions($request->permissions);
+        $roleModel->syncPermissions($validated['permissions']);
 
         return ApiResponse::success([
-            'role' => $role->name,
-            'permissions' => $role->permissions->pluck('name'),
-        ], 'Permissions updated');
+            'role'        => $roleModel->name,
+            'permissions' => $roleModel->permissions->pluck('name'),
+        ], 'Permissions updated successfully');
     }
 
-
-    // 📋 List all available permissions
+    /**
+     * List all available permissions (for user guard).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function permissions()
     {
         $permissions = Permission::where('guard_name', 'user')->pluck('name');
-        return ApiResponse::success($permissions, 'Available permissions retrieved');
+
+        return ApiResponse::success($permissions, 'Available permissions retrieved successfully');
     }
+
+    /**
+     * Delete an admin user (super-admin protected).
+     *
+     * @param User $admin
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(User $admin)
     {
         if ($admin->hasRole('super-admin')) {
-            return ApiResponse::error('Cannot delete a super-admin', 403);
+            return ApiResponse::error('Cannot delete a super-admin user', 403);
         }
 
         $admin->delete();

@@ -12,7 +12,15 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    // 🟢 List all categories
+    /**
+     * Display a listing of categories with optional search and pagination.
+     *
+     * If 'all' is provided, returns all categories. Otherwise, paginates results.
+     * Supports search by category_name and description.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $all = $request->query('all', false);
@@ -42,14 +50,31 @@ class CategoryController extends Controller
         return ApiResponse::success($categories, 'Categories fetched successfully');
     }
 
-    // 🟢 Show single category
+    /**
+     * Display a single category.
+     *
+     * Loads the category along with its parent and children relationships.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Category $category)
     {
         $category->load(['children.parent', 'parent']);
         return ApiResponse::success($category, 'Category fetched successfully');
     }
 
-    // 🟢 Create category
+    /**
+     * Store a newly created category in storage.
+     *
+     * Validates request data, handles image upload, and creates a new category record.
+     * Generates a slug automatically from the category name.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -64,22 +89,35 @@ class CategoryController extends Controller
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
-$validated['slug'] = Str::slug($validated['category_name']);
-        
+        $validated['slug'] = Str::slug($validated['category_name']);
+
         // Handle image upload if present
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
-            $validated['image'] = $path;
-        }
 
         $validated['createdBy'] = Auth::id();
 
         $category = Category::create($validated);
+        // Handle image upload if present
+        if ($request->hasFile('image')) {
+            $filename = uniqid('cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+            $path = $request->file('image')->storeAs("posts/category/{$category->id}", $filename, 'public');
+            $category->update(['image' => $path]);
+        }
 
         return ApiResponse::success($category, 'Category created successfully');
     }
 
-    // 🟢 Update category
+    /**
+     * Update the specified category in storage.
+     *
+     * Validates request data, updates the category record, and replaces the image if provided.
+     * Deletes the old image file before saving the new one.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
@@ -95,26 +133,39 @@ $validated['slug'] = Str::slug($validated['category_name']);
             'status'           => 'in:0,1',
         ]);
 
-        // Handle image upload if present
         if ($request->hasFile('image')) {
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
-            // Store new image
-            $path = $request->file('image')->store('categories', 'public');
+
+            // Build a unique filename
+            $filename = uniqid('cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $path = $request->file('image')
+                ->storeAs("posts/category/{$category->id}", $filename, 'public');
+
             $validated['image'] = $path;
         } else {
-            // Keep existing image if no new file uploaded
             $validated['image'] = $category->image;
         }
 
         $validated['updatedBy'] = Auth::id();
-
         $category->update($validated);
 
         return ApiResponse::success($category, 'Category updated successfully');
     }
 
+    /**
+     * Update the status of a category.
+     *
+     * Validates the status input and updates the category's status field.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function updateStatus(Request $request, Category $category)
     {
         $request->validate([
@@ -126,7 +177,14 @@ $validated['slug'] = Str::slug($validated['category_name']);
         return ApiResponse::success($category, 'Category status updated successfully');
     }
 
-    // 🟢 Delete category
+    /**
+     * Remove the specified category from storage.
+     *
+     * Deletes the category record and its associated image file if present.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Category $category)
     {
         // Delete image file if it exists
