@@ -37,25 +37,37 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 
+// Current route instance (to access slug param)
 const route = useRoute();
+
+// Single event data (fetched from API)
 const event = ref(null);
 
-// helper to check if file is an image
+/**
+ * Helper: Check if a file path is an image (based on extension)
+ * @param {string} filePath - Path or URL of the file
+ * @returns {boolean}
+ */
 const isImage = (filePath) => {
-  return /\.(jpg|jpeg|png|gif)$/i.test(filePath);
+  return /\.(jpg|jpeg|png|gif|webp)$/i.test(filePath);
 };
 
+/**
+ * Fetch the individual event by slug on component mount
+ */
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/events/${route.params.slug}`);
-    event.value = response.data.data;
+    const response = await axios.get(`/api/events/${route.params.id}`);
+    event.value = response.data.data; // Expected: { title, description, banner_image, featured_image, ... }
   } catch (error) {
     console.error('Error fetching event:', error);
+    // Optional: show toast or redirect in production
   }
 });
 
+// Optional props (kept for flexibility, though slug is primarily from route)
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],
   }
 });

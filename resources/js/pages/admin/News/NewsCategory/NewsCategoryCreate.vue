@@ -106,10 +106,14 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
 import { useToast } from '@/composables/useToast';
+
+// Toast notifications
 const toast = useToast();
 
+// Dropzone reference for category image upload
 const imageFile = ref(null);
 
+// Reactive form state for new news category
 const form = reactive({
     category_name: '',
     description: '',
@@ -117,14 +121,18 @@ const form = reactive({
     meta_title: '',
     meta_description: '',
     meta_keyword: '',
-    image: null,
+    image: null,              // Preview only
     alt_name: '',
     sort_order: 0,
-    status: 1,
+    status: 1                 // 1 = active
 });
 
+// List of existing categories (for parent selection)
 const categories = ref([]);
 
+/**
+ * Fetch all news categories for parent dropdown
+ */
 const fetchCategories = async () => {
     try {
         const res = await axios.get('/api/news-categories?all=1');
@@ -134,15 +142,21 @@ const fetchCategories = async () => {
     }
 };
 
+/**
+ * Create new news category
+ * Sends FormData with optional image
+ */
 const createCategory = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholder
     for (const key in form) {
         if (key !== 'image') {
             payload.append(key, form[key]);
         }
     }
 
+    // Append image if uploaded
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
     }
@@ -152,6 +166,8 @@ const createCategory = async () => {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Category created successfully!');
+
+        // Reset form
         Object.assign(form, {
             category_name: '',
             description: '',
@@ -173,6 +189,9 @@ const createCategory = async () => {
     }
 };
 
+/**
+ * Options for parent category dropdown
+ */
 const categoriesOptions = computed(() => {
     return [
         { label: '-- None --', value: '' },
@@ -183,9 +202,9 @@ const categoriesOptions = computed(() => {
     ];
 });
 
+// Load categories on mount
 onMounted(fetchCategories);
 </script>
-
 <style>
 .v-select {
     background-color: white;

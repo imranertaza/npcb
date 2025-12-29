@@ -47,25 +47,27 @@ import { useRoute, useRouter } from 'vue-router'
 import DashboardHeader from '@/components/DashboardHeader.vue'
 import { useToast } from '@/composables/useToast'
 
+/* Edit Admin User Page */
+
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
 
-const roles = ref([])
+const roles = ref([])          // available roles
 const form = ref({
   name: '',
   email: '',
-  password: '',
+  password: '',               // leave empty to keep current password
   role: ''
 })
 
-// Fetch roles
+/* Fetch available roles */
 const fetchRoles = async () => {
   const res = await axios.get('/api/roles')
   roles.value = res.data.data
 }
 
-// Fetch user by ID
+/* Fetch existing user data */
 const fetchUser = async () => {
   try {
     const res = await axios.get(`/api/admins/${route.params.id}`)
@@ -79,7 +81,7 @@ const fetchUser = async () => {
   }
 }
 
-// Update user
+/* Update user */
 const updateUser = async () => {
   try {
     const payload = { ...form.value }

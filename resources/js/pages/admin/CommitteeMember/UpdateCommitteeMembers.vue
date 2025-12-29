@@ -86,43 +86,65 @@ import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 
+// Toast notifications
 const toast = useToast();
+
+// Route & router
 const route = useRoute();
 const router = useRouter();
+
+// Dropzone preview for existing image
 const previews = ref([]);
+
+// Dropzone reference for new image upload
+const fileUpload = ref(null);
+
+// Reactive form state for editing committee member
 const form = reactive({
     id: null,
     name: '',
     designation: '',
-    image: '',
-    order: 1,
-    status: '1'
+    image: '',      // Existing image path (used only for preview)
+    order: 1,       // Display/sort order
+    status: '1'     // '1' = active, '0' = inactive
 });
-const fileUpload = ref(null);
 
-// Fetch committee member
+/**
+ * Fetch the committee member data for editing
+ */
 const fetchMember = async () => {
     try {
         const res = await axios.get(`/api/committee-members/${route.params.id}`);
-        Object.assign(form, res.data.data);
-        if (form.image) {
-            previews.value = [getImageUrl(form.image)];
+        const member = res.data.data;
+
+        // Populate form with fetched data
+        Object.assign(form, member);
+
+        // Show existing image in Dropzone preview if present
+        if (member.image) {
+            previews.value = [{ url: getImageUrl(member.image) }];
         }
     } catch (err) {
         toast.error('Failed to load committee member');
-        console.error(err);
+        console.error('Fetch member error:', err);
     }
 };
 
-// Update committee member
+/**
+ * Update the committee member
+ * Uses FormData + spoofed PUT method via _method=PUT
+ */
 const updateMember = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholder
     for (const key in form) {
         if (key !== 'image') {
-            payload.append(key, form[key]);
+            payload.append(key, form[key] ?? '');
         }
     }
+
+    // Append new image if uploaded
     if (fileUpload.value && fileUpload.value[0]) {
         payload.append('image', fileUpload.value[0].file);
     }
@@ -131,12 +153,19 @@ const updateMember = async () => {
         await axios.post(`/api/committee-members/${form.id}?_method=PUT`, payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        router.push({ name: 'CommitteeMembers', query: { toast: 'Committee member updated successfully' } });
+
+        // Redirect to index with success toast
+        router.push({
+            name: 'CommitteeMembers',
+            query: { toast: 'Committee member updated successfully' }
+        });
     } catch (err) {
-        toast.validationError(err);
+        toast.validationError(err); // Handles Laravel validation errors nicely
+        console.error('Update failed:', err);
     }
 };
 
+// Load member data on mount
 onMounted(() => {
     form.id = route.params.id;
     fetchMember();

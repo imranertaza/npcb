@@ -1,7 +1,17 @@
   <header>
       @php
-          $headerMenu = App\Models\Menu::where('position', 'header')->with('menus.children')->first();
-          $menuItems = $headerMenu->menus;
+          $headerMenu = App\Models\Menu::where('position', 'header')
+              ->with([
+                  'menus' => function ($q) {
+                      $q->where('enabled', true)->with([
+                          'children' => function ($q2) {
+                              $q2->where('enabled', true);
+                          },
+                      ]);
+                  },
+              ])
+              ->first();
+          $menuItems = $headerMenu->menus->where('enabled', true);
       @endphp
       <nav class="navbar navbar-expand-xl bg-common py-28 position-absolute z-3 w-100">
           <div class="container">

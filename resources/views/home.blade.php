@@ -10,7 +10,7 @@
                 @foreach ($slides as $slide)
                     @if ($slide->enabled)
                         <div class="swiper-slide justify-content-start">
-                            <img draggable="false" src="{{ getImageUrl($slide->image) }}" alt="{{ $slide->title }}">
+                            <img draggable="false" src="{{ getImageCacheUrl($slide->image, 1351, 617, 'webp') }}" alt="{{ $slide->title }}">
                         </div>
                     @endif
                 @endforeach

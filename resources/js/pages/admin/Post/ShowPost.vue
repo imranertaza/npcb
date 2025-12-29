@@ -37,14 +37,14 @@ const post = ref(null);
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/posts/${route.params.slug}`);
+    const response = await axios.get(`/api/posts/${route.params.id}`);
     post.value = response.data.data;
   } catch (error) {
     console.error('Error fetching post:', error);
   }
 });
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],   // or use: null to allow anything
   }
 })

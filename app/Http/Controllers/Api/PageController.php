@@ -56,9 +56,9 @@ class PageController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function show($slug)
+    public function show($id)
     {
-        $page = Page::whereSlug($slug)->firstOrFail();
+        $page = Page::findOrFail($id);
         return ApiResponse::success($page, 'Page retrieved successfully');
     }
 

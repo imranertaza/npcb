@@ -139,7 +139,7 @@
 
 <script setup>
 import axios from 'axios';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import { useToast } from '@/composables/useToast';
@@ -149,88 +149,130 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
 import { generateSlug } from '../../../layouts/helpers/helpers';
 
+// Toast notifications
 const toast = useToast();
+
+// Route & router
 const route = useRoute();
 const router = useRouter();
-const blogId = route.params.id;
-const previews = ref();
-const f_previews = ref();
 
+// Blog ID from route params
+const blogId = route.params.id;
+
+// Dropzone preview arrays (for existing images)
+const previews = ref([]);     // Main image preview
+const f_previews = ref([]);   // Featured image preview
+
+// Dropzone file references (new uploads)
+const imageFile = ref(null);      // New main image
+const f_imageFile = ref(null);    // New featured image
+
+// Reactive form state
 const form = reactive({
     news_title: '',
     slug: '',
     short_des: '',
     description: '',
-    image: '',
-    f_image: '',
+    image: '',            // Existing image path (for preview)
+    f_image: '',          // Existing featured image path (for preview)
     alt_name: '',
     publish_date: '',
-    status: '1',
+    status: '1',          // 1 = published, 0 = draft
     meta_title: '',
     meta_keyword: '',
     meta_description: '',
     createdBy: 1,
     updatedBy: null,
-    categories: [],
+    categories: [],       // Array of selected category IDs
+    id: null              // Will be filled from API response
 });
 
-const imageFile = ref(null);
-const f_imageFile = ref(null);
+// Available categories for selection
+const categories = ref([]);
 
+/**
+ * Fetch the blog post data for editing
+ */
 const fetchNews = async () => {
     try {
         const res = await axios.get(`/api/blogs/${blogId}`);
-        Object.assign(form, res.data.data);
+        const blog = res.data.data;
 
-        form.categories = res.data.data.categories.map(c => c.id);
+        // Populate form fields
+        Object.assign(form, blog);
 
-        previews.value = [getImageUrl(form.image)];
-        f_previews.value = [getImageUrl(form.f_image)];
+        // Extract category IDs
+        form.categories = blog.categories?.map(c => c.id) || [];
+
+        // Set existing image previews for Dropzone
+        if (blog.image) {
+            previews.value = [{ url: getImageUrl(blog.image) }];
+        }
+        if (blog.f_image) {
+            f_previews.value = [{ url: getImageUrl(blog.f_image) }];
+        }
     } catch (err) {
-        toast.error('Failed to load news');
-        console.error(err);
+        toast.error('Failed to load blog');
+        console.error('Fetch blog error:', err);
     }
 };
 
+/**
+ * Update the blog post
+ * Uses FormData + spoofed PUT method via _method=PUT
+ */
 const updateBlog = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholders
     for (const key in form) {
-        if (key !== 'image' && key !== "f_image") {
-            payload.append(key, form[key]);
+        if (key !== 'image' && key !== 'f_image') {
+            payload.append(key, form[key] ?? '');
         }
     }
+
+    // Append new main image if selected
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
     }
+
+    // Append new featured image if selected
     if (f_imageFile.value && f_imageFile.value[0]) {
         payload.append('f_image', f_imageFile.value[0].file);
     }
+
+    // Append categories as array
     form.categories.forEach(catId => {
         payload.append('categories[]', catId);
     });
+
     try {
         await axios.post(`/api/blogs/${form.id}?_method=PUT`, payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
+
+        // Redirect to index with success message
         router.push({ name: 'Blog', query: { toast: 'Blog updated successfully' } });
     } catch (err) {
-        toast.validationError(err);
+        toast.validationError(err); // Handles 422 validation errors nicely
+        console.error('Update blog error:', err);
     }
 };
 
-
-const categories = ref([]);
-
+/**
+ * Load all blog categories (for multi-select)
+ */
 const fetchCategories = async () => {
     try {
-        const res = await axios.get('/api/blog-categories?per_page=0'); // your category index API
+        const res = await axios.get('/api/blog-categories?per_page=0');
         categories.value = res.data.data;
     } catch (err) {
         toast.error('Failed to load categories');
+        console.error('Fetch categories error:', err);
     }
 };
 
+// Optional props (kept for compatibility, though ID is taken from route)
 defineProps({
     id: {
         type: [Number, String],
@@ -238,6 +280,7 @@ defineProps({
     }
 });
 
+// Load data on component mount
 onMounted(() => {
     fetchCategories();
     fetchNews();

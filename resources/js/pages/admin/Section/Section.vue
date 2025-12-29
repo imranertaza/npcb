@@ -48,7 +48,6 @@
                   </td>
                   <td class="align-middle">
                     <div class="d-flex gap-2">
-                      <!-- Edit -->
                       <!-- Edit Sliders -->
 
                       <router-link v-if="authStore.hasPermission('manage-frontend') && section.name != 'banner_section'"
@@ -63,18 +62,6 @@
                         title="Edit Sliders">
                         <i class="fas fa-eye"></i>
                       </router-link>
-
-                      <!-- Delete (optional - you can enable later) -->
-                      <!--
-                      <button
-                        v-if="authStore.hasPermission('delete-sections')"
-                        @click="confirmDelete(section)"
-                        class="btn btn-sm btn-outline-danger"
-                        title="Delete"
-                      >
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                      -->
                     </div>
                   </td>
                 </tr>
@@ -119,42 +106,49 @@ import { useToast } from '@/composables/useToast';
 import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 
+
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const toast = useToast();
 
-const sections = ref([]);
-const previewUrl = ref(null);
+// Reactive state
+const sections = ref([]);        // Array of section records
+const previewUrl = ref(null);    // URL of image currently being previewed (for modal/lightbox)
 
-// Fetch sections with pagination + search
+// Fetch all sections from API
 const fetchPage = async (page = 1, term = '') => {
   try {
     const res = await axios.get(`/api/sections`);
     sections.value = res.data.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching sections:', error);
     toast.error('Failed to load sections.');
   }
 };
 
+// Handle search input from SearchBox component
 const onSearch = (term) => {
   fetchPage(1, term);
 };
 
+// Open image preview (used by clicking on images in section preview)
 const previewImage = (url) => {
   previewUrl.value = url;
 };
 
+// Lifecycle: fetch data on component mount
 onMounted(() => {
   fetchPage();
 
+  // Show success toast if redirected with a message (e.g., after update)
   if (route.query.toast) {
     toast.success(route.query.toast);
+
+    // Clean up query param after showing toast
     setTimeout(() => {
       const q = { ...route.query };
       delete q.toast;
-
       router.replace({ query: q });
     }, 2000);
   }

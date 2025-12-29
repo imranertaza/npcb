@@ -123,9 +123,9 @@ if (! function_exists('getImageCacheUrl')) {
      */
     function getImageCacheUrl(?string $filePath, int $width = 200, int $height = 200, string $format = 'webp'): string
     {
-        $baseUrl      = config('app.url'); // comes from APP_URL in .env
-        $relativePath = getImageUrl($filePath);
 
+        $baseUrl      = env('APP_URL'); // comes from APP_URL in .env
+        $relativePath = getImagePath($filePath);
         // If already absolute URL, return as-is
         if (str_starts_with($relativePath, 'http://') || str_starts_with($relativePath, 'https://')) {
             return $relativePath;

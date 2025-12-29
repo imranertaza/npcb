@@ -45,34 +45,50 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from '@/composables/useToast'
 
+// Toast helper for notifications
 const toast = useToast()
+
+// Form fields
 const email = ref('')
 const password = ref('')
-const remember = ref(false)   // ✅ define remember so v-model works
+const remember = ref(false) // "Remember me" checkbox state
+
+// Router instance for navigation
 const router = useRouter()
 
+/**
+ * Handle admin login process
+ */
 const login = async () => {
   try {
+    // Fetch CSRF cookie required by Laravel Sanctum
     await axios.get('/sanctum/csrf-cookie')
+
+    // Submit login credentials
     const { data } = await axios.post('/api/admin/login', {
       email: email.value,
       password: password.value,
-      remember: remember.value   // ✅ send remember flag if backend supports it
+      remember: remember.value // Optional: persist login if supported by backend
     })
 
+    // Store authentication data
     localStorage.setItem('token', data.data.token)
     localStorage.setItem('role', 'admin')
+
+    // Set default Authorization header for future requests
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`
+
+    // Redirect to admin dashboard on success
     router.push({ name: 'Dashboard' })
   } catch (error) {
-    console.error(error)
+    console.error('Login failed:', error)
+    // Display appropriate error messages via toast
     toast.validationError(error)
   }
 }

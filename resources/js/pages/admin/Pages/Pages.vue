@@ -62,14 +62,14 @@
                     <div class="d-flex">
                       <router-link
                         v-if="authStore.hasPermission('view-pages')"
-                        :to="{ name: 'ShowPage', params: { slug: page.slug } }"
+                        :to="{ name: 'ShowPage', params: { id: page.id } }"
                         class="btn btn-sm btn-outline-dark"
                       >
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link
                         v-if="authStore.hasPermission('edit-pages')"
-                        :to="{ name: 'UpdatePages', params: { slug: page.slug } }"
+                        :to="{ name: 'UpdatePages', params: { id: page.id } }"
                         class="ml-2 btn btn-sm btn-outline-info"
                       >
                         <i class="fas fa-pencil-alt"></i>

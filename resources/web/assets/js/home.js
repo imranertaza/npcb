@@ -1,24 +1,22 @@
-// resources/js/main.js
+
 import Swiper from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/autoplay";
-import { Pagination } from "swiper/modules";
-import { Navigation } from "swiper/modules";
-import { EffectFade } from "swiper/modules";
 
+import { Pagination, Navigation, EffectFade } from "swiper/modules";
+
+/* Initialize all Swiper instances after DOM is fully loaded */
 document.addEventListener("DOMContentLoaded", () => {
-    // Banner background swiper
+    /* Banner background swiper (fade effect, synced with content) */
     const swiperBg = new Swiper(".mySwiperBg", {
         modules: [EffectFade, Pagination, Navigation],
         slidesPerView: 1,
         spaceBetween: 30,
         loop: true,
-        keyboard: {
-            enabled: true,
-        },
+        keyboard: { enabled: true },
         pagination: {
             el: ".custom-swiper-pagination",
             clickable: true,
@@ -36,14 +34,12 @@ document.addEventListener("DOMContentLoaded", () => {
         },
     });
 
-    // Banner content swiper
+    /* Banner content swiper (slide effect, synced with background) */
     const swiperContent = new Swiper(".mySwiper", {
         slidesPerView: 1,
         spaceBetween: 30,
         loop: true,
-        keyboard: {
-            enabled: true,
-        },
+        keyboard: { enabled: true },
         pagination: {
             el: ".custom-swiper-pagination",
             clickable: true,
@@ -54,9 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         speed: 400,
         effect: "slide",
-        slideEffect: {
-            slideShadows: true,
-        },
         allowTouchMove: false,
         autoplay: {
             delay: 3000,
@@ -64,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
     });
 
+    /* Gaming section swiper - responsive grid */
     var gamingSwiper = new Swiper(".myGamingSwiper", {
         modules: [EffectFade, Pagination, Navigation],
         loop: true,
@@ -72,23 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
             nextEl: ".custom-swiper-button-gaming-next",
             prevEl: ".custom-swiper-button-gaming-prev",
         },
-
         breakpoints: {
-            0: {
-                slidesPerView: 1,
-            },
-            480: {
-                slidesPerView: 2,
-            },
-            768: {
-                slidesPerView: 3,
-            },
-            992: {
-                slidesPerView: 4,
-            },
+            0:    { slidesPerView: 1 },
+            480:  { slidesPerView: 2 },
+            768:  { slidesPerView: 3 },
+            992:  { slidesPerView: 4 },
         },
     });
 
+    /* Running events swiper - responsive */
     var runningEventSwiper = new Swiper(".myRunningEventSwiper", {
         modules: [EffectFade, Pagination, Navigation],
         loop: true,
@@ -98,24 +84,15 @@ document.addEventListener("DOMContentLoaded", () => {
             prevEl: ".custom-swiper-button-running-prev",
         },
         breakpoints: {
-            0: {
-                slidesPerView: 1,
-            },
-            480: {
-                slidesPerView: 2,
-            },
-            768: {
-                slidesPerView: 3,
-            },
-            992: {
-                slidesPerView: 3,
-            },
-            1200: {
-                slidesPerView: 4,
-            },
+            0:    { slidesPerView: 1 },
+            480:  { slidesPerView: 2 },
+            768:  { slidesPerView: 3 },
+            992:  { slidesPerView: 3 },
+            1200: { slidesPerView: 4 },
         },
     });
 
+    /* Upcoming events swiper - responsive */
     var upcomingEventSwiper = new Swiper(".myUpcomingEventSwiper", {
         modules: [EffectFade, Pagination, Navigation],
         loop: true,
@@ -125,24 +102,15 @@ document.addEventListener("DOMContentLoaded", () => {
             prevEl: ".custom-swiper-button-upcoming-prev",
         },
         breakpoints: {
-            0: {
-                slidesPerView: 1,
-            },
-            480: {
-                slidesPerView: 2,
-            },
-            768: {
-                slidesPerView: 3,
-            },
-            992: {
-                slidesPerView: 3,
-            },
-            1200: {
-                slidesPerView: 4,
-            },
+            0:    { slidesPerView: 1 },
+            480:  { slidesPerView: 2 },
+            768:  { slidesPerView: 3 },
+            992:  { slidesPerView: 3 },
+            1200: { slidesPerView: 4 },
         },
     });
 
+    /* Latest blogs swiper - responsive */
     var latestBlogSwiper = new Swiper(".myLatestBlogSwiper", {
         modules: [EffectFade, Pagination, Navigation],
         loop: true,
@@ -152,21 +120,14 @@ document.addEventListener("DOMContentLoaded", () => {
             prevEl: ".custom-swiper-button-latest-prev",
         },
         breakpoints: {
-            0: {
-                slidesPerView: 1,
-            },
-            480: {
-                slidesPerView: 2,
-            },
-            768: {
-                slidesPerView: 3,
-            },
-            992: {
-                slidesPerView: 3,
-            },
+            0:    { slidesPerView: 1 },
+            480:  { slidesPerView: 2 },
+            768:  { slidesPerView: 3 },
+            992:  { slidesPerView: 3 },
         },
     });
 
+    /* Sync banner navigation buttons between background and content swipers */
     document
         .querySelector(".custom-swiper-button-next")
         .addEventListener("click", () => {

@@ -116,11 +116,11 @@
                         <div class="form-group">
                             <label>Position</label>
                             <select v-model="editForm.position" class="form-control form-control-sm">
-                                <option value="Header">Header</option>
-                                <option value="Top">Top</option>
-                                <option value="Footer">Footer</option>
-                                <option value="Right Sidebar">Right Sidebar</option>
-                                <option value="Floating Top">Floating Top</option>
+                                <option value="header">Header</option>
+                                <option value="top">Top</option>
+                                <option value="footer">Footer</option>
+                                <option value="right_sidebar">Right Sidebar</option>
+                                <option value="floating_top">Floating Top</option>
                             </select>
                         </div>
                         <div class="form-check icheck-success">
@@ -139,23 +139,26 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted, inject } from 'vue'
 import axios from 'axios'
 import DashboardHeader from '@/components/DashboardHeader.vue'
 import { useToast } from '@/composables/useToast';
 
+// Toast notifications
 const toast = useToast()
+
+// SweetAlert2 instance
 const $swal = inject('$swal');
 
+// List of menus
 const menus = ref([])
 
 // Add modal state
 const addModal = ref(false)
 const newMenu = ref({
     name: '',
-    position: 'Header',
+    position: 'header',
     enabled: true
 })
 
@@ -163,11 +166,13 @@ const newMenu = ref({
 const editModal = ref({ open: false, target: null })
 const editForm = ref({
     name: '',
-    position: 'Header',
+    position: 'header',
     enabled: true,
 })
 
-// ✅ Fetch menus from API
+/**
+ * Fetch all menus from API
+ */
 const fetchMenus = async () => {
     try {
         const { data } = await axios.get('/api/menus')
@@ -177,7 +182,9 @@ const fetchMenus = async () => {
     }
 }
 
-// ✅ Add menu via API
+/**
+ * Add a new menu
+ */
 const addMenu = async () => {
     if (!newMenu.value.name.trim()) return
     try {
@@ -191,7 +198,9 @@ const addMenu = async () => {
     }
 }
 
-// ✅ Edit menu via API
+/**
+ * Apply changes from edit modal
+ */
 const applyEdit = async () => {
     const target = editModal.value.target
     if (!target) return
@@ -205,6 +214,9 @@ const applyEdit = async () => {
     }
 }
 
+/**
+ * Confirm and delete a menu
+ */
 const confirmDelete = async (menu) => {
     const result = await $swal({
         title: `Delete "${menu.name}"?`,
@@ -232,22 +244,21 @@ const confirmDelete = async (menu) => {
     }
 };
 
-
-// Modal helpers
+// Modal control helpers
 const openAddModal = () => { addModal.value = true }
 const closeAddModal = () => { addModal.value = false }
 
 const openEditModal = (menu) => {
     editModal.value.open = true
     editModal.value.target = menu
-    editForm.value = { ...menu,enabled: !!menu.enabled }
+    editForm.value = { ...menu, enabled: !!menu.enabled }
 }
 const closeEditModal = () => {
     editModal.value.open = false
     editModal.value.target = null
 }
 
-// Load menus on mount
+// Load menus on component mount
 onMounted(fetchMenus)
 </script>
 

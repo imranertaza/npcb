@@ -126,7 +126,6 @@
         </div>
     </section>
 </template>
-
 <script setup>
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
@@ -137,10 +136,16 @@ import { useToast } from '@/composables/useToast';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
 import { generateSlug } from '../../../layouts/helpers/helpers';
 
+// Toast notifications
 const toast = useToast();
+
+// Dropzone file references (main image)
 const imageFile = ref(null);
+
+// Dropzone file references (featured image)
 const fImageFile = ref(null);
 
+// Reactive form state
 const form = reactive({
     title: '',
     slug: '',
@@ -148,47 +153,59 @@ const form = reactive({
     description: '',
     alt_name: '',
     publish_date: '',
-    status: '1',
+    status: '1',              // 1 = published, 0 = draft
     meta_title: '',
     meta_keyword: '',
     meta_description: '',
-    image: null,
-    f_image: null,
-    categories: []
+    image: null,              // preview URL (not sent)
+    f_image: null,            // preview URL (not sent)
+    categories: []            // array of selected category IDs
 });
 
+// Available blog categories for multi-select
 const categories = ref([]);
 
+/**
+ * Fetch all blog categories on mount (per_page=0 to get all)
+ */
 const fetchCategories = async () => {
     try {
-        const res = await axios.get('/api/blog-categories?per_page=0'); // your category index API
+        const res = await axios.get('/api/blog-categories?per_page=0');
         categories.value = res.data.data;
     } catch (err) {
         toast.error('Failed to load categories');
+        console.error(err);
     }
 };
+
 onMounted(() => {
     fetchCategories();
 });
 
+/**
+ * Handle blog creation form submission
+ */
 const submitNews = async () => {
     const payload = new FormData();
 
-    // Append form fields
+    // Append all text fields
     for (const key in form) {
-        if (key !== 'image') {
-            payload.append(key, form[key]);
+        if (key !== 'image' && key !== 'f_image') {
+            payload.append(key, form[key] || '');
         }
     }
-    // Append image file from Dropzone
+
+    // Append main image from Dropzone
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
     }
-    // Append featured image file from Dropzone
+
+    // Append featured image from Dropzone
     if (fImageFile.value && fImageFile.value[0]) {
         payload.append('f_image', fImageFile.value[0].file);
     }
 
+    // Append categories as categories[]
     form.categories.forEach(catId => {
         payload.append('categories[]', catId);
     });
@@ -198,13 +215,14 @@ const submitNews = async () => {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Blog created successfully!');
+        // Optional: redirect or reset form here
     } catch (error) {
-        toast.error('Failed to create blog');
-        console.error(error);
+        toast.validationError(error); // handles 422 validation errors nicely
+        console.error('Blog creation failed:', error);
     }
 };
-</script>
 
+</script>
 <style scoped>
 .category-list {
     border: 1px solid #ddd;

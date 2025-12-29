@@ -47,7 +47,7 @@ const isImage = (filePath) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/notices/${route.params.slug}`);
+    const response = await axios.get(`/api/notices/${route.params.id}`);
     notice.value = response.data.data;
   } catch (error) {
     console.error('Error fetching notice:', error);
@@ -55,7 +55,7 @@ onMounted(async () => {
 });
 
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],
   }
 });

@@ -6,5 +6,3 @@
         All rights reserved.
     </footer>
 </template>
-<script setup>
-</script>

@@ -82,36 +82,51 @@ import { inject, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import SearchBox from '@/components/SearchBox.vue';
 
-const toast = useToast()
-const authStore = useAuthStore()
-const route = useRoute();
-const galleries = ref([]);
-const $swal = inject('$swal');
-const router = useRouter()
+// Toast notifications
+const toast = useToast();
 
-// Fetch galleries
+// Auth store
+const authStore = useAuthStore();
+
+// Route & router
+const route = useRoute();
+const router = useRouter();
+
+// Gallery list (paginated)
+const galleries = ref([]);
+
+// SweetAlert2 instance
+const $swal = inject('$swal');
+
+/**
+ * Fetch galleries with pagination and search
+ */
 const fetchGalleries = async (page = 1, searchTerm = "") => {
     try {
         const res = await axios.get(`/api/gallery?page=${page}&search=${searchTerm}`);
-        galleries.value = res.data.data;
+        galleries.value = res.data.data; // Full paginated response
     } catch (error) {
         console.error(error);
     }
 };
 
-// Search
+/**
+ * Handle search - reset to page 1
+ */
 const onSearch = (term) => {
-    fetchGalleries(1, term)
-}
+    fetchGalleries(1, term);
+};
 
-// Update Gallery status
+/**
+ * Toggle gallery status
+ */
 const updateStatus = async (gallery) => {
     try {
         const response = await axios.patch(`/api/gallery/${gallery.id}/toggle-status`);
-        gallery.status = response.data.status;
-        if (gallery.status==1) {
+        gallery.status = response.data.data.status;
+        if (gallery.status == 1) {
             toast.success(response.data.message);
-        }else{
+        } else {
             toast.info(response.data.message);
         }
     } catch (error) {
@@ -119,21 +134,10 @@ const updateStatus = async (gallery) => {
         console.error(error);
     }
 };
-// Init
-onMounted(async () => {
-    fetchGalleries()
 
-    if (route.query.toast) {
-        toast.success(route.query.toast);
-        setTimeout(() => {
-            const q = { ...route.query };
-            delete q.toast;
-            router.replace({ query: q });
-        }, 2000);
-    }
-});
-
-// Delete gallery
+/**
+ * Delete gallery with confirmation
+ */
 const confirmDelete = async (gallery) => {
     const result = await $swal({
         title: `Delete "${gallery.name}"?`,
@@ -149,7 +153,7 @@ const confirmDelete = async (gallery) => {
         try {
             await axios.delete(`/api/gallery/${gallery.id}`);
             toast.success('Gallery deleted successfully!');
-            galleries.value.data = galleries.value?.data.filter(g => g.id != gallery.id);
+            galleries.value.data = galleries.value?.data.filter(g => g.id !== gallery.id);
         } catch (error) {
             toast.validationError(error);
         }
@@ -157,4 +161,18 @@ const confirmDelete = async (gallery) => {
         toast.info('Deletion cancelled.');
     }
 };
+
+// Load data on mount + handle toast query param
+onMounted(async () => {
+    fetchGalleries();
+
+    if (route.query.toast) {
+        toast.success(route.query.toast);
+        setTimeout(() => {
+            const q = { ...route.query };
+            delete q.toast;
+            router.replace({ query: q });
+        }, 2000);
+    }
+});
 </script>

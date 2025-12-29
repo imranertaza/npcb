@@ -75,27 +75,29 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import axios from 'axios';
 import { reactive, ref } from 'vue';
 
+// Toast notifications
 const toast = useToast();
+
+// Dropzone reference for thumbnail upload
 const imageFile = ref(null);
 
-const form = reactive({
-    name: '',
-    alt_name: '',
-    sort_order: 0,
-    thumb: null
-});
-
+// Reactive form state
+const initialForm = { name: '', alt_name: '', sort_order: 0, thumb: null }
+const form = reactive({ ...initialForm })
+/**
+ * Submit gallery item creation
+ */
 const submitGallery = async () => {
     const payload = new FormData();
 
-    // Append form fields
+    // Append text fields
     for (const key in form) {
         if (key !== 'thumb') {
             payload.append(key, form[key]);
         }
     }
 
-    // Append image file from Dropzone
+    // Append thumbnail image if uploaded
     if (imageFile.value && imageFile.value[0]) {
         payload.append('thumb', imageFile.value[0].file);
     }
@@ -104,6 +106,8 @@ const submitGallery = async () => {
         await axios.post('/api/gallery', payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
+        Object.assign(form, initialForm)
+        imageFile.value = null;
         toast.success('Gallery created successfully!');
     } catch (error) {
         toast.validationError(error);

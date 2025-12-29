@@ -17,7 +17,7 @@
                     <div v-if="news.categories && news.categories.length" class="mt-3">
                         <h6 class="font-weight-bold">Categories</h6>
                         <a href="#" v-for="cat in news.categories" :key="cat.id">
-                            <span class="badge border ml-2">{{ cat.parent?.category_name ? cat.parent.category_name + '> ' : ''}}{{ cat.category_name }}
+                            <span class="badge border ml-2">{{ cat.parent?.category_name ? cat.parent.category_name + '>' : ''}}{{ cat.category_name }}
                             </span>
                         </a>
                     </div>
@@ -37,30 +37,40 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 
+// Current route (to access slug param)
 const route = useRoute();
+
+// Single news item data
 const news = ref(null);
 
+/**
+ * Check if the file is a video based on extension
+ */
 const isVideo = (file) => {
     if (!file) return false;
 
-    // Handle cases where file might be a full URL or path
+    // Extract extension from path or URL (ignore query params)
     const ext = file.split("?")[0].split(".").pop().toLowerCase();
 
     const videoExts = ["mp4", "avi", "mov", "wmv", "webm", "mkv"];
     return videoExts.includes(ext);
 };
 
+/**
+ * Fetch the news detail by slug on component mount
+ */
 onMounted(async () => {
     try {
-        const response = await axios.get(`/api/news/${route.params.slug}`);
+        const response = await axios.get(`/api/news/${route.params.id}`);
         news.value = response.data.data;
     } catch (error) {
         console.error('Error fetching news:', error);
     }
 });
 
+// Optional props (kept for flexibility, slug primarily from route)
 defineProps({
-    slug: {
+    id: {
         type: [String, Number],
     }
 });

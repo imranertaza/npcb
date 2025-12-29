@@ -1,16 +1,14 @@
 <template>
-  <div class="wrapper">
-    <Navbar />
-    <!-- <Sidebar /> -->
-     <SidebarVue/>
-    <div class="content-wrapper">
-      <!-- All child routes render here -->
-      <div class="container-fluid py-4">
-        <router-view />
-      </div>
+    <div class="wrapper">
+        <Navbar />
+        <SidebarVue />
+        <div class="content-wrapper">
+            <div class="container-fluid py-4">
+                <router-view />
+            </div>
+        </div>
+        <Footer />
     </div>
-    <Footer />
-  </div>
 </template>
 
 <script setup>
@@ -19,8 +17,4 @@ import Navbar from '@/layouts/includes/Navbar.vue'
 import "@/assets/dist/css/adminlte.min.css";
 import SidebarVue from './includes/SidebarVue.vue';
 import 'icheck-bootstrap/icheck-bootstrap.css'
-
-
 </script>
-
-<style scoped></style>

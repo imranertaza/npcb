@@ -55,7 +55,7 @@ class BlogController extends Controller
      */
     public function show($id)
     {
-        $blog = Blog::findOrFail($id)->with('categories.parent')->firstOrFail();
+        $blog = Blog::with('categories.parent')->findOrFail($id);
         return ApiResponse::success($blog, 'Blog retrieved successfully');
     }
 

@@ -96,7 +96,6 @@
         </div>
     </section>
 </template>
-
 <script setup>
 import { reactive, ref, onMounted, computed } from 'vue';
 import axios from 'axios';
@@ -106,43 +105,58 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
 import { useToast } from '@/composables/useToast';
+
+// Toast notifications
 const toast = useToast();
 
+// Dropzone reference for category image upload
 const imageFile = ref(null);
 
+// Reactive form state for new event category
 const form = reactive({
     category_name: '',
     description: '',
-    parent_id: '',
+    parent_id: '',            // '' = root category
     meta_title: '',
     meta_description: '',
     meta_keyword: '',
-    image: null,
+    image: null,              // Preview URL (not sent to server)
     alt_name: '',
     sort_order: 0,
-    status: 1,
+    status: 1                 // 1 = active, 0 = inactive
 });
 
+// List of existing categories (for parent selection)
 const categories = ref([]);
 
+/**
+ * Fetch all event categories for the parent dropdown
+ */
 const fetchCategories = async () => {
     try {
         const res = await axios.get('/api/events-categories?all=1');
         categories.value = res.data.data;
     } catch (error) {
         toast.error('Failed to load categories');
+        console.error('Fetch categories error:', error);
     }
 };
 
+/**
+ * Create a new event category
+ * Builds FormData payload with optional image
+ */
 const createCategory = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholder
     for (const key in form) {
         if (key !== 'image') {
-            payload.append(key, form[key]);
+            payload.append(key, form[key] ?? '');
         }
     }
 
+    // Append image if selected via Dropzone
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
     }
@@ -151,7 +165,10 @@ const createCategory = async () => {
         await axios.post('/api/events-categories', payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
+
         toast.success('Category created successfully!');
+
+        // Reset form to initial state
         Object.assign(form, {
             category_name: '',
             description: '',
@@ -159,20 +176,23 @@ const createCategory = async () => {
             meta_title: '',
             meta_description: '',
             meta_keyword: '',
-            icon_id: '',
             image: null,
             alt_name: '',
-            header_menu: 0,
-            side_menu: 0,
             sort_order: 0,
             status: 1,
         });
+
+        // Clear Dropzone
         imageFile.value = null;
     } catch (error) {
-        toast.validationError(error);
+        toast.validationError(error); // Handles Laravel 422 validation errors
     }
 };
 
+/**
+ * Options for parent category dropdown/multiselect
+ * Includes "-- None --" as the first option
+ */
 const categoriesOptions = computed(() => {
     return [
         { label: '-- None --', value: '' },
@@ -183,9 +203,9 @@ const categoriesOptions = computed(() => {
     ];
 });
 
+// Load categories on component mount
 onMounted(fetchCategories);
 </script>
-
 <style>
 .v-select {
     background-color: white;

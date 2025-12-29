@@ -62,7 +62,7 @@
                     <div class="d-flex">
                       <router-link
                         v-if="authStore.hasPermission('view-posts')"
-                        :to="{ name: 'ShowPost', params: { slug: post.slug } }"
+                        :to="{ name: 'ShowPost', params: { id: post.id } }"
                         class="btn btn-sm btn-outline-dark"
                       >
                         <i class="fas fa-eye"></i>

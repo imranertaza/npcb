@@ -45,11 +45,8 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label">Category Image</label>
-                                <div v-if="form.image" class="mb-2">
-                                    <img :src="getImageUrl(form.image)" alt="Category Image" height="80"
-                                        class="rounded" />
-                                </div>
-                                <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                                <Vue3Dropzone v-model="imageFile" v-model:previews="previewsImage"
+                                    :allowSelectOnPreview="true" />
                                 <small class="text-muted">Recommended: 1140 × 375px</small>
 
                             </div>
@@ -100,30 +97,55 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 import { useToast } from '@/composables/useToast';
 import Multiselect from '@vueform/multiselect';
+const previewsImage = ref([]);
+
+// Toast notifications
 const toast = useToast();
+
+// Current route (to get category ID from params)
 const route = useRoute();
+
+// Category data being edited (fetched from API)
 const form = ref(null);
-const categories = ref([]);
+
+// Dropzone reference for new image upload
 const imageFile = ref(null);
 
+// All categories (for parent selection dropdown)
+const categories = ref([]);
+
+/**
+ * Fetch the event category to edit by ID
+ */
 const fetchCategory = async () => {
     try {
         const res = await axios.get(`/api/events-categories/${route.params.id}`);
         form.value = res.data.data;
+        previewsImage.value = [getImageUrl(form.value.image)];
+
     } catch (error) {
         toast.error('Failed to load category');
+        console.error('Fetch category error:', error);
     }
 };
 
+/**
+ * Fetch all event categories for the parent dropdown
+ */
 const fetchCategories = async () => {
     try {
         const res = await axios.get('/api/events-categories?all=1');
         categories.value = res.data.data;
     } catch (error) {
         toast.error('Failed to load categories');
+        console.error('Fetch categories error:', error);
     }
 };
 
+/**
+ * Options for parent category select
+ * Includes "-- None --" as root option
+ */
 const categoriesOptions = computed(() => {
     return [
         { label: '-- None --', value: '' },
@@ -134,35 +156,52 @@ const categoriesOptions = computed(() => {
     ];
 });
 
+/**
+ * Update the event category
+ * Uses FormData with spoofed PUT via _method=PUT
+ */
 const updateCategory = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholder
     for (const key in form.value) {
         if (key !== 'image') {
             payload.append(key, form.value[key] ?? '');
         }
     }
 
+    // Append new image if selected
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
     }
 
     try {
-        const res = await axios.post(`/api/events-categories/${route.params.id}?_method=PUT`, payload, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await axios.post(
+            `/api/events-categories/${route.params.id}?_method=PUT`,
+            payload,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }
+        );
+
+        // Update form with fresh data from server
         form.value = res.data.data;
         toast.success('Category updated successfully!');
     } catch (error) {
-        toast.validationError(error);
+        toast.validationError(error); // Handles Laravel 422 validation errors
+        console.error('Update failed:', error);
     }
 };
+
+// Optional props (kept for compatibility, though ID comes from route)
 defineProps({
     id: {
         type: [Number, String],
         required: false
     }
 });
+
+// Load data when component mounts
 onMounted(() => {
     fetchCategory();
     fetchCategories();

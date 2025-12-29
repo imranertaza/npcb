@@ -33,10 +33,15 @@ import DashboardHeader from '@/components/DashboardHeader.vue'
 import { useToast } from '@/composables/useToast'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-const roles = ref([])
-const allPermissions = ref([])
 
-const toast = useToast();
+/* Role & Permissions Management Page */
+
+const toast = useToast()
+
+const roles = ref([])            // roles with current permissions
+const allPermissions = ref([])   // full list of available permissions
+
+/* Fetch roles with their assigned permissions */
 const fetchRoles = async () => {
     try {
         const res = await axios.get('/api/roles-with-permissions')
@@ -44,9 +49,9 @@ const fetchRoles = async () => {
     } catch (error) {
         toast.validationError(error)
     }
-
 }
 
+/* Fetch all system permissions */
 const fetchAllPermissions = async () => {
     try {
         const res = await axios.get('/api/permissions')
@@ -56,6 +61,7 @@ const fetchAllPermissions = async () => {
     }
 }
 
+/* Save updated permissions for a role */
 const save = async (role) => {
     if (role.name === 'super-admin') return
     try {
