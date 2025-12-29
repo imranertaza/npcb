@@ -15,7 +15,14 @@ class NewsCategoryMapSeeder extends Seeder
     public function run(): void
     {
         News::all()->each(function ($news) {
-            $categories = NewsCategory::inRandomOrder()->take(rand(1, 3))->pluck('id')->toArray();
+            // Pick 1 or 2 random categories
+            $count = rand(1, 2);
+
+            $categories = NewsCategory::inRandomOrder()
+                ->take($count)
+                ->pluck('id');
+
+            // Attach them to the news item
             $news->categories()->attach($categories);
         });
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 class News extends Model
 {
     protected $guarded = ['id'];
-
+    protected $casts   = [
+        'status' => 'integer',
+    ];
     /**
      * Relationship: A news item can belong to many categories.
      */
@@ -37,13 +38,12 @@ class News extends Model
         return $this->belongsTo(User::class, 'updatedBy');
     }
 
-
     /**
      * Scope: Published news only.
      */
     public function scopePublished($query)
     {
-        return $query->where('status', '1');
+        return $query->where('status', 1);
     }
 
     /**
@@ -52,5 +52,18 @@ class News extends Model
     public function syncCategories(array $categoryIds)
     {
         $this->categories()->sync($categoryIds);
+    }
+
+    public static function getGamesNews()
+    {
+        return self::where('status', 1)->whereHas('categories', function ($query) {
+            $query->where('category_name', 'like', '%game%');
+        })->paginate(10);
+    }
+    public static function getSpotlightNews()
+    {
+        return self::where('status', 1)->whereHas('categories', function ($query) {
+            $query->where('category_name', 'like', '%spotlight%');
+        })->paginate(10);
     }
 }

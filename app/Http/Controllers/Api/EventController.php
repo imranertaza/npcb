@@ -9,10 +9,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * API Controller for managing events.
+ *
+ * Handles CRUD operations, status toggling, category assignment, and file management
+ * for events (banner and featured images).
+ */
 class EventController extends Controller
 {
-    // List events with optional search
+    /**
+     * Retrieve a paginated list of events with optional search.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $query = Event::latest();
@@ -32,14 +44,28 @@ class EventController extends Controller
         return ApiResponse::success($events, 'Events retrieved successfully');
     }
 
-    // Show single event by slug
-    public function show($slug)
+    /**
+     * Retrieve a single event by its slug along with its category.
+     *
+     * @param string $slug The unique slug of the event
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
+     */
+    public function show($id)
     {
-        $event = Event::with('category')->where('slug', $slug)->firstOrFail();
+        $event = Event::findOrFail($id)->with('category')->firstOrFail();
         return ApiResponse::success($event, 'Event retrieved successfully');
     }
 
-    // Store new event
+    /**
+     * Store a new event.
+     *
+     * Handles banner and featured image uploads and assigns the authenticated user
+     * as creator/updater.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -47,28 +73,46 @@ class EventController extends Controller
             'title'             => 'required|string|max:255',
             'slug'              => 'required|string|unique:events,slug',
             'description'       => 'nullable|string',
-            'file'              => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf|max:4096',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:event_categories,id',
+            'type'              => 'required|integer|in:0,1',
+            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'featured_image'    => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
         ]);
 
         $validated['createdBy'] = Auth::id();
         $validated['updatedBy'] = Auth::id();
 
-        if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('events', 'public');
-        }
-
+        // Create event first (without images)
         $event = Event::create($validated);
 
-        if (isset($validated['categories'])) {
-            $event->syncCategories($validated['categories']);
+        // Handle banner image
+        if ($request->hasFile('banner_image')) {
+            $filename = uniqid('banner_') . '.' . $request->file('banner_image')->getClientOriginalExtension();
+            $path = $request->file('banner_image')
+                ->storeAs("events/{$event->id}/images/banner", $filename, 'public');
+            $event->update(['banner_image' => $path]);
+        }
+
+        // Handle featured image
+        if ($request->hasFile('featured_image')) {
+            $filename = uniqid('featured_') . '.' . $request->file('featured_image')->getClientOriginalExtension();
+            $path = $request->file('featured_image')
+                ->storeAs("events/{$event->id}/images/featured", $filename, 'public');
+            $event->update(['featured_image' => $path]);
         }
 
         return ApiResponse::success($event, 'Event created successfully');
     }
 
-    // Update existing event
+
+    /**
+     * Update an existing event.
+     *
+     * Replaces banner/featured images only if new files are uploaded (deletes old files).
+     *
+     * @param Request $request
+     * @param int $id The ID of the event to update
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
         $event = Event::findOrFail($id);
@@ -81,50 +125,77 @@ class EventController extends Controller
                 'string',
                 Rule::unique('events', 'slug')->ignore($event->id),
             ],
+            'type'              => 'required|integer|in:0,1',
             'description'       => 'nullable|string',
-            'file'              => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf|max:4096',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:event_categories,id',
+            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'featured_image'    => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
         ]);
 
         $validated['updatedBy'] = Auth::id();
 
-        if ($request->hasFile('file')) {
-            if ($event->file && Storage::disk('public')->exists($event->file)) {
-                Storage::disk('public')->delete($event->file);
+        // Handle banner image replacement
+        if ($request->hasFile('banner_image')) {
+            if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
+                Storage::disk('public')->delete($event->banner_image);
             }
-            $validated['file'] = $request->file('file')->store('events', 'public');
+
+            $filename = uniqid('banner_') . '.' . $request->file('banner_image')->getClientOriginalExtension();
+            $validated['banner_image'] = $request->file('banner_image')
+                ->storeAs("events/{$event->id}/images/banner", $filename, 'public');
+        }
+
+        // Handle featured image replacement
+        if ($request->hasFile('featured_image')) {
+            if ($event->featured_image && Storage::disk('public')->exists($event->featured_image)) {
+                Storage::disk('public')->delete($event->featured_image);
+            }
+
+            $filename = uniqid('featured_') . '.' . $request->file('featured_image')->getClientOriginalExtension();
+            $validated['featured_image'] = $request->file('featured_image')
+                ->storeAs("events/{$event->id}/images/featured", $filename, 'public');
         }
 
         $event->update($validated);
 
-        if (isset($validated['categories'])) {
-            $event->syncCategories($validated['categories']);
-        }
-
         return ApiResponse::success($event, 'Event updated successfully');
     }
 
-    // Toggle active/inactive status
+
+    /**
+     * Toggle the publication status (active/inactive) of an event.
+     *
+     * @param string $slug The slug of the event
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
+     */
     public function toggleStatus($slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
         $event->status = $event->status === '1' ? '0' : '1';
         $event->save();
 
-        return response()->json([
-            'message' => $event->status === '1' ? 'Event active' : 'Event inactive',
-            'status'  => $event->status,
-        ]);
+        return ApiResponse::success([
+            'status' => $event->status,
+        ], $event->status === '1' ? 'Event active' : 'Event inactive');
     }
 
-    // Delete event
+    /**
+     * Permanently delete an event along with its associated banner and featured images.
+     *
+     * @param string $slug The slug of the event to delete
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
+     */
     public function destroy($slug)
     {
         $event = Event::where('slug', $slug)->firstOrFail();
 
-        if ($event->file && Storage::disk('public')->exists($event->file)) {
-            Storage::disk('public')->delete($event->file);
+        if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
+            Storage::disk('public')->delete($event->banner_image);
+        }
+
+        if ($event->featured_image && Storage::disk('public')->exists($event->featured_image)) {
+            Storage::disk('public')->delete($event->featured_image);
         }
 
         $event->delete();

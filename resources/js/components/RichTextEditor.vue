@@ -1,105 +1,84 @@
 <template>
-  <div class="" :class="$attrs.class">
-    <ckeditor
-      v-model="internalValue"
-      :editor="ClassicEditor"
-      :config="config"
-      @ready="onEditorReady"
-    />
-    <teleport to="body">
-      <div v-if="show" class="fm-backdrop" @click.self="show = false">
-        <div class="fm-modal">
-          <header class="fm-header">
-            <h2>Media Library</h2>
-            <button class="fm-close" @click="show = false" title="Close">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                />
-              </svg>
-            </button>
-          </header>
+    <div class="" :class="$attrs.class">
+        <ckeditor v-model="internalValue" :editor="ClassicEditor" :config="config" @ready="onEditorReady" />
+        <teleport to="body">
+            <div v-if="show" class="fm-backdrop" @click.self="show = false">
+                <div class="fm-modal">
+                    <header class="fm-header">
+                        <h2>Media Library</h2>
+                        <button class="fm-close" @click="show = false" title="Close">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                            </svg>
+                        </button>
+                    </header>
 
-          <!-- Upload zone -->
-          <div class="fm-upload-zone">
-            <input
-              type="file"
-              multiple
-              @change="handleUpload"
-              accept="image/*,video/*,application/pdf"
-              id="fm-upload"
-            />
-            <label for="fm-upload" class="fm-upload-label">
-              <svg viewBox="0 0 24 24" class="upload-icon">
-                <path
-                  d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"
-                />
-                <path d="M13 9h-2v3H8l4 4 4-4h-3V9z" />
-              </svg>
-              <span>Drop files here or click to upload</span>
-            </label>
+                    <!-- Upload zone -->
+                    <div class="fm-upload-zone">
+                        <input type="file" multiple @change="handleUpload" accept="image/*,video/*,application/pdf"
+                            id="fm-upload" />
+                        <label for="fm-upload" class="fm-upload-label">
+                            <svg viewBox="0 0 24 24" class="upload-icon">
+                                <path
+                                    d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
+                                <path d="M13 9h-2v3H8l4 4 4-4h-3V9z" />
+                            </svg>
+                            <span>Drop files here or click to upload</span>
+                        </label>
 
-            <!-- Progress feedback -->
-            <div v-if="isUploading" class="fm-progress">
-              <p>Uploading… {{ uploadProgress }}%</p>
-              <progress :value="uploadProgress" max="100"></progress>
+                        <!-- Progress feedback -->
+                        <div v-if="isUploading" class="fm-progress">
+                            <p>Uploading… {{ uploadProgress }}%</p>
+                            <progress :value="uploadProgress" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <!-- File grid -->
+                    <div class="fm-grid">
+                        <div v-for="file in fileItems" :key="file.path" class="fm-item">
+                            <div class="fm-thumb-wrapper" style="width: 100%;" @click="selectFile(file)">
+                                <!-- Image -->
+                                <img style="width: 100%;" v-if="['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(file.type)"
+                                    :src="file.url" alt="" class="fm-thumb" />
+
+                                <!-- Video -->
+                                <video v-else-if="['mp4', 'mov', 'avi', 'mkv'].includes(file.type)" controls
+                                    style="width: 100%;">
+                                    <source :src="file.url" :type="'video/' + file.type" />
+                                </video>
+
+                                <!-- PDF -->
+                                <div v-else-if="file.type === 'pdf'" class="fm-pdf">
+                                    📄 <span>PDF</span>
+                                </div>
+
+                                <!-- Unknown -->
+                                <div v-else class="fm-unknown">
+                                    ❓ {{ file.name }}
+                                </div>
+
+                                <div class="fm-check">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="fm-name">{{ file.name }}</p>
+                            <div class="fm-actions">
+                                <button @click.stop="promptRename(file)" title="Rename">✏️</button>
+                                <button @click.stop="deleteFile(file.path)" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="fm-footer">
+                        <button class="fm-btn-secondary" @click="show = false">Cancel</button>
+                    </footer>
+                </div>
             </div>
-          </div>
-
-          <!-- File grid -->
-          <div class="fm-grid">
-            <div v-for="file in fileItems" :key="file.path" class="fm-item">
-              <div class="fm-thumb-wrapper" style="width: 100%;" @click="selectFile(file)">
-                <!-- Image -->
-                <img style="width: 100%;"
-                  v-if="['jpg','jpeg','png','gif','webp'].includes(file.type)"
-                  :src="file.url"
-                  alt=""
-                  class="fm-thumb"
-                />
-
-                <!-- Video -->
-                <video
-                  v-else-if="['mp4','mov','avi','mkv'].includes(file.type)"
-                  controls
-                  style="width: 100%;"
-                >
-                  <source :src="file.url" :type="'video/' + file.type" />
-                </video>
-
-                <!-- PDF -->
-                <div v-else-if="file.type === 'pdf'" class="fm-pdf">
-                  📄 <span>PDF</span>
-                </div>
-
-                <!-- Unknown -->
-                <div v-else class="fm-unknown">
-                  ❓ {{ file.name }}
-                </div>
-
-                <div class="fm-check">
-                  <svg viewBox="0 0 24 24">
-                    <path
-                      d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <p class="fm-name">{{ file.name }}</p>
-              <div class="fm-actions">
-                <button @click.stop="promptRename(file)" title="Rename">✏️</button>
-                <button @click.stop="deleteFile(file.path)" title="Delete">🗑️</button>
-              </div>
-            </div>
-          </div>
-
-          <footer class="fm-footer">
-            <button class="fm-btn-secondary" @click="show = false">Cancel</button>
-          </footer>
-        </div>
-      </div>
-    </teleport>
-  </div>
+        </teleport>
+    </div>
 </template>
 
 <script setup>
@@ -137,7 +116,8 @@ import {
     IndentBlock,
     Font,
     RemoveFormat,
-    Autoformat
+    Autoformat,
+    GeneralHtmlSupport
 } from 'ckeditor5';
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import FileManagerPlugin from '../plugins/FileManagerPlugin';
@@ -285,8 +265,18 @@ const config = computed(() => ({
         Image, ImageCaption, ImageResize, ImageStyle, ImageToolbar,
         ImageUpload, Table, TableToolbar, BlockQuote, MediaEmbed,
         SourceEditing, FileManagerPlugin, PictureEditing,
-        RemoveFormat, Autoformat
+        RemoveFormat, Autoformat,GeneralHtmlSupport
     ],
+    htmlSupport: {
+        allow: [
+            {
+                name: /.*/,
+                attributes: true,
+                classes: true,
+                styles: true
+            }
+        ]
+    },
     toolbar: [
         'undo', 'redo', '|',
         'sourceEditing', '|',

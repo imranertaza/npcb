@@ -9,11 +9,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * API Controller for managing results (e.g., competition results, exam results, etc.).
+ *
+ * Handles CRUD operations, status toggling, and file management (images or documents).
+ */
 class ResultController extends Controller
 {
     /**
-     * List results with optional search + pagination
+     * Retrieve a paginated list of results with optional search.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -35,16 +44,25 @@ class ResultController extends Controller
     }
 
     /**
-     * Show single result by slug
+     * Retrieve a single result by its slug.
+     *
+     * @param string $slug The unique slug of the result
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
      */
-    public function show($slug)
+    public function show($id)
     {
-        $result = Result::where('slug', $slug)->firstOrFail();
+        $result = Result::FindOrFail($id);
         return ApiResponse::success($result, 'Result retrieved successfully');
     }
 
     /**
-     * Store new result
+     * Store a new result.
+     *
+     * Handles optional file upload (image or document) and assigns creator/updater.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -53,23 +71,37 @@ class ResultController extends Controller
             'slug'        => 'required|string|unique:results,slug',
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
-            'status'      => ['required', Rule::in(['0', '1'])],
+            'status'      => 'required|in:0,1',
         ]);
 
         $validated['createdBy'] = Auth::id();
         $validated['updatedBy'] = Auth::id();
 
-        if ($request->hasFile('file')) {
-            $validated['file'] = $request->file('file')->store('results', 'public');
-        }
-
+        // Create result first (without file)
         $result = Result::create($validated);
+
+        // Handle file upload if present
+        if ($request->hasFile('file')) {
+            $filename = uniqid('result_file_') . '.' . $request->file('file')->getClientOriginalExtension();
+
+            $path = $request->file('file')
+                ->storeAs("results/{$result->id}", $filename, 'public');
+
+            $result->update(['file' => $path]);
+        }
 
         return ApiResponse::success($result, 'Result created successfully');
     }
 
+
     /**
-     * Update existing result
+     * Update an existing result.
+     *
+     * Replaces the attached file only if a new one is uploaded (deletes the old file).
+     *
+     * @param Request $request
+     * @param int $id The ID of the result to update
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -84,7 +116,7 @@ class ResultController extends Controller
             ],
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
-            'status'      => ['required', Rule::in(['0', '1'])],
+            'status'      => 'required|in:0,1',
         ]);
 
         $validated['updatedBy'] = Auth::id();
@@ -93,7 +125,11 @@ class ResultController extends Controller
             if ($result->file && Storage::disk('public')->exists($result->file)) {
                 Storage::disk('public')->delete($result->file);
             }
-            $validated['file'] = $request->file('file')->store('results', 'public');
+
+            $filename = uniqid('result_file_') . '.' . $request->file('file')->getClientOriginalExtension();
+
+            $validated['file'] = $request->file('file')
+                ->storeAs("results/{$result->id}", $filename, 'public');
         }
 
         $result->update($validated);
@@ -101,8 +137,13 @@ class ResultController extends Controller
         return ApiResponse::success($result, 'Result updated successfully');
     }
 
+
     /**
-     * Toggle active/inactive status
+     * Toggle the publication status (active/inactive) of a result.
+     *
+     * @param string $slug The slug of the result
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
      */
     public function toggleStatus($slug)
     {
@@ -117,7 +158,11 @@ class ResultController extends Controller
     }
 
     /**
-     * Delete result
+     * Permanently delete a result along with its associated file (if any).
+     *
+     * @param string $slug The slug of the result to delete
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ModelNotFoundException
      */
     public function destroy($slug)
     {

@@ -1,70 +1,73 @@
 <template>
-  <DashboardHeader title="Manage Result">
-    <div class="d-flex justify-content-end">
-      <SearchBox @search="onSearch" />
-    </div>
-  </DashboardHeader>
-
-  <section>
-    <div class="row">
-      <div class="col-md-12">
-        <div v-if="results?.data?.length === 0" class="alert alert-info">No results found.</div>
-
-        <div v-else>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-              <thead class="thead-light">
-                <tr class="align-middle">
-                  <th style="width: 10px">#</th>
-                  <th>Title</th>
-                  <th>File</th>
-                  <th v-if="authStore.hasPermission('edit-results')">Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(result, index) in results?.data" :key="result.id">
-                  <td class="align-middle">{{ index + 1 }}</td>
-                  <td class="align-middle">{{ truncateText(result.title, 20) }}</td>
-                  <td class="align-middle">
-                    <a v-if="result.file" :href="getImageUrl(result.file)" target="_blank"
-                      class="btn btn-sm btn-outline-primary">
-                      View File
-                    </a>
-                  </td>
-                  <td v-if="authStore.hasPermission('edit-results')" class="align-middle">
-                    <select v-model="result.status" @change="updateStatus(result)" class="custom-select"
-                      :class="result.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
-                      <option :value="1">Active</option>
-                      <option :value="0">Inactive</option>
-                    </select>
-                  </td>
-                  <td class="align-middle">
-                    <div class="d-flex">
-                      <router-link v-if="authStore.hasPermission('view-results')"
-                        :to="{ name: 'ShowResult', params: { slug: result.slug } }" class="btn btn-sm btn-outline-dark">
-                        <i class="fas fa-eye"></i>
-                      </router-link>
-                      <router-link v-if="authStore.hasPermission('edit-results')"
-                        :to="{ name: 'UpdateResult', params: { slug: result.slug } }"
-                        class="ml-2 btn btn-sm btn-outline-info">
-                        <i class="fas fa-pencil-alt"></i>
-                      </router-link>
-                      <button v-if="authStore.hasPermission('delete-results')"
-                        class="ml-2 btn btn-sm btn-outline-danger" @click="confirmDelete(result)">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <Pagination :pData="results" @page-change="fetchPage" />
+    <DashboardHeader title="Manage Result">
+        <div class="d-flex justify-content-end">
+            <SearchBox @search="onSearch" />
         </div>
-      </div>
-    </div>
-  </section>
+    </DashboardHeader>
+
+    <section>
+        <div class="row">
+            <div class="col-md-12">
+                <div v-if="results?.data?.length === 0" class="alert alert-info">No results found.</div>
+
+                <div v-else>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr class="align-middle">
+                                    <th style="width: 10px">#</th>
+                                    <th>Title</th>
+                                    <th>File</th>
+                                    <th v-if="authStore.hasPermission('edit-results')">Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(result, index) in results?.data" :key="result.id">
+                                    <td class="align-middle">{{ index + 1 }}</td>
+                                    <td class="align-middle">{{ truncateText(result.title, 20) }}</td>
+                                    <td class="align-middle">
+                                        <a v-if="result.file" :href="getImageUrl(result.file)" target="_blank"
+                                            class="btn btn-sm btn-outline-primary">
+                                            View File
+                                        </a>
+                                    </td>
+                                    <td v-if="authStore.hasPermission('edit-results')" class="align-middle">
+                                        <select v-model="result.status" @change="updateStatus(result)"
+                                            class="custom-select"
+                                            :class="result.status == 1 ? 'bg-success text-white' : 'bg-transparent text-dark'">
+                                            <option :value="1">Active</option>
+                                            <option :value="0">Inactive</option>
+                                        </select>
+                                    </td>
+                                    <td class="align-middle">
+                                        <div class="d-flex">
+                                            <router-link v-if="authStore.hasPermission('view-results')"
+                                                :to="{ name: 'ShowResult', params: { slug: result.slug } }"
+                                                class="btn btn-sm btn-outline-dark">
+                                                <i class="fas fa-eye"></i>
+                                            </router-link>
+                                            <router-link v-if="authStore.hasPermission('edit-results')"
+                                                :to="{ name: 'UpdateResult', params: { id: result.id } }"
+                                                class="ml-2 btn btn-sm btn-outline-info">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </router-link>
+                                            <button v-if="authStore.hasPermission('delete-results')"
+                                                class="ml-2 btn btn-sm btn-outline-danger"
+                                                @click="confirmDelete(result)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <Pagination :pData="results" @page-change="fetchPage" />
+                </div>
+            </div>
+        </div>
+    </section>
 </template>
 
 <script setup>
@@ -87,65 +90,69 @@ const $swal = inject('$swal');
 
 // Fetch results with pagination + search
 const fetchPage = async (page = 1, term = "") => {
-  try {
-    const res = await axios.get(`/api/results?page=${page}&search=${term || ''}`);
-    results.value = res.data.data;
-  } catch (error) {
-    console.error(error);
-    toast.error('Failed to load results.');
-  }
+    try {
+        const res = await axios.get(`/api/results?page=${page}&search=${term || ''}`);
+        results.value = res.data.data;
+    } catch (error) {
+        console.error(error);
+        toast.error('Failed to load results.');
+    }
 };
 
 const onSearch = async (term) => {
-  fetchPage(1, term);
+    fetchPage(1, term);
 };
 
 onMounted(() => {
-  fetchPage();
-  if (route.query.toast) {
-    toast.success(route.query.toast);
-    setTimeout(() => {
-      const q = { ...route.query };
-      delete q.toast;
-      router.replace({ query: q });
-    }, 2000);
-  }
+    fetchPage();
+    if (route.query.toast) {
+        toast.success(route.query.toast);
+        setTimeout(() => {
+            const q = { ...route.query };
+            delete q.toast;
+            router.replace({ query: q });
+        }, 2000);
+    }
 });
 
 // Update result status
 const updateStatus = async (result) => {
-  try {
-    const response = await axios.patch(`/api/results/${result.slug}/toggle-status`);
-    result.status = response?.data?.data?.status;
-    toast.success(response.data.message);
-  } catch (error) {
-    toast.error('Failed to update status');
-    console.error(error);
-  }
+    try {
+        const response = await axios.patch(`/api/results/${result.slug}/toggle-status`);
+        result.status = response?.data?.data?.status;
+        if (result.status == 1) {
+            toast.success(response.data.message);
+        } else {
+            toast.info(response.data.message);
+        }
+    } catch (error) {
+        toast.error('Failed to update status');
+        console.error(error);
+    }
 };
 
 // Delete result
 const confirmDelete = async (result) => {
-  const resultConfirm = await $swal({
-    title: `Delete "${result.title}"?`,
-    text: 'This action cannot be undone.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete',
-    cancelButtonText: 'Cancel',
-    reverseButtons: true
-  });
+    const resultConfirm = await $swal({
+        title: `Delete "${result.title}"?`,
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    });
 
-  if (resultConfirm.isConfirmed) {
-    try {
-      await axios.delete(`/api/results/${result.slug}`);
-      toast.success('Result deleted successfully!');
-      results.value.data = results.value.data.filter(r => r.id !== result.id);
-    } catch (error) {
-      toast.validationError(error);
+    if (resultConfirm.isConfirmed) {
+        try {
+            await axios.delete(`/api/results/${result.slug}`);
+            toast.success('Result deleted successfully!');
+            results.value.data = results.value.data.filter(r => r.id !== result.id);
+        } catch (error) {
+            toast.validationError(error);
+        }
+    } else {
+        toast.info('Deletion cancelled.');
     }
-  } else {
-    toast.info('Deletion cancelled.');
-  }
 };
 </script>

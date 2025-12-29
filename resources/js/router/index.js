@@ -54,11 +54,32 @@ import Result from "../pages/admin/Result/Result.vue";
 import ShowResult from "../pages/admin/Result/ShowResult.vue";
 import UpdateResult from "../pages/admin/Result/UpdateResult.vue";
 import CreateResult from "../pages/admin/Result/CreateResult.vue";
+import Blog from "../pages/admin/Blog/Blog.vue";
+import ShowBlog from "../pages/admin/Blog/ShowBlog.vue";
+import UpdateBlog from "../pages/admin/Blog/UpdateBlog.vue";
+import CreateBlog from "../pages/admin/Blog/CreateBlog.vue";
+import BlogCategory from "../pages/admin/Blog/BlogCategory/BlogCategory.vue";
+import BlogCategoryCreate from "../pages/admin/Blog/BlogCategory/BlogCategoryCreate.vue";
+import BlogCategoryEdit from "../pages/admin/Blog/BlogCategory/BlogCategoryEdit.vue";
+import BlogCategoryShow from "../pages/admin/Blog/BlogCategory/BlogCategoryShow.vue";
+import UpdateSection from "../pages/admin/Section/UpdateSection.vue";
+import Section from "../pages/admin/Section/Section.vue";
+import Sliders from "../pages/admin/Sliders/Sliders.vue";
+import CreateSlider from "../pages/admin/Sliders/CreateSlider.vue";
+import UpdateSlider from "../pages/admin/Sliders/UpdateSlider.vue";
+import CommitteeMembers from "../pages/admin/CommitteeMember/CommitteeMembers.vue";
+import UpdateCommitteeMembers from "../pages/admin/CommitteeMember/UpdateCommitteeMembers.vue";
+import CreateCommitteeMembers from "../pages/admin/CommitteeMember/CreateCommitteeMembers.vue";
+import CreatePlayer from "../pages/admin/Player/CreatePlayer.vue";
+import UpdatePlayer from "../pages/admin/Player/UpdatePlayer.vue";
+import ShowPlayer from "../pages/admin/Player/ShowPlayer.vue";
+import Player from "../pages/admin/Player/Player.vue";
 
 const routes = [
     { path: "/", name: "home", component: Home },
     {
         path: "/admin",
+        redirect: "/admin/dashboard",
         children: [
             { path: "login", name: "AdminLogin", component: AdminLogin },
             {
@@ -66,13 +87,16 @@ const routes = [
                 prefix: "admin",
                 component: AdminLayout,
                 meta: { requiresAuth: true, role: "admin" },
+
                 children: [
+
                     {
                         path: "",
                         name: "Dashboard",
                         component: Dashboard,
                         meta: { permission: "view-dashboard" },
                     },
+
                     {
                         path: "admin-profile",
                         name: "adminProfile",
@@ -142,7 +166,7 @@ const routes = [
                         meta: { permission: "view-posts" },
                     },
                     {
-                        path: "edit-posts/:slug",
+                        path: "edit-posts/:id",
                         name: "UpdatePost",
                         component: UpdatePost,
                         props: true,
@@ -212,7 +236,7 @@ const routes = [
                         meta: { permission: "view-news" },
                     },
                     {
-                        path: "edit-news/:slug",
+                        path: "edit-news/:id",
                         name: "UpdateNews",
                         component: UpdateNews,
                         props: true,
@@ -259,6 +283,69 @@ const routes = [
                             permission: "view-news-categories",
                         },
                     },
+                    // Blog CRUD
+                    {
+                        path: "manage-blogs",
+                        name: "Blog",
+                        component: Blog,
+                        meta: { permission: "view-blog" },
+                    },
+                    {
+                        path: "blogs/:slug",
+                        name: "ShowBlog",
+                        component: ShowBlog,
+                        props: true,
+                        meta: { permission: "view-blog" },
+                    },
+                    {
+                        path: "edit-blogs/:id",
+                        name: "UpdateBlog",
+                        component: UpdateBlog,
+                        props: true,
+                        meta: { permission: "edit-blog" },
+                    },
+                    {
+                        path: "create-blogs",
+                        name: "CreateBlog",
+                        component: CreateBlog,
+                        meta: { permission: "create-blog" },
+                    },
+
+                    {
+                        path: "blog-categories",
+                        name: "BlogCategoryIndex",
+                        component: BlogCategory,
+                        meta: {
+                            permission: "view-blog-categories",
+                        },
+                    },
+                    {
+                        path: "blog-categories/create",
+                        name: "BlogCategoryCreate",
+                        component: BlogCategoryCreate,
+                        meta: {
+                            permission: "create-blog-categories",
+                        },
+                    },
+                    {
+                        path: "blog-categories/edit/:id",
+                        name: "UpdateBlogCategory",
+                        component: BlogCategoryEdit,
+                        props: true,
+                        meta: {
+                            permission: "edit-blog-categories",
+                        },
+                    },
+                    {
+                        path: "admin/blog-categories/:id",
+                        name: "BlogCategoryShow",
+                        component: BlogCategoryShow,
+                        props: true,
+                        meta: {
+                            permission: "view-blog-categories",
+                        },
+                    },
+                    // Menu manager
                     {
                         path: "menus",
                         name: "MenuManager",
@@ -316,7 +403,7 @@ const routes = [
                         meta: { permission: "view-events" },
                     },
                     {
-                        path: "edit-events/:slug",
+                        path: "edit-events/:id",
                         name: "UpdateEvent",
                         component: UpdateEvent,
                         props: true,
@@ -376,7 +463,7 @@ const routes = [
                         meta: { permission: "view-notices" },
                     },
                     {
-                        path: "edit-notices/:slug",
+                        path: "edit-notices/:id",
                         name: "UpdateNotice",
                         component: UpdateNotice,
                         props: true,
@@ -387,6 +474,32 @@ const routes = [
                         name: "CreateNotice",
                         component: CreateNotice,
                         meta: { permission: "create-notices" },
+                    },
+                    {
+                        path: "manage-players",
+                        name: "Players",
+                        component: Player,
+                        meta: { permission: "view-players" },
+                    },
+                    {
+                        path: "players/:slug",
+                        name: "ShowPlayer",
+                        component: ShowPlayer,
+                        props: true,
+                        meta: { permission: "view-players" },
+                    },
+                    {
+                        path: "edit-players/:id",
+                        name: "UpdatePlayer",
+                        component: UpdatePlayer,
+                        props: true,
+                        meta: { permission: "edit-players" },
+                    },
+                    {
+                        path: "create-players",
+                        name: "CreatePlayer",
+                        component: CreatePlayer,
+                        meta: { permission: "create-players" },
                     },
                     {
                         path: "manage-results",
@@ -402,7 +515,7 @@ const routes = [
                         meta: { permission: "view-results" },
                     },
                     {
-                        path: "edit-results/:slug",
+                        path: "edit-results/:id",
                         name: "UpdateResult",
                         component: UpdateResult,
                         props: true,
@@ -412,7 +525,60 @@ const routes = [
                         path: "create-results",
                         name: "CreateResult",
                         component: CreateResult,
-                    meta: { permission: "create-results" },
+                        meta: { permission: "create-results" },
+                    },
+                    {
+                        path: "manage-sections",
+                        name: "Section",
+                        component: Section,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "edit-sections/:id",
+                        name: "UpdateSection",
+                        component: UpdateSection,
+                        props: true,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "banner-sliders",
+                        name: "Sliders",
+                        component: Sliders,
+                        props: true,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "edit-sliders/:id",
+                        name: "UpdateSlider",
+                        component: UpdateSlider,
+                        props: true,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "create-sliders",
+                        name: "CreateSlider",
+                        component: CreateSlider,
+                        meta: { permission: "manage-frontend" },
+                    },
+                    {
+                        path: "manage-committee-members",
+                        name: "CommitteeMembers",
+                        component: CommitteeMembers,
+                        props: true,
+                        meta: { permission: "manage-committee-members" },
+                    },
+                    {
+                        path: "edit-committee-members/:id",
+                        name: "UpdateCommitteeMembers",
+                        component: UpdateCommitteeMembers,
+                        props: true,
+                        meta: { permission: "manage-committee-members" },
+                    },
+                    {
+                        path: "create-committee-members",
+                        name: "CreateCommitteeMembers",
+                        component: CreateCommitteeMembers,
+                        meta: { permission: "manage-committee-members" },
                     },
                 ],
             },

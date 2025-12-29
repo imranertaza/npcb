@@ -1,19 +1,68 @@
 <?php
 
 use App\Http\Controllers\FrontendController;
-use App\Models\Event;
-use App\Models\EventCategory;
+use App\Services\ImageService;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
-
+Route::get('/clear', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+// Remove the public/cache directory
+    $cacheDir = public_path('cache');
+    if (File::exists($cacheDir)) {
+        File::deleteDirectory($cacheDir);
+    }
+    return "Application cache cleared!";
+});
 Route::controller(FrontendController::class)->group(function () {
-        Route::get('/', 'index')->name('home');
-        Route::prefix('pages')->name('page.')->group(function () {
-            Route::get('/', 'pages')->name('index');
-            Route::get('/{slug}','pageDetails')->name('details');
-        });
+    Route::get('/', 'index')->name('home');
+    Route::get('match-fixtures', 'matchFixtures')->name('match-fixtures');
+    Route::get('notice-board', 'noticeBoard')->name('notice-board');
+    Route::get('tournament-result', 'tournamentResult')->name('tournament-result');
+    Route::get('/photo-gallery', 'gallery')->name('gallery');
+    Route::get('gallery-details/{id}', 'galleryDetails')->name('gallery-details');
+    Route::get('news-and-updates', 'newsAndUpdates')->name('news-and-updates');
+    Route::get('spotlights', 'spotlightNews')->name('spotlight-news');
+    Route::get('news-and-updates/{slug}', 'newsAndUpdatesDetails')->name('news-and-updates-details');
+    Route::get('blogs', 'blogs')->name('blogs');
+    Route::get('blogs/{slug}', 'blogsDetails')->name('blogs-details');
+    Route::get('players', 'players')->name('player.index');
+    Route::get('players/{slug}', 'playerDetails')->name('player.details');
+    Route::get('post-categories/{slug}', 'postCategoryDetails')->name('post-categories');
+    Route::get('sports/{slug}', 'postDetails')->name('sports-details');
+
+    Route::get('running-events', 'runningEvents')->name('running-events');
+    Route::get('upcoming-events', 'upcomingEvents')->name('upcoming-events');
+    Route::get('running-events/{slug}', 'runningEventsDetails')->name('event-details');
+    Route::get('executive-committee', 'committeeMembers')->name('committee-members');
+    Route::post('contact-us', 'contactSubmit')->name('contact.submit');
+    Route::prefix('pages')->name('page.')->group(function () {
+        Route::get('/', 'pages')->name('index');
+        Route::get('/{slug}', 'pageDetails')->name('details');
     });
+    Route::get('/image/{width}/{height}/{format}/{path}', function ($width, $height, $format, $path) {
+
+        $fullPath = $path; $url = ImageService::resizeAndCache($fullPath, (int) $width, (int) $height, $format);
+        // Convert URL back to actual file path
+        $filePath = public_path(str_replace(asset(''), '', $url));
+        // Return raw file with correct headers
+        return Response::file($filePath, ['Content-Type' => 'image/' . $format, 'Cache-Control' => 'public, max-age=604800']);
+    })->where('path', '.*');
+
+    Route::get('/image_url/{width}/{height}/{format}/{path}', function ($width, $height, $format, $path) {
+        $fullPath = $path;
+
+        $url = ImageService::resizeAndCache($fullPath, (int) $width, (int) $height, $format);
+
+        return redirect($url);
+    })->where('path', '.*');
+});
+Route::get('/admin', function () {return redirect('/admin/dashboard');});
 Route::get('admin/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
-

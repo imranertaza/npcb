@@ -14,31 +14,42 @@ class MenuSeeder extends Seeder
     public function run(): void
     {
         // Create Header menu
-        Menu::create([
-            'name'     => 'Main Header',
-            'position' => 'Header',
-            'enabled'  => true,
-        ]);
+        Menu::updateOrCreate(
+            ['name' => 'Main Header'],
+            [
+                'name'     => 'Main Header',
+                'position' => 'header',
+                'enabled'  => true,
+            ]
+        );
 
         // Create Footer menu
-        Menu::create([
-            'name'     => 'Footer Menu',
-            'position' => 'Footer',
-            'enabled'  => true,
-        ]);
+        Menu::updateOrCreate(
+            ['name' => 'INFORMATION'],
+            [
+                'name'     => 'INFORMATION',
+                'position' => 'footer',
+                'enabled'  => true,
+            ]
+        );
+        Menu::updateOrCreate(
+            ['name' => 'NEWS'],
+            [
+                'name'     => 'NEWS',
+                'position' => 'footer',
+                'enabled'  => true,
+            ]
+        );
 
-        // Create Sidebar menu
-        Menu::create([
-            'name'     => 'Sidebar Menu',
-            'position' => 'Right Sidebar',
-            'enabled'  => false,
-        ]);
 
         // Create Floating Top menu
-        Menu::create([
-            'name'     => 'Floating Top Menu',
-            'position' => 'Floating Top',
-            'enabled'  => true,
-        ]);
+        Menu::updateOrCreate(
+            ['name' => 'Floating Top Menu'],
+            [
+                'name'     => 'Floating Top Menu',
+                'position' => 'Floating Top',
+                'enabled'  => true,
+            ]
+        );
     }
 }

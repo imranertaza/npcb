@@ -12,6 +12,15 @@ use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
+    /**
+     * Display a listing of pages with optional search and pagination.
+     *
+     * Applies search filters if provided in the request. If 'all' is set,
+     * returns a lightweight list of pages (id + title). Otherwise, paginates results.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $query = Page::latest();
@@ -27,91 +36,151 @@ class PageController extends Controller
                     ->orWhere('meta_keyword', 'like', "%{$search}%");
             });
         }
-        if ($request->filled('all')) {
-            $pages = $query->select(['id', 'page_title'])->get(); // you can set per_page here
-        } else {
 
-            $pages = $query->paginate(10); // you can set per_page here
+        if ($request->filled('all')) {
+            $pages = $query->select(['id', 'page_title'])->get();
+        } else {
+            $pages = $query->paginate(10);
         }
 
         return ApiResponse::success($pages, 'Pages retrieved successfully');
     }
 
+    /**
+     * Display a single page by slug.
+     *
+     * Retrieves a page record using its unique slug. Throws a 404 if not found.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
     public function show($slug)
     {
-        $page = Page::where('slug', $slug)->firstOrFail();
+        $page = Page::whereSlug($slug)->firstOrFail();
         return ApiResponse::success($page, 'Page retrieved successfully');
     }
 
+    /**
+     * Store a newly created page in storage.
+     *
+     * Validates request data, handles image upload, and creates a new page record.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'page_title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:pages,slug|max:300',
-            'short_des' => 'required|string|max:255',
+            'page_title'       => 'required|string|max:255',
+            'slug'             => 'required|string|unique:pages,slug|max:300',
+            'short_des'        => 'required|string|max:255',
             'page_description' => 'required|string',
-            'temp' => 'nullable|string|max:255',
-            'f_image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'meta_title' => 'nullable|string|max:255',
+            'temp'             => 'nullable|string|max:255',
+            'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
-            'meta_keyword' => 'nullable|string|max:255',
-            'status' => ['required', Rule::in(['Active', 'Inactive'])],
-            'createdBy' => 'nullable|integer',
-            'updatedBy' => 'nullable|integer',
+            'meta_keyword'     => 'nullable|string|max:255',
+            'status'           => ['required', Rule::in(['Active', 'Inactive'])],
+            'createdBy'        => 'nullable|integer',
+            'updatedBy'        => 'nullable|integer',
         ]);
+
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
-        if ($request->hasFile('f_image')) {
-            $validated['f_image'] = $request->file('f_image')->store('pages', 'public');
-        }
 
         $page = Page::create($validated);
+
+        // Handle image upload after page is created (so we have ID)
+        if ($request->hasFile('f_image')) {
+            $filename = uniqid('image_') . '.' . $request->file('f_image')->getClientOriginalExtension();
+            $path = $request->file('f_image')->storeAs("pages/{$page->id}", $filename, 'public');
+            $page->update(['f_image' => $path]);
+        }
+
         return response()->json(['message' => 'Page created successfully', 'data' => $page], 201);
     }
 
+    /**
+     * Update the specified page in storage.
+     *
+     * Validates request data, updates the page record, and replaces the image if provided.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, $id)
     {
         $page = Page::findOrFail($id);
 
         $validated = $request->validate([
-            'page_title' => 'required|string|max:255',
-            'slug' => ['required', 'string', 'max:300', Rule::unique('pages', 'slug')->ignore($page->id)],
-            'short_des' => 'required|string|max:255',
+            'page_title'       => 'required|string|max:255',
+            'slug'             => ['required', 'string', 'max:300', Rule::unique('pages', 'slug')->ignore($page->id)],
+            'short_des'        => 'required|string|max:255',
             'page_description' => 'required|string',
-            'temp' => 'nullable|string|max:255',
-            'f_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'meta_title' => 'nullable|string|max:255',
+            'temp'             => 'nullable|string|max:255',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
-            'meta_keyword' => 'nullable|string|max:255',
-            'status' => ['required', Rule::in(['Active', 'Inactive'])],
+            'meta_keyword'     => 'nullable|string|max:255',
+            'status'           => ['required', Rule::in(['Active', 'Inactive'])],
         ]);
 
         if ($request->hasFile('f_image')) {
             if ($page->f_image && Storage::disk('public')->exists($page->f_image)) {
                 Storage::disk('public')->delete($page->f_image);
             }
-            $validated['f_image'] = $request->file('f_image')->store('pages', 'public');
+
+            $filename = uniqid('image_') . '.' . $request->file('f_image')->getClientOriginalExtension();
+            $validated['f_image'] = $request->file('f_image')->storeAs("pages/{$page->id}", $filename, 'public');
         }
 
         $page->update($validated);
         return response()->json(['message' => 'Page updated successfully', 'data' => $page], 200);
     }
 
+    /**
+     * Toggle the active/inactive status of a page.
+     *
+     * Finds a page by slug and switches its status between 'Active' and 'Inactive'.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
     public function toggleStatus($slug)
     {
-        $page = Page::where('slug', $slug)->firstOrFail();
+        $page = Page::whereSlug($slug)->firstOrFail();
         $page->status = $page->status === 'Active' ? 'Inactive' : 'Active';
         $page->save();
 
         return response()->json([
             'message' => $page->status === 'Active' ? 'Page activated' : 'Page deactivated',
-            'status' => $page->status
+            'status'  => $page->status,
         ]);
     }
 
+    /**
+     * Remove the specified page from storage.
+     *
+     * Deletes the page record and its associated image file if present.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
     public function destroy($slug)
     {
-        $page = Page::where('slug', $slug)->firstOrFail();
+        $page = Page::whereSlug($slug)->firstOrFail();
 
         if ($page->f_image && Storage::disk('public')->exists($page->f_image)) {
             Storage::disk('public')->delete($page->f_image);

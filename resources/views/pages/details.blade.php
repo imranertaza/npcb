@@ -1,8 +1,15 @@
-@extends('layouts.frontend.'.$page->temp)
+@extends('layouts.frontend.' . $page->temp)
 @section('page-content')
+    <!-- About section start  -->
+    <section class="container py-100">
+        <h2 class="visually-hidden">About The National Paralympic Committee of Bangladesh</h2>
+        <div class="">
 
-<h1>{{ $page->page_title }}</h1>
-<img src="{{ getImageUrl($page->f_image) }}" alt="{{ $page->page_title }}">
-{!! $page->page_description !!}
-
+            <img class="img-fluid" src="{{ getImageCacheUrl($page->f_image,1140, 375) }}" alt="">
+        </div>
+        <div class="text-center mx-md-5 text-dark-emphasis">
+            {!! $page->page_description !!}
+        </div>
+    </section>
+    <!-- About section End  -->
 @endsection

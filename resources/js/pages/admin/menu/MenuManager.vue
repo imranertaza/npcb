@@ -64,7 +64,7 @@
                 <select id="edit-link-type" v-model="editForm.link_type" class="form-control form-control-sm">
                   <option value="">-- Select Type --</option>
                   <option value="page">Page</option>
-                  <option value="category">Category</option>
+                  <option value="category">Post Category</option>
                   <option value="url">URL</option>
                 </select>
               </div>
@@ -271,7 +271,7 @@ const editModal = ref({ open: false, target: null })
 const editForm = ref({
   name: '',
   icon: '',
-  link: '',
+  url: '',
   link_type: '',
   page_id: '',
   category_id: '',
@@ -383,16 +383,16 @@ const deleteItem = async (id, name = 'this item') => {
 
 
 const openEditPanel = (item) => {
+
   editModal.value.open = true
   editModal.value.target = item
   editForm.value = {
     name: item.name || '',
     icon: item.icon || '',
     link_type: item.link_type || '',
-    link: item.link || '',
+    url: item.link || '',
     category_id: item.category_id || '',
     page_id: item.page_id || '',
-    url: item.url || '',
     enabled: item.enabled !== false
   }
 }
@@ -405,7 +405,6 @@ const closeEditPanel = () => {
 const applyEdit = async () => {
   const target = editModal.value.target
   if (!target) return
-
   try {
     const payload = {
       name: editForm.value.name,

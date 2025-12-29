@@ -1,11 +1,8 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Gallery;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class GallerySeeder extends Seeder
 {
@@ -18,6 +15,7 @@ class GallerySeeder extends Seeder
             [
                 'name'       => 'Football Highlights',
                 'thumb'      => 'https://placehold.co/600x400?text=Football',
+                'status'=>1,
                 'alt_name'   => 'Football Gallery',
                 'sort_order' => 1,
                 'createdBy'  => 1,
@@ -27,6 +25,7 @@ class GallerySeeder extends Seeder
                 'name'       => 'Basketball Moments',
                 'thumb'      => 'https://placehold.co/600x400?text=Basketball',
                 'alt_name'   => 'Basketball Gallery',
+                'status'=>1,
                 'sort_order' => 2,
                 'createdBy'  => 1,
                 'updatedBy'  => null,
@@ -35,6 +34,7 @@ class GallerySeeder extends Seeder
                 'name'       => 'Cricket Shots',
                 'thumb'      => 'https://placehold.co/600x400?text=Cricket',
                 'alt_name'   => 'Cricket Gallery',
+                'status'=>1,
                 'sort_order' => 3,
                 'createdBy'  => 1,
                 'updatedBy'  => null,
@@ -43,6 +43,7 @@ class GallerySeeder extends Seeder
                 'name'       => 'Tennis Action',
                 'thumb'      => 'https://placehold.co/600x400?text=Tennis',
                 'alt_name'   => 'Tennis Gallery',
+                'status'     => 1,
                 'sort_order' => 4,
                 'createdBy'  => 1,
                 'updatedBy'  => null,

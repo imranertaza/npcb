@@ -46,6 +46,8 @@ class Post extends Model
         return $query->where('status', '1');
     }
 
+    
+
     /**
      * Helper: Sync categories.
      */

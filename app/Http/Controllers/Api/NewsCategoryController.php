@@ -8,14 +8,30 @@ use App\Models\NewsCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
+/**
+ * API Controller for managing news categories.
+ *
+ * Provides CRUD operations, status updates, and hierarchical listing of news categories
+ * (supports parent-child relationships).
+ */
 class NewsCategoryController extends Controller
 {
-    /*  List categories with optional search and pagination */
+    /**
+     * Retrieve a list of news categories.
+     *
+     * Supports optional search, pagination, and different modes:
+     * - ?all=1 : Return all categories with children (hierarchical)
+     * - ?per_page=0 : Return only top-level categories (id + category_name)
+     * - Default: Paginated list with children
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $all = $request->query('all', false);
-
         $search = $request->query('search');
 
         $query = NewsCategory::with(['children'])->orderBy('sort_order');
@@ -41,14 +57,27 @@ class NewsCategoryController extends Controller
         return ApiResponse::success($categories, 'Categories fetched successfully');
     }
 
-    /*  Get single category details */
+    /**
+     * Retrieve a single news category with its parent and children relationships.
+     *
+     * @param NewsCategory $category The category model instance (resolved via route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(NewsCategory $category)
     {
         $category->load(['children.parent', 'parent']);
         return ApiResponse::success($category, 'Category fetched successfully');
     }
 
-    /*  Create new category */
+    /**
+     * Create a new news category.
+     *
+     * Automatically generates a slug from the category name.
+     * Handles optional image upload and assigns the authenticated user as creator.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -64,22 +93,38 @@ class NewsCategoryController extends Controller
             'status'           => 'in:0,1',
         ]);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('news_categories', 'public');
-            $validated['image'] = $path;
-        }
-
+        $validated['slug'] = Str::slug($validated['category_name']);
         $validated['createdBy'] = Auth::id();
 
+        // Create category first (without image)
         $category = NewsCategory::create($validated);
+
+        // Handle image upload if present
+        if ($request->hasFile('image')) {
+            $filename = uniqid('cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            // Store in: storage/app/public/news/category/{id}/file.ext
+            $path = $request->file('image')
+                ->storeAs("news/category/{$category->id}", $filename, 'public');
+
+            $category->update(['image' => $path]);
+        }
 
         return ApiResponse::success($category, 'Category created successfully');
     }
 
-    /*  Update existing category */
+    /**
+     * Update an existing news category.
+     *
+     * Replaces image if a new one is uploaded (deletes old image).
+     * Preserves existing image if none is provided.
+     *
+     * @param Request $request
+     * @param NewsCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, NewsCategory $category)
     {
-
         $validated = $request->validate([
             'parent_id'        => 'nullable|exists:news_categories,id',
             'category_name'    => 'required|string|max:255',
@@ -93,14 +138,22 @@ class NewsCategoryController extends Controller
             'status'           => 'in:0,1',
         ]);
 
+        // Handle image upload if present
         if ($request->hasFile('image')) {
+            // Delete old image if it exists
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
 
-            $path = $request->file('image')->store('news_categories', 'public');
+            // Build a unique filename
+            $filename = uniqid('cat_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $path = $request->file('image')
+                ->storeAs("news/category/{$category->id}", $filename, 'public');
+
             $validated['image'] = $path;
         } else {
+            // Keep existing image if no new file uploaded
             $validated['image'] = $category->image;
         }
 
@@ -111,19 +164,32 @@ class NewsCategoryController extends Controller
         return ApiResponse::success($category, 'Category updated successfully');
     }
 
-    /*  Update category status */
+
+    /**
+     * Update only the status (active/inactive) of a news category.
+     *
+     * @param Request $request
+     * @param NewsCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateStatus(Request $request, NewsCategory $category)
     {
         $request->validate([
             'status' => 'required|in:0,1',
         ]);
+
         $category->status = (string)$request->input('status');
         $category->save();
 
         return ApiResponse::success($category, 'Category status updated successfully');
     }
 
-    /*  Delete category */
+    /**
+     * Permanently delete a news category and its associated image (if any).
+     *
+     * @param NewsCategory $category The category model instance (route model binding)
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(NewsCategory $category)
     {
         if ($category->image && Storage::disk('public')->exists($category->image)) {

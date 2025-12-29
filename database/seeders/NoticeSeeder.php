@@ -22,6 +22,15 @@ class NoticeSeeder extends Seeder
                 'file' => 'notice_1.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
+                'type' => 0,
+            ],
+            [
+                'title' => 'National para badminton championships 2025',
+                'description' => 'The National para badminton championships 2025 will be held on 15th December 2025.',
+                'file' => 'notice_1.pdf',
+                'createdBy' => 1,
+                'updatedBy' => 1,
+                'type' => 1,
             ],
             [
                 'title' => 'New Policy Update for Employees',
@@ -29,6 +38,7 @@ class NoticeSeeder extends Seeder
                 'file' => 'policy_update.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
+                'type' => 0,
             ],
             [
                 'title' => 'Holiday Announcement',
@@ -36,6 +46,7 @@ class NoticeSeeder extends Seeder
                 'file' => 'holiday_notice.pdf',
                 'createdBy' => 1,
                 'updatedBy' => 1,
+                'type' => 0,
             ],
             [
                 'title' => 'System Downtime Alert',
@@ -43,6 +54,7 @@ class NoticeSeeder extends Seeder
                 'file' => 'downtime_alert.png',
                 'createdBy' => 1,
                 'updatedBy' => 1,
+                'type' => 0,
             ],
             [
                 'title' => 'Training Session Reminder',
@@ -50,6 +62,7 @@ class NoticeSeeder extends Seeder
                 'file' => 'training_schedule.docx',
                 'createdBy' => 1,
                 'updatedBy' => 1,
+                'type' => 1,
             ],
         ];
 
@@ -62,6 +75,7 @@ class NoticeSeeder extends Seeder
                     'file'        => $notice['file'],
                     'createdBy'   => $notice['createdBy'],
                     'updatedBy'   => $notice['updatedBy'],
+                    'type'        => $notice['type'],
                 ]
             );
         }

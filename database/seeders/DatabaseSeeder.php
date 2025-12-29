@@ -2,10 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\BlogCategory;
+use App\Models\BlogCategoryMap;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,5 +37,11 @@ class DatabaseSeeder extends Seeder
         $this->call(NoticeSeeder::class);
         $this->call(ResultSeeder::class);
         $this->call(NewsCategoryMapSeeder::class);
+        $this->call(SectionSeeder::class);
+        $this->call(SliderSeeder::class);
+        $this->call(BlogSeeder::class);
+        $this->call(CommitteeMemberSeeder::class);
+        $this->call(PlayerSeeder::class);
+        Artisan::call("optimize:clear");
     }
 }

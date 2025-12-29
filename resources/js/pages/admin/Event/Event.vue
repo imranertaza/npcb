@@ -27,9 +27,10 @@
                   <td class="align-middle">{{ index + 1 }}</td>
                   <td class="align-middle">{{ truncateText(event.title, 20) }}</td>
                   <td class="align-middle">
-                    <a v-if="event.file" :href="getImageUrl(event.file)" target="_blank" class="btn btn-sm btn-outline-primary">
-                      View File
-                    </a>
+                    <button v-if="event.featured_image" @click="openImageModal(event.featured_image)"
+                      class="btn btn-sm btn-outline-primary">
+                      View Image
+                    </button>
                   </td>
                   <td v-if="authStore.hasPermission('edit-events')" class="align-middle">
                     <select v-model="event.status" @change="updateStatus(event)" class="custom-select"
@@ -41,17 +42,15 @@
                   <td class="align-middle">
                     <div class="d-flex">
                       <router-link v-if="authStore.hasPermission('view-events')"
-                        :to="{ name: 'ShowEvent', params: { slug: event.slug } }"
-                        class="btn btn-sm btn-outline-dark">
+                        :to="{ name: 'ShowEvent', params: { slug: event.slug } }" class="btn btn-sm btn-outline-dark">
                         <i class="fas fa-eye"></i>
                       </router-link>
                       <router-link v-if="authStore.hasPermission('edit-events')"
-                        :to="{ name: 'UpdateEvent', params: { slug: event.slug } }"
+                        :to="{ name: 'UpdateEvent', params: { id: event.id } }"
                         class="ml-2 btn btn-sm btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                       </router-link>
-                      <button v-if="authStore.hasPermission('delete-events')"
-                        class="ml-2 btn btn-sm btn-outline-danger"
+                      <button v-if="authStore.hasPermission('delete-events')" class="ml-2 btn btn-sm btn-outline-danger"
                         @click="confirmDelete(event)">
                         <i class="fas fa-trash-alt"></i>
                       </button>
@@ -60,6 +59,24 @@
                 </tr>
               </tbody>
             </table>
+            <!-- Image Modal -->
+            <div v-if="showModal" class="modal fade show d-block" tabindex="-1" role="dialog">
+              <div class="modal-dialog modal-lg" role="document" @click.stop>
+                <div class="modal-content ">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Event Image</h5>
+                    <button type="button" class="close" @click="closeImageModal">
+                      <span>&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body text-center overflow-scroll " style="height: 80vh; overflow: auto;">
+                    <img :src="modalImage" alt="Event Image" class="img-fluid rounded border" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="showModal" class="modal-backdrop fade show" @click="closeImageModal"></div>
+
           </div>
           <Pagination :pData="events" @page-change="fetchPage" />
         </div>
@@ -85,6 +102,20 @@ const events = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
+
+
+const showModal = ref(false);
+const modalImage = ref('');
+
+const openImageModal = (imagePath) => {
+  modalImage.value = getImageUrl(imagePath);
+  showModal.value = true;
+};
+
+const closeImageModal = () => {
+  showModal.value = false;
+  modalImage.value = '';
+};
 
 // Fetch events with pagination + search
 const fetchPage = async (page = 1, term = "") => {

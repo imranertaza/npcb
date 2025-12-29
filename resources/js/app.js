@@ -25,6 +25,7 @@ import $ from "jquery";
 window.$ = window.jQuery = $;
 import "summernote/dist/summernote-lite.css";
 import "summernote/dist/summernote-lite.js";
+import { useLoadingStore } from "./store/useLoadingStore";
 
 const app = createApp(App);
 app.use(createPinia());
@@ -40,6 +41,54 @@ const token = localStorage.getItem("token");
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
+axios.interceptors.request.use((config) => {
+  const loadingStore = useLoadingStore();
+
+  // Normalize method to lowercase
+  const method = config.method?.toLowerCase();
+
+  if (["post", "put", "patch", "delete"].includes(method)) {
+    // Dynamic message based on method
+    const msgMap = {
+      post: "Working...",
+      put: "Updating...",
+      patch: "Updating...",
+      delete: "Deleting..."
+    };
+    loadingStore.start(msgMap[method] || "Processing...");
+
+    // Attach upload progress handler if applicable
+    config.onUploadProgress = (event) => {
+      if (event.total) {
+        const percent = Math.round((event.loaded * 100) / event.total);
+        loadingStore.setProgress(percent);
+      }
+    };
+  }
+
+  return config;
+});
+
+axios.interceptors.response.use(
+  (response) => {
+    const loadingStore = useLoadingStore();
+    const method = response.config.method?.toLowerCase();
+
+    if (["post", "put", "patch", "delete"].includes(method)) {
+      loadingStore.stop();
+    }
+    return response;
+  },
+  (error) => {
+    const loadingStore = useLoadingStore();
+    const method = error.config?.method?.toLowerCase();
+
+    if (["post", "put", "patch", "delete"].includes(method)) {
+      loadingStore.stop();
+    }
+    return Promise.reject(error);
+  }
+);
 if (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
