@@ -13,8 +13,8 @@
                             <img src="{{ getImageCacheUrl($item->thumb, 262, 230) }}" class="card-img-top"
                                 alt="{{ $item->alt_name }}">
                             <div class="card-body">
-                                <h5 class="title-five">
-                                    {{ $item->name }}
+                                <h5 class="title-five min-h-38">
+                                    {{ truncateText($item->name, 45) }}
                                 </h5>
                             </div>
                         </div>

@@ -266,7 +266,7 @@ class FrontendController extends Controller
      */
     public function runningEvents()
     {
-        $events = Event::where('type', 1)
+        $events = Event::where('type', '1')
             ->where('status', 1)
             ->latest()
             ->paginate(10);
@@ -282,7 +282,7 @@ class FrontendController extends Controller
     public function upcomingEvents()
     {
         $events = Event::where('type', 0)
-            ->where('status', 1)
+            ->where('status', '1')
             ->latest()
             ->paginate(10);
 
