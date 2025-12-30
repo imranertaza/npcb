@@ -40,7 +40,6 @@ class SectionController extends Controller
     public function show($id)
     {
         $section = Section::findOrFail($id);
-
         return ApiResponse::success($section, 'Section data retrieved successfully');
     }
 

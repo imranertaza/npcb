@@ -55,7 +55,7 @@ class PlayerController extends Controller
      */
     public function show($id)
     {
-        $player = Player::findOrFail($id)->firstOrFail();
+        $player = Player::findOrFail($id);
         return ApiResponse::success($player, 'Player retrieved successfully');
     }
 

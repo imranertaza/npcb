@@ -99,12 +99,25 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 import { useToast } from '@/composables/useToast';
 import Multiselect from '@vueform/multiselect';
+
+// Toast notifications
 const toast = useToast();
+
+// Current route (to get category ID)
 const route = useRoute();
+
+// Category data being edited
 const form = ref(null);
-const categories = ref([]);
+
+// Dropzone reference for new image upload
 const imageFile = ref(null);
 
+// All categories (for parent selection)
+const categories = ref([]);
+
+/**
+ * Fetch the news category to edit
+ */
 const fetchCategory = async () => {
     try {
         const res = await axios.get(`/api/news-categories/${route.params.id}`);
@@ -114,6 +127,9 @@ const fetchCategory = async () => {
     }
 };
 
+/**
+ * Fetch all categories for parent dropdown
+ */
 const fetchCategories = async () => {
     try {
         const res = await axios.get('/api/news-categories?all=1');
@@ -123,6 +139,9 @@ const fetchCategories = async () => {
     }
 };
 
+/**
+ * Options for parent category select
+ */
 const categoriesOptions = computed(() => {
     return [
         { label: '-- None --', value: '' },
@@ -133,15 +152,20 @@ const categoriesOptions = computed(() => {
     ];
 });
 
+/**
+ * Update the news category (PUT spoofed with POST + _method=PUT)
+ */
 const updateCategory = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholder
     for (const key in form.value) {
         if (key !== 'image') {
             payload.append(key, form.value[key] ?? '');
         }
     }
 
+    // Append new image if uploaded
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
     }
@@ -156,12 +180,16 @@ const updateCategory = async () => {
         toast.validationError(error);
     }
 };
+
+// Optional props (kept for compatibility)
 defineProps({
     id: {
         type: [Number, String],
         required: false
     }
 });
+
+// Load data on mount
 onMounted(() => {
     fetchCategory();
     fetchCategories();

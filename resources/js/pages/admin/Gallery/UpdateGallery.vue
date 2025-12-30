@@ -73,13 +73,13 @@
                         <div class="row" v-if="form.details?.length > 0">
                             <div v-for="detail in form.details" :key="detail.id" class="col-md-3 mb-3">
                                 <div class="card h-100 shadow-sm">
-                                    <img v-if="detail.image" :src="getImageCacheUrl(detail.image,252,200)"
+                                    <img v-if="detail.image" :src="getImageCacheUrl(detail.image, 252, 200)"
                                         :alt="detail.alt_name || form.name" class="card-img-top object-fit-cover"
                                         height="200" />
                                     <div class="card-body pt-0">
                                         <div class="d-flex justify-content-between mt-2">
                                             <small class="d-block text-muted">{{ detail.alt_name || 'No alt text'
-                                                }}</small>
+                                            }}</small>
                                             <div class="btn-group" role="group">
                                                 <button class="btn btn-sm btn-outline-info"
                                                     @click="openEditModal(detail)">
@@ -163,51 +163,66 @@
     </div>
 
 </template>
-
 <script setup>
 import { ref, reactive, onMounted, inject } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import { getImageUrl,getImageCacheUrl } from '@/layouts/helpers/helpers';
+import { getImageUrl, getImageCacheUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { useToast } from '@/composables/useToast';
 
+// Toast notifications
 const toast = useToast();
-const previews = ref();
+
+// Route & router
 const route = useRoute();
 const router = useRouter();
+
+// SweetAlert2 instance
 const $swal = inject('$swal');
+
+// Gallery ID from route
 const galleryId = route.params.id;
+
+// Dropzone previews & files
+const previews = ref([]);           // Main thumbnail preview
+const imageFile = ref(null);        // New thumbnail upload
+
+// Add detail modal
 const showAddModal = ref(false);
 const newDetail = reactive({ alt_name: '', sort_order: 0 });
 const newDetailFile = ref(null);
 const newDetailPreviews = ref([]);
+
+// Edit detail modal
 const showEditModal = ref(false);
 const editDetail = reactive({ id: null, alt_name: '', sort_order: 0 });
 
-
+// Reactive form state (main gallery + details)
 const form = reactive({
     id: null,
     name: '',
     alt_name: '',
     sort_order: 0,
     thumb: '',
-    details: [], // gallery details
+    details: [],      // Array of gallery detail images
     createdBy: 1,
     updatedBy: null
 });
 
-const imageFile = ref(null);
-
-// Fetch gallery with details
+/**
+ * Fetch gallery with its details
+ */
 const fetchGallery = async () => {
     try {
         const res = await axios.get(`/api/gallery/${galleryId}`);
         Object.assign(form, res.data.data);
+
+        // Set existing thumbnail preview
         if (form.thumb) {
-            previews.value = [getImageUrl(form.thumb)];
+            previews.value = [{ url: getImageUrl(form.thumb) }];
         }
     } catch (err) {
         console.error(err);
@@ -215,13 +230,15 @@ const fetchGallery = async () => {
     }
 };
 
-// Update gallery
+/**
+ * Update main gallery info (name, alt_name, sort_order, thumbnail)
+ */
 const updateGallery = async () => {
     const payload = new FormData();
 
     for (const key in form) {
         if (key !== 'thumb' && key !== 'details') {
-            payload.append(key, form[key]);
+            payload.append(key, form[key] ?? '');
         }
     }
 
@@ -239,6 +256,9 @@ const updateGallery = async () => {
     }
 };
 
+/**
+ * Add new image detail to gallery
+ */
 const addDetail = async () => {
     const payload = new FormData();
     payload.append('gallery_id', form.id);
@@ -253,17 +273,21 @@ const addDetail = async () => {
         const res = await axios.post('/api/gallery/details', payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        form.details.push(res.data.data); // append new detail to list
+        form.details.push(res.data.data);
         toast.success('Image added successfully!');
         showAddModal.value = false;
         newDetail.alt_name = '';
+        newDetail.sort_order = 0;
         newDetailFile.value = null;
         newDetailPreviews.value = [];
     } catch (err) {
         toast.validationError(err);
     }
 };
-// Delete detail
+
+/**
+ * Delete a gallery detail image
+ */
 const deleteDetail = async (detail) => {
     const result = await $swal({
         title: `Delete this image?`,
@@ -286,6 +310,9 @@ const deleteDetail = async (detail) => {
     }
 };
 
+/**
+ * Open edit modal with detail data
+ */
 const openEditModal = (detail) => {
     editDetail.id = detail.id;
     editDetail.alt_name = detail.alt_name || '';
@@ -293,6 +320,9 @@ const openEditModal = (detail) => {
     showEditModal.value = true;
 };
 
+/**
+ * Close edit modal and reset fields
+ */
 const closeEditModal = () => {
     showEditModal.value = false;
     editDetail.id = null;
@@ -300,6 +330,9 @@ const closeEditModal = () => {
     editDetail.sort_order = 0;
 };
 
+/**
+ * Save edited detail (alt_name & sort_order)
+ */
 const saveDetail = async () => {
     try {
         await axios.patch(`/api/gallery/details/${editDetail.id}`, {
@@ -307,7 +340,6 @@ const saveDetail = async () => {
             sort_order: editDetail.sort_order
         });
 
-        // Update local state
         const idx = form.details.findIndex(d => d.id === editDetail.id);
         if (idx !== -1) {
             form.details[idx].alt_name = editDetail.alt_name;
@@ -321,10 +353,12 @@ const saveDetail = async () => {
     }
 };
 
+// Load gallery on mount
 onMounted(() => {
     fetchGallery();
 });
 
+// Optional props (kept for compatibility)
 defineProps({
     id: {
         type: [Number, String],

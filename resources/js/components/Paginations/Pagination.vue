@@ -29,6 +29,11 @@
 </template>
 
 <script setup>
+/**
+ * Props:
+ * pData: Pagination data object (typically from Laravel's LengthAwarePaginator)
+ *        Expected structure: { current_page, data, links: [{ url, label, active }, ...], ... }
+ */
 const props = defineProps({
   pData: {
     type: Object,
@@ -36,14 +41,23 @@ const props = defineProps({
   }
 })
 
+// Emit custom event when user clicks a pagination link
 const emit = defineEmits(['page-change'])
 
+/**
+ * Handle pagination link click
+ * Extracts page number from the link URL and emits it to parent
+ * Skips if link is null (disabled) or already active
+ */
 const handleClick = (link) => {
   if (!link.url || link.active) return
 
-  // Extract page number from link.url (e.g. ?page=3)
+  // Create full URL to safely parse query params (link.url is relative, e.g. "?page=3")
   const url = new URL(link.url, window.location.origin)
   const page = url.searchParams.get('page')
-  if (page) emit('page-change', Number(page))
+
+  if (page) {
+    emit('page-change', Number(page))
+  }
 }
 </script>

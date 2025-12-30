@@ -81,6 +81,7 @@
     </div>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
@@ -123,52 +124,69 @@ import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import FileManagerPlugin from '../plugins/FileManagerPlugin';
 import 'ckeditor5/ckeditor5.css';
 
+// Base URL from Vite environment (e.g., http://localhost:8000)
+const baseUrl = import.meta.env.VITE_APP_URL;
+
+// v-model support
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
-    modelValue: { type: String, default: '', readonly: false },
-    placeholder: { type: String, default: 'Start typing...', readonly: false }
+    modelValue: { type: String, default: '' },
+    placeholder: { type: String, default: 'Start typing...' }
 })
+
+// Two-way binding with parent component
 const internalValue = ref(props.modelValue)
 watch(() => props.modelValue, (v) => internalValue.value = v)
 watch(internalValue, (v) => emit('update:modelValue', v))
 
-const show = ref(false);
-const editorInstance = ref(null);
-const fileItems = ref([]);
-const currentFolder = ref('uploads');
+// File manager modal visibility
+const show = ref(false)
 
-// NEW: progress state
-const uploadProgress = ref(0);
-const isUploading = ref(false);
+// Reference to the CKEditor instance
+const editorInstance = ref(null)
 
-// Load files from backend
+// Files displayed in the file manager grid
+const fileItems = ref([])
+
+// Current folder (currently fixed to 'uploads')
+const currentFolder = ref('uploads')
+
+// Upload progress tracking
+const uploadProgress = ref(0)
+const isUploading = ref(false)
+
+/**
+ * Fetch media files from backend and prepare for grid display
+ */
 const loadFiles = async () => {
-    const { data } = await axios.get('/api/media', { params: { folder: currentFolder.value } });
-    fileItems.value = data.files.map(path => {
-        const name = path.split('/').pop();
-        const ext = name.split('.').pop().toLowerCase();
+    const { data } = await axios.get('/api/media', { params: { folder: currentFolder.value } })
+    fileItems.value = data.data.files.map(path => {
+        const name = path.split('/').pop()
+        const ext = name.split('.').pop().toLowerCase()
         return {
             name,
             path,
             url: getImageUrl(path),
             type: ext
-        };
-    });
-};
+        }
+    })
+}
 
-// Upload file with progress
+/**
+ * Upload selected files with progress feedback
+ */
 const handleUpload = async (event) => {
-    const files = event.target.files;
-    if (!files || !files.length) return;
+    const files = event.target.files
+    if (!files || !files.length) return
 
     for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folder', currentFolder.value);
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('folder', currentFolder.value)
 
         try {
-            isUploading.value = true;
-            uploadProgress.value = 0;
+            isUploading.value = true
+            uploadProgress.value = 0
 
             const { data } = await axios.post('/api/media/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data', 'Accept': 'application/json' },
@@ -176,86 +194,101 @@ const handleUpload = async (event) => {
                     if (progressEvent.total) {
                         uploadProgress.value = Math.round(
                             (progressEvent.loaded * 100) / progressEvent.total
-                        );
+                        )
                     }
                 }
-            });
+            })
 
-            // Add each uploaded file to grid
+            // Add newly uploaded file to the grid
             fileItems.value.push({
                 name: data.path.split('/').pop(),
                 path: data.path,
                 url: data.url,
                 type: file.name.split('.').pop().toLowerCase()
-            });
+            })
 
-            // Once upload is complete (100%), close and select file
+            // Auto-select and close modal once upload finishes
             if (uploadProgress.value === 100) {
-                isUploading.value = false;
-                selectFile(fileItems.value[fileItems.value.length - 1]);
-                show.value = false; // close file manager modal
+                isUploading.value = false
+                selectFile(fileItems.value[fileItems.value.length - 1])
+                show.value = false
             }
         } catch (error) {
-            console.error(`Upload failed for ${file.name}`, error);
-            isUploading.value = false;
+            console.error(`Upload failed for ${file.name}`, error)
+            isUploading.value = false
         }
     }
 
-    // Reset input so same files can be reselected later
-    event.target.value = '';
-};
+    // Allow re-selecting the same files
+    event.target.value = ''
+}
 
-// Delete file
+/**
+ * Delete a file from the server and refresh the list
+ */
 const deleteFile = async (path) => {
-    await axios.delete('/api/media/file', { data: { path } });
-    await loadFiles();
-};
+    await axios.delete('/api/media/file', { data: { path } })
+    await loadFiles()
+}
 
+/**
+ * Rename a file via prompt and update server
+ */
 const promptRename = async (file) => {
-    const newName = prompt("Enter new name:", file.name);
-    if (!newName) return;
+    const newName = prompt("Enter new name:", file.name)
+    if (!newName) return
 
     await axios.put('/api/media/file/rename', {
         old_path: file.path,
         new_name: newName
-    });
+    })
 
-    await loadFiles();
-};
+    await loadFiles()
+}
 
+/**
+ * Insert the selected file into the editor based on its type
+ */
 const selectFile = (file) => {
-    if (!editorInstance.value) return;
+    if (!editorInstance.value) return
 
     editorInstance.value.model.change(writer => {
-        let element;
+        let element
 
+        // Images
         if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(file.type)) {
-            element = writer.createElement('imageBlock', { src: file.url });
-            editorInstance.value.model.insertObject(element, editorInstance.value.model.document.selection);
+            element = writer.createElement('imageBlock', { src: file.url })
+            editorInstance.value.model.insertObject(element, editorInstance.value.model.document.selection)
         }
+        // Videos
         else if (['mp4', 'mov', 'avi', 'mkv'].includes(file.type)) {
-            element = writer.createElement('media', { url: `http://127.0.0.1:8000${file.url}` });
-            editorInstance.value.model.insertObject(element, editorInstance.value.model.document.selection);
+            element = writer.createElement('media', { url: `${baseUrl}${file.url}` })
+            editorInstance.value.model.insertObject(element, editorInstance.value.model.document.selection)
         }
+        // PDFs - insert as a clickable link
         else if (file.type === 'pdf') {
-            const insertPosition = editorInstance.value.model.document.selection.getFirstPosition();
-            const pdfName = file.name || 'PDF file';
-            const pdfUrl = `http://127.0.0.1:8000${file.url}`;
+            const insertPosition = editorInstance.value.model.document.selection.getFirstPosition()
+            const pdfName = file.name || 'PDF file'
+            const pdfUrl = `${baseUrl}${file.url}`
 
-            const linkText = writer.createText(`📄 PDF: ${pdfName}`, { linkHref: pdfUrl });
-            editorInstance.value.model.insertContent(linkText, insertPosition);
+            const linkText = writer.createText(`PDF: ${pdfName}`, { linkHref: pdfUrl })
+            editorInstance.value.model.insertContent(linkText, insertPosition)
         }
+        // Other files - insert as text link
         else {
-            element = writer.createElement('paragraph', {});
-            writer.insertText(`📁 File: ${file.url}`, element, 'end');
-            editorInstance.value.model.insertContent(element, editorInstance.value.model.document.selection);
+            element = writer.createElement('paragraph', {})
+            writer.insertText(`File: ${file.url}`, element, 'end')
+            editorInstance.value.model.insertContent(element, editorInstance.value.model.document.selection)
         }
-    });
+    })
 
-    show.value = false;
-};
+    // Close file manager after insertion
+    show.value = false
+}
 
-// CKEditor config
+/**
+ * CKEditor configuration (plugins, toolbar, media handling)
+ */
 const config = computed(() => ({
     licenseKey: 'GPL',
     plugins: [
@@ -265,17 +298,10 @@ const config = computed(() => ({
         Image, ImageCaption, ImageResize, ImageStyle, ImageToolbar,
         ImageUpload, Table, TableToolbar, BlockQuote, MediaEmbed,
         SourceEditing, FileManagerPlugin, PictureEditing,
-        RemoveFormat, Autoformat,GeneralHtmlSupport
+        RemoveFormat, Autoformat, GeneralHtmlSupport
     ],
     htmlSupport: {
-        allow: [
-            {
-                name: /.*/,
-                attributes: true,
-                classes: true,
-                styles: true
-            }
-        ]
+        allow: [{ name: /.*/, attributes: true, classes: true, styles: true }]
     },
     toolbar: [
         'undo', 'redo', '|',
@@ -307,31 +333,38 @@ const config = computed(() => ({
                 name: 'directVideo',
                 url: /\.(mp4|mov|avi|mkv)(\?.*)?$/i,
                 html: match => {
-                    const url = match.input;
+                    const url = match.input
                     return `<div style="padding-bottom: 20px;">
                         <video controls style="width: 100%; height: 100%;">
                             <source src="${url}" type="video/mp4">
                         </video>
-                    </div>`;
+                    </div>`
                 }
             }
         ]
     }
-}));
+}))
 
+/**
+ * Open the file manager modal and load files
+ */
 const showFileManager = async () => {
-    show.value = true;
-    await loadFiles();
-};
+    show.value = true
+    await loadFiles()
+}
 
+/**
+ * Capture the editor instance when it's ready
+ */
 const onEditorReady = (editor) => {
-    editorInstance.value = editor;
-};
+    editorInstance.value = editor
+}
 
+// Make file manager accessible globally (used by the custom plugin button)
 onMounted(() => {
-    window._openFileManager = showFileManager;
-    loadFiles();
-});
+    window._openFileManager = showFileManager
+    loadFiles()
+})
 </script>
 
 <style scoped>

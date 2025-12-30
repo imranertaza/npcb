@@ -55,7 +55,7 @@ class NewsController extends Controller
      */
     public function show($id)
     {
-        $news = News::findOrFail($id)->with('categories.parent')->firstOrFail();
+        $news = News::with('categories.parent')->findOrFail($id);
         return ApiResponse::success($news, 'News retrieved successfully');
     }
 

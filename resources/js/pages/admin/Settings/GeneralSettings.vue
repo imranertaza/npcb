@@ -110,8 +110,8 @@
                                 <small class="text-muted">Recommended:1351 × 300px</small>
 
                                 <div v-if="BreadcrumbFilePreview.length" class="mt-2">
-                                    <img :src="BreadcrumbFilePreview[0]" alt="Favicon Preview" height="300" class="img-thumbnail"
- />
+                                    <img :src="BreadcrumbFilePreview[0]" alt="Favicon Preview" height="300"
+                                        class="img-thumbnail" />
                                 </div>
                             </div>
                         </div>
@@ -330,9 +330,23 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
+/**
+ * Global Settings Management Page
+ *
+ * Allows administrators to update site-wide settings including:
+ * - Store information (address, contact details)
+ * - Branding assets (logos, favicon, breadcrumb, OG/Twitter images)
+ * - Mail server configuration
+ * - Social media links
+ * - SEO & Open Graph metadata
+ * - reCAPTCHA security settings
+ *
+ * Settings are fetched from the backend on mount and submitted as multipart/form-data.
+ */
+
 const toast = useToast();
 
-// Reactive form data (text/select/number fields only)
+// Main form state - contains all text, email, URL, and boolean settings
 const form = ref({
     address: '',
     email: '',
@@ -365,28 +379,29 @@ const form = ref({
     twitter_title: '',
     twitter_description: '',
     twitter_domain: '',
-    // 🔒 Security / reCAPTCHA fields
+    // Security / reCAPTCHA
     use_recaptcha: false,
     nocaptcha_sitekey: '',
     nocaptcha_secret: '',
 });
 
-// Dropzone file and preview refs
+// Dropzone file references (new uploads)
 const logoFile = ref([]);
 const footerLogoFile = ref([]);
 const faviconFile = ref([]);
+const BreadcrumbFile = ref([]);
 const ogImageFile = ref([]);
 const twitterImageFile = ref([]);
 
+// Preview URLs for currently saved images
 const logoPreview = ref([]);
 const footerLogoPreview = ref([]);
 const faviconPreview = ref([]);
-const BreadcrumbFile = ref([]);
 const BreadcrumbFilePreview = ref([]);
 const ogImagePreview = ref([]);
 const twitterImagePreview = ref([]);
 
-// Fetch existing settings
+// Fetch all settings from database and populate form + previews
 const fetchSettings = async () => {
     try {
         const { data } = await axios.get('/api/settings');
@@ -396,8 +411,8 @@ const fetchSettings = async () => {
             const key = s.label;
             const value = s.value;
 
+            // Populate text/numeric fields
             if (form.value.hasOwnProperty(key)) {
-                // handle boolean for use_recaptcha
                 if (key === 'use_recaptcha') {
                     form.value[key] = value === '1' || value === true;
                 } else {
@@ -405,7 +420,7 @@ const fetchSettings = async () => {
                 }
             }
 
-            // Load image previews
+            // Generate preview URLs for existing images
             if (key === 'store_logo' && value) logoPreview.value = [getImageUrl(value)];
             if (key === 'footer_logo' && value) footerLogoPreview.value = [getImageUrl(value)];
             if (key === 'store_icon' && value) faviconPreview.value = [getImageUrl(value)];
@@ -418,6 +433,7 @@ const fetchSettings = async () => {
     }
 };
 
+// Fetch reCAPTCHA-specific settings (from config, not DB)
 const fetchSecuritySettings = async () => {
     try {
         const { data } = await axios.get('/api/settings/security');
@@ -429,13 +445,12 @@ const fetchSecuritySettings = async () => {
     }
 };
 
-// Submit settings
+// Submit all settings (text + new file uploads)
 const submitSettings = async () => {
     const payload = new FormData();
 
-    // Append all text/boolean fields
+    // Append all form fields (convert boolean to '1'/'0' for backend)
     Object.entries(form.value).forEach(([key, value]) => {
-        // convert boolean to 1/0 for backend
         if (typeof value === 'boolean') {
             payload.append(key, value ? '1' : '0');
         } else {
@@ -443,7 +458,7 @@ const submitSettings = async () => {
         }
     });
 
-    // Append image files only if new file selected
+    // Append new uploaded files only if selected
     if (logoFile.value[0]?.file) payload.append('store_logo', logoFile.value[0].file);
     if (footerLogoFile.value[0]?.file) payload.append('footer_logo', footerLogoFile.value[0].file);
     if (faviconFile.value[0]?.file) payload.append('store_icon', faviconFile.value[0].file);
@@ -461,12 +476,12 @@ const submitSettings = async () => {
     }
 };
 
+// Load data when component mounts
 onMounted(() => {
     fetchSettings();
     fetchSecuritySettings();
 });
 </script>
-
 
 <style scoped>
 .form-check-input {

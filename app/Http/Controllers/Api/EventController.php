@@ -53,7 +53,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event = Event::findOrFail($id)->with('category')->firstOrFail();
+        $event = Event::with('category')->findOrFail($id);
         return ApiResponse::success($event, 'Event retrieved successfully');
     }
 

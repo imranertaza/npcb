@@ -51,7 +51,7 @@
                                     <td class="align-middle">
                                         <div class="d-flex">
                                             <router-link v-if="authStore.hasPermission('view-players')"
-                                                :to="{ name: 'ShowPlayer', params: { slug: player.slug } }"
+                                                :to="{ name: 'ShowPlayer', params: { id: player.id } }"
                                                 class="btn btn-sm btn-outline-dark">
                                                 <i class="fas fa-eye"></i>
                                             </router-link>

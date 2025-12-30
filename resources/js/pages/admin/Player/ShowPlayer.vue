@@ -55,7 +55,7 @@ const player = ref(null);
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/players/${route.params.slug}`);
+    const response = await axios.get(`/api/players/${route.params.id}`);
     player.value = response.data.data;
   } catch (error) {
     console.error('Error fetching player:', error);
@@ -63,7 +63,7 @@ onMounted(async () => {
 });
 
 defineProps({
-  slug: {
+  id: {
     type: [String, Number],
   },
 });

@@ -107,7 +107,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import axios from 'axios';
 import { computed, inject, onMounted, ref } from 'vue'
@@ -115,24 +114,35 @@ import draggable from 'vuedraggable'
 import DashboardHeader from '@/components/DashboardHeader.vue';
 import { useToast } from '@/composables/useToast';
 
+// New top-level menu name input
 const newMenuName = ref('');
-const categories = ref();
 
+// Categories for link_type = category
+const categories = ref([]);
+
+// Toast notifications
 const toast = useToast()
 
-const pages = ref([])
+// Pages for link_type = page
+const pages = ref([]);
+
+// SweetAlert2 instance
 const $swal = inject('$swal');
 
 import { useRoute } from 'vue-router'
 import MenuItem from './MenuItem.vue';
 import Multiselect from '@vueform/multiselect';
 
+// Current route & menu ID from URL
 const route = useRoute()
-
-// This gives you the id from the URL
 const menuId = route.params.id
+
+// Hierarchical menu items
 const menuItems = ref([]);
 
+/**
+ * Fetch menu items for the current menu
+ */
 const fetchMenuItems = async (menuId = 1) => {
   try {
     const { data } = await axios.get('/api/menu-items', {
@@ -145,7 +155,9 @@ const fetchMenuItems = async (menuId = 1) => {
   }
 }
 
-// Recursive search for item by id
+/**
+ * Recursively find a menu item by ID
+ */
 const findItemById = (nodes, id) => {
   for (const node of nodes) {
     if (node.id === id) return node
@@ -157,6 +169,9 @@ const findItemById = (nodes, id) => {
   return null
 }
 
+/**
+ * Update menu item name, icon, link details, etc.
+ */
 const updateName = async (item) => {
   try {
     const payload = {
@@ -176,11 +191,15 @@ const updateName = async (item) => {
     toast.error(`Failed to update menu item "${item.name}".`)
   }
 }
+
+/**
+ * Toggle enabled/disabled status of a menu item
+ */
 const toggleStatus = async (menuId) => {
   const item = findItemById(menuItems.value, menuId)
   if (!item) return
 
-  // Flip locally first
+  // Optimistic UI update
   item.enabled = !item.enabled
 
   try {
@@ -191,11 +210,14 @@ const toggleStatus = async (menuId) => {
     toast.success(`Menu item "${item.name}" is now ${item.enabled ? 'enabled' : 'disabled'}.`)
   } catch (err) {
     toast.error(`Failed to update status for "${item.name}".`)
-    // Rollback if API fails
+    // Rollback on failure
     item.enabled = !item.enabled
   }
 }
 
+/**
+ * Build flat payload for reordering (with order & parent_id)
+ */
 const buildReorderPayload = (nodes, parentId = null) => {
   return nodes.flatMap((node, index) => {
     const current = {
@@ -203,12 +225,14 @@ const buildReorderPayload = (nodes, parentId = null) => {
       order: index + 1,
       parent_id: parentId
     }
-    // recurse into children
     const children = buildReorderPayload(node.elements || [], node.id)
     return [current, ...children]
   })
 }
 
+/**
+ * Send reordered items to backend
+ */
 const onReorder = async () => {
   try {
     const items = buildReorderPayload(menuItems.value)
@@ -223,6 +247,9 @@ const onReorder = async () => {
   }
 }
 
+/**
+ * Fetch categories for dropdown
+ */
 const fetchCategories = async () => {
   try {
     const res = await axios.get('/api/categories?all=1');
@@ -232,6 +259,9 @@ const fetchCategories = async () => {
   }
 };
 
+/**
+ * Category options for multiselect
+ */
 const categoriesOptions = computed(() => {
   return [
     { label: '-- None --', value: '' },
@@ -242,6 +272,9 @@ const categoriesOptions = computed(() => {
   ];
 });
 
+/**
+ * Fetch pages for dropdown
+ */
 const fetchPages = async (page = 1, searchTerm = "") => {
   try {
     const res = await axios.get(`/api/pages?all=1`);
@@ -251,6 +284,9 @@ const fetchPages = async (page = 1, searchTerm = "") => {
   }
 };
 
+/**
+ * Page options for multiselect
+ */
 const pagesOptions = computed(() => {
   return [
     { label: '-- None --', value: '' },
@@ -261,12 +297,16 @@ const pagesOptions = computed(() => {
   ];
 });
 
+/**
+ * Load initial data on mount
+ */
 onMounted(async () => {
   menuItems.value = await fetchMenuItems(menuId)
   fetchCategories()
   fetchPages()
 })
 
+// Edit modal state
 const editModal = ref({ open: false, target: null })
 const editForm = ref({
   name: '',
@@ -278,6 +318,9 @@ const editForm = ref({
   enabled: true
 })
 
+/**
+ * Add new top-level menu item
+ */
 const addMenu = async () => {
   const name = newMenuName.value.trim()
   if (!name) return
@@ -307,13 +350,14 @@ const addMenu = async () => {
   }
 }
 
-
+/**
+ * Add submenu under a parent item
+ */
 const addSubmenu = async (parent) => {
   const name = (parent._newChildName || '').trim()
   if (!name) return
 
   try {
-    // Build payload for backend
     const payload = {
       menu_id: parent.menu_id || 1,
       parent_id: parent.id,
@@ -324,7 +368,6 @@ const addSubmenu = async (parent) => {
       enabled: true
     }
 
-    // Call API
     const { data } = await axios.post('/api/menu-items', payload)
 
     parent.elements.push({
@@ -333,7 +376,6 @@ const addSubmenu = async (parent) => {
       elements: []
     })
 
-    // Reset input
     parent._newChildName = ''
     toast.success(`Submenu "${name}" added successfully!`)
   } catch (err) {
@@ -341,6 +383,9 @@ const addSubmenu = async (parent) => {
   }
 }
 
+/**
+ * Delete menu item with confirmation
+ */
 const deleteItem = async (id, name = 'this item') => {
   const result = await $swal({
     title: `Delete "${name}"?`,
@@ -380,28 +425,34 @@ const deleteItem = async (id, name = 'this item') => {
   }
 };
 
-
-
+/**
+ * Open edit modal and populate form
+ */
 const openEditPanel = (item) => {
-
   editModal.value.open = true
   editModal.value.target = item
   editForm.value = {
     name: item.name || '',
     icon: item.icon || '',
     link_type: item.link_type || '',
-    url: item.link || '',
+    url: item.url || '',
     category_id: item.category_id || '',
     page_id: item.page_id || '',
     enabled: item.enabled !== false
   }
 }
 
+/**
+ * Close edit modal
+ */
 const closeEditPanel = () => {
   editModal.value.open = false
   editModal.value.target = null
 }
 
+/**
+ * Apply changes from edit modal
+ */
 const applyEdit = async () => {
   const target = editModal.value.target
   if (!target) return
@@ -419,14 +470,12 @@ const applyEdit = async () => {
 
     Object.assign(target, data.data)
 
-    // Close modal
     toast.success('Menu item updated successfully!')
     closeEditPanel()
   } catch (err) {
     toast.validationError(err)
   }
 }
-
 </script>
 <style>
 .menu-item {

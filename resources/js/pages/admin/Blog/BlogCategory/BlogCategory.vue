@@ -72,7 +72,6 @@
     </div>
   </section>
 </template>
-
 <script setup>
 import axios from 'axios';
 import { inject, onMounted, ref } from 'vue';
@@ -83,48 +82,67 @@ import { useAuthStore } from '@/store/auth';
 import { useToast } from '@/composables/useToast';
 import SearchBox from '@/components/SearchBox.vue';
 
+// Toast notifications
 const toast = useToast();
+
+// Reactive list of blog categories (from paginated response)
 const categories = ref([]);
+
+// Auth store (if needed for user/role checks)
 const authStore = useAuthStore();
+
+// SweetAlert2 instance (injected from main.js/app setup)
 const $swal = inject('$swal');
 
+/**
+ * Fetch blog categories with pagination and optional search
+ * @param {number} page - Page number (default: 1)
+ * @param {string} searchTerm - Search query (default: empty)
+ */
 const fetchCategory = async (page = 1, searchTerm = "") => {
   try {
-    const res = await axios.get(`/api/blog-categories?page=${page}&search=${searchTerm}`);
-    categories.value = res.data.data;
+    const res = await axios.get(`/api/blog-categories?page=${page}&search=${searchTerm || ''}`);
+    categories.value = res.data.data; // Full paginated response (data + meta/links)
   } catch (error) {
-    console.error(error);
+    toast.error('Failed to load categories');
   }
 };
+
+/**
+ * Handle search input - reset to page 1 with the search term
+ */
 const onSearch = (term) => {
   fetchCategory(1, term);
 };
-// Fetch categories
+
+// Load categories on component mount
 onMounted(async () => {
-  try {
-    fetchCategory();
-  } catch (error) {
-    toast.validationError(error);
-  }
+  await fetchCategory();
 });
 
-// Update status
+/**
+ * Toggle category status (active ↔ inactive)
+ */
 const updateStatus = async (cat) => {
   try {
-    const response = await axios.patch(`/api/blog-categories/${cat.id}`, {
-      status: cat.status,
+    await axios.patch(`/api/blog-categories/${cat.id}`, {
+      status: cat.status
     });
+
     if (cat.status == 1) {
       toast.success('Category activated');
     } else {
       toast.info('Category deactivated');
     }
   } catch (error) {
-    toast.error('Something went wrong.');
+    toast.validationError(error);
+    console.error('Status update failed:', error);
   }
 };
 
-// Delete category
+/**
+ * Confirm and delete a blog category
+ */
 const confirmDelete = async (cat) => {
   const result = await $swal({
     title: `Delete "${cat.category_name}"?`,
@@ -140,9 +158,12 @@ const confirmDelete = async (cat) => {
     try {
       await axios.delete(`/api/blog-categories/${cat.id}`);
       toast.success('Category deleted successfully!');
-      fetchCategory(categories?.value?.current_page);
+
+      // Refresh current page (preserves pagination)
+      fetchCategory(categories.value?.current_page || 1);
     } catch (error) {
       toast.validationError(error);
+      console.error('Delete failed:', error);
     }
   } else {
     toast.info('Deletion cancelled.');

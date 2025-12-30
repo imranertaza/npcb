@@ -48,7 +48,7 @@ class FrontendController extends Controller
 
         $about_mission_vision = Section::where('name', 'about_mission_vision')->first();
 
-        $blogs                = Blog::where('status', 1)->latest()->paginate(7);
+        $blogs                = Blog::where('status', "1")->latest()->paginate(7);
 
         $topNews              = News::where('status', 1)->latest()->paginate(5);
 
@@ -210,7 +210,7 @@ class FrontendController extends Controller
      */
     public function blogs()
     {
-        $blogs = Blog::where('status', 1)->latest()->paginate(12);
+        $blogs = Blog::where('status', '1')->latest()->paginate(12);
 
         return view('blog.blogs', compact('blogs'));
     }
@@ -223,7 +223,7 @@ class FrontendController extends Controller
      */
     public function blogsDetails($slug)
     {
-        $blog = Blog::where('status', 1)->where('slug', $slug)->firstOrFail();
+        $blog = Blog::where('status', '1')->where('slug', $slug)->firstOrFail();
 
         return view('blog.blog-details', compact('blog'));
     }
@@ -266,7 +266,7 @@ class FrontendController extends Controller
      */
     public function runningEvents()
     {
-        $events = Event::where('type', 1)
+        $events = Event::where('type', '1')
             ->where('status', 1)
             ->latest()
             ->paginate(10);
@@ -282,7 +282,7 @@ class FrontendController extends Controller
     public function upcomingEvents()
     {
         $events = Event::where('type', 0)
-            ->where('status', 1)
+            ->where('status', '1')
             ->latest()
             ->paginate(10);
 
@@ -326,7 +326,7 @@ class FrontendController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         $posts    = $category->posts()
-            ->where('status', 1)
+            ->where('status', '1')
             ->latest()
             ->paginate(12);
 
@@ -341,7 +341,7 @@ class FrontendController extends Controller
      */
     public function postDetails($slug)
     {
-        $post = Post::where('status', 1)->where('slug', $slug)->firstOrFail();
+        $post = Post::where('status', '1')->where('slug', $slug)->firstOrFail();
 
         return view('sports.sports-details', compact('post'));
     }
