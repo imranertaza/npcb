@@ -65,6 +65,8 @@
                                         <select v-model="form.type" class="custom-select">
                                             <option value="1">Running</option>
                                             <option value="0">Upcoming</option>
+                                            <option value="2">Past</option>
+
                                         </select>
                                     </div>
                                     <!-- Status -->

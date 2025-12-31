@@ -77,16 +77,20 @@ class PageController extends Controller
         $validated = $request->validate([
             'page_title'       => 'required|string|max:255',
             'slug'             => 'required|string|unique:pages,slug|max:300',
-            'short_des'        => 'required|string|max:255',
-            'page_description' => 'required|string',
+            'short_des'        => 'nullable|string|max:255',
+            'page_description' => 'nullable|string',
             'temp'             => 'nullable|string|max:255',
-            'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'meta_keyword'     => 'nullable|string|max:255',
             'status'           => ['required', Rule::in(['Active', 'Inactive'])],
             'createdBy'        => 'nullable|integer',
             'updatedBy'        => 'nullable|integer',
+        ], [
+            'f_image.image' => 'Please upload a valid image file.',
+            'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+            'f_image.max'   => 'That file is too big! Keep it under 2MB.',
         ]);
 
         $validated['createdBy'] = Auth::user()->id;
@@ -119,18 +123,22 @@ class PageController extends Controller
     public function update(Request $request, $id)
     {
         $page = Page::findOrFail($id);
-
         $validated = $request->validate([
             'page_title'       => 'required|string|max:255',
             'slug'             => ['required', 'string', 'max:300', Rule::unique('pages', 'slug')->ignore($page->id)],
-            'short_des'        => 'required|string|max:255',
-            'page_description' => 'required|string',
+            'short_des'        => 'nullable|string|max:255',
+            'page_description' => 'nullable|string',
             'temp'             => 'nullable|string|max:255',
             'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'remove_f_image'   => 'nullable|numeric',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'meta_keyword'     => 'nullable|string|max:255',
             'status'           => ['required', Rule::in(['Active', 'Inactive'])],
+        ], [
+            'f_image.image' => 'Please upload a valid image file.',
+            'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+            'f_image.max'   => 'That file is too big! Keep it under 2MB.',
         ]);
 
         if ($request->hasFile('f_image')) {
@@ -140,6 +148,11 @@ class PageController extends Controller
 
             $filename = uniqid('image_') . '.' . $request->file('f_image')->getClientOriginalExtension();
             $validated['f_image'] = $request->file('f_image')->storeAs("pages/{$page->id}", $filename, 'public');
+        } elseif ($request->input('remove_f_image') == 1) {
+            if ($page->f_image && Storage::disk('public')->exists($page->f_image)) {
+                Storage::disk('public')->delete($page->f_image);
+            }
+            $validated['f_image'] = null;
         }
 
         $page->update($validated);

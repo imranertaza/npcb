@@ -10,7 +10,8 @@
                 @foreach ($slides as $slide)
                     @if ($slide->enabled)
                         <div class="swiper-slide justify-content-start">
-                            <img draggable="false" src="{{ getImageCacheUrl($slide->image, 1351, 617, 'webp') }}" alt="{{ $slide->title }}">
+                            <img draggable="false" src="{{ getImageCacheUrl($slide->image, 1351, 617, 'webp') }}"
+                                alt="{{ $slide->title }}">
                         </div>
                     @endif
                 @endforeach
@@ -18,13 +19,12 @@
         </div>
         <div class="banner-content container z-3">
             <div class="swiper mySwiper d-flex">
-                <div class="swiper-wrapper w-75 bg-common banner-main-content-area">
+                <div class="swiper-wrapper w-75 banner-main-content-area">
                     @foreach ($slides as $slide)
                         @if ($slide->enabled)
                             <div class="swiper-slide">
                                 <div class="slider-content">
                                     <h1 class="title-one">{{ $slide->title }}</h1>
-                                    <p class="content-text mt-16">{{ $slide->description }}</p>
                                     @if (!empty($slide->link))
                                         <a href="{{ $slide->link }}" class="read-more mt-16 btn-1 slower">Read More</a>
                                     @endif
@@ -65,7 +65,7 @@
     {{-- Banner section end --}}
 
     {{-- Top News Section Start --}}
-    <section class="top-news-section py-100 bg-white-muted">
+    <section class="top-news-section py-100 bg-custom-gray">
         <div class="container">
             <div class="d-flex justify-content-between mb-30">
                 <h2 class="title-two">Top News</h2>
@@ -120,72 +120,76 @@
     </section>
     {{-- Top News Section End --}}
     {{-- Game News Section Start  --}}
-    <section class="bg-primary py-100">
-        <div class="container">
-            <div class="d-flex justify-content-between mb-30">
-                <h2 class="title-two text-white">Game News</h2>
-                <a href="{{ route('news-and-updates') }}"
-                    class="btn-common btn btn-default text-primary bg-white  btn-1 slower border-0">View
-                    all</a>
-            </div>
-            <div class="gaming-news-slider position-relative">
-                <div class="swiper myGamingSwiper">
-                    <div class="swiper-wrapper mb-5">
-                        @foreach ($gamesNews as $news)
-                            <div class="swiper-slide">
-                                <a href="{{ route('news-and-updates-details', $news->slug) }}">
-                                    <div class="gaming-news-card card-smooth hover-fill-horizontal fill-white-muted">
-                                        <img src="{{ getImageCacheUrl($news->f_image, 362, 320) }}" class="card-img-top"
-                                            alt="news image">
-                                        <div class="card-body">
-                                            <h5 class="title-four min-h-38">
-                                                {{ truncateText($news->news_title, 45) }}
-                                            </h5>
+    @if (0)
+        <section class="bg-primary py-100">
+            <div class="container">
+                <div class="d-flex justify-content-between mb-30">
+                    <h2 class="title-two text-white">Game News</h2>
+                    <a href="{{ route('news-and-updates') }}"
+                        class="btn-common btn btn-default text-primary bg-white  btn-1 slower border-0">View
+                        all</a>
+                </div>
+                <div class="gaming-news-slider position-relative">
+                    <div class="swiper myGamingSwiper">
+                        <div class="swiper-wrapper mb-5">
+                            @foreach ($gamesNews as $news)
+                                <div class="swiper-slide">
+                                    <a href="{{ route('news-and-updates-details', $news->slug) }}">
+                                        <div class="gaming-news-card card-smooth hover-fill-horizontal fill-white-muted">
+                                            <img src="{{ getImageCacheUrl($news->f_image, 362, 320) }}"
+                                                class="card-img-top" alt="news image">
+                                            <div class="card-body">
+                                                <h5 class="title-four min-h-38">
+                                                    {{ truncateText($news->news_title, 45) }}
+                                                </h5>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="right-0">
-                        <div class="d-flex gap-2 mb-md-2 justify-content-end">
-                            <div class="custom-swiper-button-gaming-prev swiper-button-prev">
-                                <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
-                                        transform="matrix(-1 0 0 1 35 0)" fill="white" />
-                                    <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
-                                        transform="matrix(-1 0 0 1 35 0)" stroke="white" />
-                                    <path
-                                        d="M21.548 12.0802L20.487 11.0202L14.708 16.7972C14.6149 16.8898 14.5409 16.9999 14.4905 17.1211C14.44 17.2424 14.4141 17.3724 14.4141 17.5037C14.4141 17.6351 14.44 17.7651 14.4905 17.8863C14.5409 18.0076 14.6149 18.1177 14.708 18.2102L20.487 23.9902L21.547 22.9302L16.123 17.5052L21.548 12.0802Z"
-                                        fill="#00786E" />
-                                </svg>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="right-0">
+                            <div class="d-flex gap-2 mb-md-2 justify-content-end">
+                                <div class="custom-swiper-button-gaming-prev swiper-button-prev">
+                                    <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
+                                            transform="matrix(-1 0 0 1 35 0)" fill="white" />
+                                        <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
+                                            transform="matrix(-1 0 0 1 35 0)" stroke="white" />
+                                        <path
+                                            d="M21.548 12.0802L20.487 11.0202L14.708 16.7972C14.6149 16.8898 14.5409 16.9999 14.4905 17.1211C14.44 17.2424 14.4141 17.3724 14.4141 17.5037C14.4141 17.6351 14.44 17.7651 14.4905 17.8863C14.5409 18.0076 14.6149 18.1177 14.708 18.2102L20.487 23.9902L21.547 22.9302L16.123 17.5052L21.548 12.0802Z"
+                                            fill="#00786E" />
+                                    </svg>
 
-                            </div>
-                            <div class="custom-swiper-button-gaming-next swiper-button-next">
-                                <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="0.5" y="0.5" width="35" height="34" rx="17" fill="white" />
-                                    <rect x="0.5" y="0.5" width="35" height="34" rx="17" stroke="white" />
-                                    <path
-                                        d="M14.452 12.0802L15.513 11.0202L21.292 16.7972C21.3851 16.8898 21.4591 16.9999 21.5095 17.1211C21.56 17.2424 21.5859 17.3724 21.5859 17.5037C21.5859 17.6351 21.56 17.7651 21.5095 17.8863C21.4591 18.0076 21.3851 18.1177 21.292 18.2102L15.513 23.9902L14.453 22.9302L19.877 17.5052L14.452 12.0802Z"
-                                        fill="#00786E" />
-                                </svg>
+                                </div>
+                                <div class="custom-swiper-button-gaming-next swiper-button-next">
+                                    <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="0.5" width="35" height="34" rx="17"
+                                            fill="white" />
+                                        <rect x="0.5" y="0.5" width="35" height="34" rx="17"
+                                            stroke="white" />
+                                        <path
+                                            d="M14.452 12.0802L15.513 11.0202L21.292 16.7972C21.3851 16.8898 21.4591 16.9999 21.5095 17.1211C21.56 17.2424 21.5859 17.3724 21.5859 17.5037C21.5859 17.6351 21.56 17.7651 21.5095 17.8863C21.4591 18.0076 21.3851 18.1177 21.292 18.2102L15.513 23.9902L14.453 22.9302L19.877 17.5052L14.452 12.0802Z"
+                                            fill="#00786E" />
+                                    </svg>
 
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
     {{-- Game News Section End --}}
 
     {{-- Running Event Section Start --}}
     <section class="py-100 bg-white-muted">
         <div class="container">
             <div class="d-flex justify-content-between mb-30">
-                <h2 class="title-two">Running Event</h2>
+                <h2 class="title-two">Events</h2>
                 <a href="{{ route('running-events') }}" class="btn-common btn btn-primary  btn-1 slower">View all</a>
             </div>
             <div class="gaming-news-slider position-relative">
@@ -200,7 +204,7 @@
                                             class="card-img-top" alt="news image">
                                         <div class="card-body">
                                             <h5 class="title-four min-h-38">
-                                                {{ truncateText($item->title,45) }}
+                                                {{ truncateText($item->title, 45) }}
                                             </h5>
                                         </div>
                                     </div>
@@ -240,80 +244,90 @@
     </section>
     {{-- Running Event Section End --}}
     {{-- Upcoming Event Section Start --}}
-    <section class="bg-primary py-100">
-        <div class="container">
-            <div class="d-flex justify-content-between mb-30">
-                <h2 class="title-two text-white">Upcoming Event</h2>
-                <a href="{{ route('upcoming-events') }}"
-                    class="btn-common btn btn-default text-primary bg-white  btn-1 slower border-0">View
-                    all</a>
-            </div>
-            <div class="gaming-news-slider position-relative">
-                <div class="swiper myUpcomingEventSwiper">
-                    <div class="swiper-wrapper mb-5">
-                        @forelse ($upcomingEvent as $item)
-                            <div class="swiper-slide ">
-                                <div class="upcoming-event-card card-smooth">
-                                    <a href="{{ route('event-details', $item->slug) }}" aria-label="Upcoming Event 1">
-                                        <img src="{{ getImageCacheUrl($item->featured_image, 252, 515) }}"
-                                            class="card-img-top img-thumbnail" alt="{{ $item->title }}">
-                                    </a>
+    @if (0)
+        <section class="bg-primary py-100">
+            <div class="container">
+                <div class="d-flex justify-content-between mb-30">
+                    <h2 class="title-two text-white">Upcoming Event</h2>
+                    <a href="{{ route('upcoming-events') }}"
+                        class="btn-common btn btn-default text-primary bg-white  btn-1 slower border-0">View
+                        all</a>
+                </div>
+                <div class="gaming-news-slider position-relative">
+                    <div class="swiper myUpcomingEventSwiper">
+                        <div class="swiper-wrapper mb-5">
+                            @forelse ($upcomingEvent as $item)
+                                <div class="swiper-slide ">
+                                    <div class="upcoming-event-card card-smooth">
+                                        <a href="{{ route('event-details', $item->slug) }}"
+                                            aria-label="Upcoming Event 1">
+                                            <img src="{{ getImageCacheUrl($item->featured_image, 252, 515) }}"
+                                                class="card-img-top img-thumbnail" alt="{{ $item->title }}">
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                        @empty
-                        @endforelse
-                    </div>
-                    <div class="right-0">
-                        <div class="d-flex gap-2 mb-md-2 justify-content-end">
-                            <div class="custom-swiper-button-upcoming-prev swiper-button-prev">
-                                <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
-                                        transform="matrix(-1 0 0 1 35 0)" fill="white" />
-                                    <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
-                                        transform="matrix(-1 0 0 1 35 0)" stroke="white" />
-                                    <path
-                                        d="M21.548 12.0802L20.487 11.0202L14.708 16.7972C14.6149 16.8898 14.5409 16.9999 14.4905 17.1211C14.44 17.2424 14.4141 17.3724 14.4141 17.5037C14.4141 17.6351 14.44 17.7651 14.4905 17.8863C14.5409 18.0076 14.6149 18.1177 14.708 18.2102L20.487 23.9902L21.547 22.9302L16.123 17.5052L21.548 12.0802Z"
-                                        fill="#00786E" />
-                                </svg>
+                            @empty
+                            @endforelse
+                        </div>
+                        <div class="right-0">
+                            <div class="d-flex gap-2 mb-md-2 justify-content-end">
+                                <div class="custom-swiper-button-upcoming-prev swiper-button-prev">
+                                    <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
+                                            transform="matrix(-1 0 0 1 35 0)" fill="white" />
+                                        <rect x="-0.5" y="0.5" width="35" height="34" rx="17"
+                                            transform="matrix(-1 0 0 1 35 0)" stroke="white" />
+                                        <path
+                                            d="M21.548 12.0802L20.487 11.0202L14.708 16.7972C14.6149 16.8898 14.5409 16.9999 14.4905 17.1211C14.44 17.2424 14.4141 17.3724 14.4141 17.5037C14.4141 17.6351 14.44 17.7651 14.4905 17.8863C14.5409 18.0076 14.6149 18.1177 14.708 18.2102L20.487 23.9902L21.547 22.9302L16.123 17.5052L21.548 12.0802Z"
+                                            fill="#00786E" />
+                                    </svg>
 
-                            </div>
-                            <div class="custom-swiper-button-upcoming-next swiper-button-next">
-                                <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="0.5" y="0.5" width="35" height="34" rx="17" fill="white" />
-                                    <rect x="0.5" y="0.5" width="35" height="34" rx="17" stroke="white" />
-                                    <path
-                                        d="M14.452 12.0802L15.513 11.0202L21.292 16.7972C21.3851 16.8898 21.4591 16.9999 21.5095 17.1211C21.56 17.2424 21.5859 17.3724 21.5859 17.5037C21.5859 17.6351 21.56 17.7651 21.5095 17.8863C21.4591 18.0076 21.3851 18.1177 21.292 18.2102L15.513 23.9902L14.453 22.9302L19.877 17.5052L14.452 12.0802Z"
-                                        fill="#00786E" />
-                                </svg>
+                                </div>
+                                <div class="custom-swiper-button-upcoming-next swiper-button-next">
+                                    <svg width="36" height="35" viewBox="0 0 36 35" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="0.5" width="35" height="34" rx="17"
+                                            fill="white" />
+                                        <rect x="0.5" y="0.5" width="35" height="34" rx="17"
+                                            stroke="white" />
+                                        <path
+                                            d="M14.452 12.0802L15.513 11.0202L21.292 16.7972C21.3851 16.8898 21.4591 16.9999 21.5095 17.1211C21.56 17.2424 21.5859 17.3724 21.5859 17.5037C21.5859 17.6351 21.56 17.7651 21.5095 17.8863C21.4591 18.0076 21.3851 18.1177 21.292 18.2102L15.513 23.9902L14.453 22.9302L19.877 17.5052L14.452 12.0802Z"
+                                            fill="#00786E" />
+                                    </svg>
 
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
+
     {{-- Upcoming Event Section End --}}
     {{-- Our mission and vision section start --}}
-    <section class="py-100 bg-white-muted">
-        <div class="container">
-            <div class="row row-cols-md-2 align-items-center">
-                <div class="text-center mb-md-0 mb-4">
-                    <img class="img-fluid rounded-2"
-                        src="{{ getImageCacheUrl($about_mission_vision->data['image'], 476, 375) }}"
-                        alt="Mission and Vision">
-                </div>
-                <div class="">
-                    <h3 class="title-two mb-3">{{ $about_mission_vision->data['title'] }}</h3>
-                    {!! $about_mission_vision->data['home_content'] !!}
-                    <a href="{{ route('page.details', 'about-us') }}" class="btn-primary btn-common btn-1 slower">Read
-                        More</a>
+    @if (0)
+        <section class="py-100 bg-white-muted">
+            <div class="container">
+                <div class="row row-cols-md-2 align-items-center">
+                    <div class="text-center mb-md-0 mb-4">
+                        <img class="img-fluid rounded-2"
+                            src="{{ getImageCacheUrl($about_mission_vision->data['image'], 476, 375) }}"
+                            alt="Mission and Vision">
+                    </div>
+                    <div class="">
+                        <h3 class="title-two mb-3">{{ $about_mission_vision->data['title'] }}</h3>
+                        {!! $about_mission_vision->data['home_content'] !!}
+                        <a href="{{ route('page.details', 'about-us') }}"
+                            class="btn-primary btn-common btn-1 slower">Read
+                            More</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
+
     {{-- Our mission and vision section End --}}
     {{-- Our Latest Blog Section Start --}}
     <section class="bg-custom-gray py-100 ">
