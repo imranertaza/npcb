@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('banner_image')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
-            $table->tinyInteger('type')->default('0')->comment('1=Running, 0=Upcoming')->in_array([0, 1]);
+            $table->tinyInteger('type')->default('0')->comment('2=Past,1=Running, 0=Upcoming')->in_array([0, 1]);
             $table->enum('status', ['1', '0'])->default('1');
             $table->foreignId('createdBy')->constrained('users');
             $table->foreignId('updatedBy')->nullable()->constrained('users');

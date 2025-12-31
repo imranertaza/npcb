@@ -16,12 +16,12 @@ return new class extends Migration
             $table->string('temp', 255)->nullable()->default('default');
             $table->string('page_title', 255);
             $table->string('slug', 300);
-            $table->string('short_des', 255);
-            $table->longText('page_description');
-            $table->string('f_image', 255);
-            $table->string('meta_title', 255);
-            $table->string('meta_description', 255);
-            $table->string('meta_keyword', 255);
+            $table->string('short_des', 255)->nullable();
+            $table->longText('page_description')->nullable();
+            $table->string('f_image', 255)->nullable();
+            $table->string('meta_title', 255)->nullable();
+            $table->string('meta_description', 255)->nullable();
+            $table->string('meta_keyword', 255)->nullable();
             $table->enum('status', ['Active', 'Inactive']);
             $table->foreignId('createdBy')->constrained('users');
             $table->foreignId('updatedBy')->nullable()->constrained('users');

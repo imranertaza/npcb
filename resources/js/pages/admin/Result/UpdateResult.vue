@@ -59,6 +59,14 @@
                                         </div>
                                     </div>
 
+                                    <!-- type -->
+                                    <div class="form-group">
+                                        <label>Type</label>
+                                        <select v-model="form.type" class="custom-select">
+                                            <option value="1">International</option>
+                                            <option value="0">National</option>
+                                        </select>
+                                    </div>
                                     <!-- Status -->
                                     <div class="form-group">
                                         <label>Status</label>

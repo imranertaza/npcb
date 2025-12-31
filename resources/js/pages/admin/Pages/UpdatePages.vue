@@ -22,7 +22,7 @@
                                     <!-- Short Description -->
                                     <div class="form-group">
                                         <label>Short Description</label>
-                                        <input v-model="form.short_des" type="text" class="form-control" required />
+                                        <input v-model="form.short_des" type="text" class="form-control" />
                                     </div>
 
                                     <!-- Description -->
@@ -55,14 +55,15 @@
                                             :allowSelectOnPreview="true" />
                                     </div>
 
-                                    <!-- Page Type
-                  <div class="form-group">
-                    <label>Select Template</label>
-                    <select v-model="form.temp" class="custom-select" required>
-                      <option class="text-capitalize" v-for="template in templates" :key="template"
-                        :selected="form.temp === template" :value="template">{{ template }}</option>
-                    </select>
-                  </div> -->
+                                    <!-- Page Type -->
+                                    <div class="form-group">
+                                        <label>Select Template</label>
+                                        <select v-model="form.temp" class="custom-select" required>
+                                            <option class="text-capitalize" v-for="template in templates"
+                                                :key="template" :selected="form.temp === template" :value="template">{{
+                                                    template }}</option>
+                                        </select>
+                                    </div>
 
                                     <!-- Status -->
                                     <div class="form-group">
@@ -101,8 +102,8 @@ const toast = useToast();
 const previews = ref();
 const route = useRoute();
 const router = useRouter();
-const pageSlug = route.params.slug;
 const templates = ref([])
+
 const form = reactive({
     page_title: '',
     slug: '',
@@ -121,12 +122,11 @@ const form = reactive({
 const imageFile = ref(null);
 
 
-
 const fetchPage = async () => {
     try {
         const res = await axios.get(`/api/pages/${route.params.id}`);
-        Object.assign(form, res.data.data);
-        previews.value = [getImageUrl(form.f_image)];
+        const normalized = Object.fromEntries(Object.entries(res.data.data).map(([key, value]) => [key, value ?? ""]));
+        Object.assign(form, normalized); previews.value = [getImageUrl(form.f_image)];
     } catch (err) {
         console.error(err);
     }
@@ -144,6 +144,9 @@ const updatePage = async () => {
     // Append image file from Dropzone
     if (imageFile.value && imageFile.value[0]) {
         payload.append('f_image', imageFile.value[0].file);
+    }
+    if (!previews.value[0]) {
+        payload.append('remove_f_image', 1);
     }
 
     try {

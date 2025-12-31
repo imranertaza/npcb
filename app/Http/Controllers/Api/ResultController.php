@@ -72,6 +72,7 @@ class ResultController extends Controller
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
             'status'      => 'required|in:0,1',
+            'type'      => 'required|in:0,1',
         ]);
 
         $validated['createdBy'] = Auth::id();
@@ -117,6 +118,7 @@ class ResultController extends Controller
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
             'status'      => 'required|in:0,1',
+            'type'      => 'required|in:0,1',
         ]);
 
         $validated['updatedBy'] = Auth::id();
