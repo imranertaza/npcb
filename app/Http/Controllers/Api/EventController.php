@@ -53,7 +53,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event = Event::findOrFail($id)->with('category')->firstOrFail();
+        $event = Event::with('category')->findOrFail($id);
         return ApiResponse::success($event, 'Event retrieved successfully');
     }
 
@@ -125,7 +125,7 @@ class EventController extends Controller
                 'string',
                 Rule::unique('events', 'slug')->ignore($event->id),
             ],
-            'type'              => 'required|integer|in:0,1',
+            'type'              => 'required|integer|in:0,1,2',
             'description'       => 'nullable|string',
             'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
             'featured_image'    => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',

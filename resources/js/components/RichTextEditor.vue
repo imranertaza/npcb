@@ -116,8 +116,7 @@ import {
     IndentBlock,
     Font,
     RemoveFormat,
-    Autoformat,
-    GeneralHtmlSupport
+    Autoformat
 } from 'ckeditor5';
 import { Ckeditor } from '@ckeditor/ckeditor5-vue';
 import FileManagerPlugin from '../plugins/FileManagerPlugin';
@@ -225,7 +224,7 @@ const promptRename = async (file) => {
 
 const selectFile = (file) => {
     if (!editorInstance.value) return;
-
+    const baseUrl = import.meta.env.VITE_APP_URL;
     editorInstance.value.model.change(writer => {
         let element;
 
@@ -234,13 +233,13 @@ const selectFile = (file) => {
             editorInstance.value.model.insertObject(element, editorInstance.value.model.document.selection);
         }
         else if (['mp4', 'mov', 'avi', 'mkv'].includes(file.type)) {
-            element = writer.createElement('media', { url: `http://127.0.0.1:8000${file.url}` });
+            element = writer.createElement('media', { url: `${baseUrl}${file.url}` });
             editorInstance.value.model.insertObject(element, editorInstance.value.model.document.selection);
         }
         else if (file.type === 'pdf') {
             const insertPosition = editorInstance.value.model.document.selection.getFirstPosition();
             const pdfName = file.name || 'PDF file';
-            const pdfUrl = `http://127.0.0.1:8000${file.url}`;
+            const pdfUrl = `${baseUrl}${file.url}`;
 
             const linkText = writer.createText(`📄 PDF: ${pdfName}`, { linkHref: pdfUrl });
             editorInstance.value.model.insertContent(linkText, insertPosition);
@@ -265,18 +264,8 @@ const config = computed(() => ({
         Image, ImageCaption, ImageResize, ImageStyle, ImageToolbar,
         ImageUpload, Table, TableToolbar, BlockQuote, MediaEmbed,
         SourceEditing, FileManagerPlugin, PictureEditing,
-        RemoveFormat, Autoformat,GeneralHtmlSupport
+        RemoveFormat, Autoformat
     ],
-    htmlSupport: {
-        allow: [
-            {
-                name: /.*/,
-                attributes: true,
-                classes: true,
-                styles: true
-            }
-        ]
-    },
     toolbar: [
         'undo', 'redo', '|',
         'sourceEditing', '|',

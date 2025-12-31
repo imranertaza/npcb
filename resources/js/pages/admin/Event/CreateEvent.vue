@@ -124,22 +124,32 @@ import RichTextEditor from "@/components/RichTextEditor.vue";
 import Multiselect from "@vueform/multiselect";
 import { generateSlug } from "../../../layouts/helpers/helpers";
 
+// Toast notifications
 const toast = useToast();
-const fileUpload = ref(null);
-const categories = ref([]);
-const imageUpload = ref(null);
 
+// Dropzone references for image uploads
+const fileUpload = ref(null);      // Banner image
+const imageUpload = ref(null);     // Featured image
+
+// Available event categories for selection
+const categories = ref([]);
+
+// Reactive form state for new event
 const form = reactive({
   title: "",
   slug: "",
   description: "",
-  event_category_id: "",
-  status: "1",
-  banner_image: null,
-  featured_image: null,
-  type: 1,
+  event_category_id: "",   // '' = no category
+  status: "1",             // "1" = published/active, "0" = draft/inactive
+  banner_image: null,      // Preview only (not sent)
+  featured_image: null,    // Preview only (not sent)
+  type: 1                  // Event type (adjust based on your backend)
 });
 
+/**
+ * Computed options for event category dropdown/multiselect
+ * Includes "-- None --" as the first option
+ */
 const categoriesOptions = computed(() => {
   return [
     { label: "-- None --", value: "" },
@@ -150,29 +160,39 @@ const categoriesOptions = computed(() => {
   ];
 });
 
-// Fetch categories for dropdown
+/**
+ * Fetch all event categories for the dropdown
+ */
 const fetchCategories = async () => {
   try {
     const res = await axios.get("/api/events-categories?all=1");
     categories.value = res.data.data;
   } catch (error) {
     toast.error("Failed to load categories");
+    console.error("Fetch categories error:", error);
   }
 };
 
+/**
+ * Submit the event creation form
+ * Builds FormData payload with text fields + optional images
+ */
 const submitEvent = async () => {
   const payload = new FormData();
 
+  // Append all fields except image placeholders
   for (const key in form) {
-    if (key !== "banner_image") {
-      payload.append(key, form[key]);
+    if (key !== "banner_image" && key !== "featured_image") {
+      payload.append(key, form[key] ?? "");
     }
   }
 
+  // Append banner image if uploaded
   if (fileUpload.value && fileUpload.value[0]) {
     payload.append("banner_image", fileUpload.value[0].file);
   }
 
+  // Append featured image if uploaded
   if (imageUpload.value && imageUpload.value[0]) {
     payload.append("featured_image", imageUpload.value[0].file);
   }
@@ -181,14 +201,23 @@ const submitEvent = async () => {
     await axios.post("/api/events", payload, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+
     toast.success("Event created successfully!");
+
+    // Optional: reset form or redirect here
   } catch (error) {
-    toast.error("Failed to create event");
-    console.error(error);
+    toast.validationError(error); // Better handling for validation (422) errors
+    console.error("Event creation failed:", error);
   }
 };
 
+// Load categories when component mounts
 onMounted(() => {
   fetchCategories();
 });
+
+// Optional: Auto-generate slug when title changes
+// watch(() => form.title, (newTitle) => {
+//   form.slug = generateSlug(newTitle);
+// });
 </script>

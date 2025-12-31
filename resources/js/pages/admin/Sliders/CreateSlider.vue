@@ -82,8 +82,10 @@ import axios from 'axios';
 import { reactive, ref } from 'vue';
 import { useToast } from '@/composables/useToast';
 
+/* Create Banner Slide Form */
+
 const toast = useToast();
-const fileUpload = ref(null);
+const fileUpload = ref(null); // uploaded image file
 
 const form = reactive({
     key: 'banner_section',   // fixed key for banner
@@ -96,6 +98,7 @@ const form = reactive({
     enabled: 1
 });
 
+/* Submit new slide */
 const submitSlide = async () => {
     const payload = new FormData();
 

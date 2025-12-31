@@ -43,7 +43,7 @@
                                     <td class="align-middle">
                                         <div class="d-flex">
                                             <router-link v-if="authStore.hasPermission('view-notices')"
-                                                :to="{ name: 'ShowNotice', params: { slug: notice.slug } }"
+                                                :to="{ name: 'ShowNotice', params: { id: notice.id } }"
                                                 class="btn btn-sm btn-outline-dark">
                                                 <i class="fas fa-eye"></i>
                                             </router-link>

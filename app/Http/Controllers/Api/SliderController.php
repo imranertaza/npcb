@@ -31,7 +31,6 @@ class SliderController extends Controller
     {
         $slides = Slider::where('key', $key)
             ->orderBy('order')
-            ->where('enabled', 1)
             ->paginate(10); // Adjust per_page if needed via query string
 
         return ApiResponse::success($slides, 'Slides retrieved successfully');

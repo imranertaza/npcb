@@ -28,14 +28,14 @@ const page = ref(null);
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/pages/${route.params.slug}`);
+    const response = await axios.get(`/api/pages/${route.params.id}`);
     page.value = response.data.data;
   } catch (error) {
     console.error('Error loading page:', error);
   }
 });
  defineProps({
-  slug: {
+  id: {
     type: [String, Number],   // or use: null to allow anything
   }
 })

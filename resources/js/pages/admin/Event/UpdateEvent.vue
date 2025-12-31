@@ -58,20 +58,6 @@
                                             :allowSelectOnPreview="true" />
                                         <small class="text-muted">Recommended: 1140 × 375px</small>
 
-                                        <!-- Custom Preview -->
-                                        <div v-if="previewsPdf && previewsPdf.length" class="mt-3">
-                                            <div v-for="(preview, idx) in previewsPdf" :key="idx">
-                                                <!-- If PDF -->
-                                                <div v-if="isPdf(preview)" class="d-flex align-items-center">
-                                                    <i class="fas fa-file-pdf fa-3x text-danger mr-2"></i>
-                                                    <a :href="preview" target="_blank">View PDF Document</a>
-                                                </div>
-
-                                                <!-- If Image -->
-                                                <img v-else :src="preview" alt="Preview"
-                                                    class="img-fluid rounded border" style="max-height:120px" />
-                                            </div>
-                                        </div>
                                     </div>
                                     <!-- Type -->
                                     <div class="form-group">
@@ -79,6 +65,8 @@
                                         <select v-model="form.type" class="custom-select">
                                             <option value="1">Running</option>
                                             <option value="0">Upcoming</option>
+                                            <option value="2">Past</option>
+
                                         </select>
                                     </div>
                                     <!-- Status -->
@@ -118,34 +106,46 @@ import RichTextEditor from '@/components/RichTextEditor.vue';
 import Multiselect from '@vueform/multiselect';
 import { generateSlug } from '../../../layouts/helpers/helpers';
 
+// Toast notifications
 const toast = useToast();
+
+// Route & router
 const route = useRoute();
 const router = useRouter();
-// const eventId = route.params.id;
-const previews = ref([]);
-const previewsImage = ref([]);
-const previewsPdf = ref([]);
+
+// Dropzone previews
+const previews = ref([]);          // Banner image preview (existing + new)
+const previewsImage = ref([]);     // Featured image preview (existing + new)
+
+// Dropzone file references for new uploads
+const fileUpload = ref(null);      // New banner image
+const imageUpload = ref(null);     // New featured image
+
+// Available event categories
 const categories = ref([]);
+
+// Helper to detect PDF files (if needed in template)
 const isPdf = (filename) => /\.pdf$/i.test(filename);
 
+// Reactive form state for editing event
 const form = reactive({
     id: null,
     title: '',
     slug: '',
     description: '',
-    banner_image: '',
-    featured_image: '',
+    banner_image: '',         // Existing path (preview only)
+    featured_image: '',       // Existing path (preview only)
     event_category_id: '',
-    status: '1',
+    status: '1',              // '1' = active/published
     createdBy: 1,
     type: 0,
     updatedBy: null
 });
 
-const fileUpload = ref(null);
-const imageUpload = ref(null);
-
-
+/**
+ * Computed options for event category select/multiselect
+ * Includes "-- None --" as root option
+ */
 const categoriesOptions = computed(() => {
     return [
         { label: '-- None --', value: '' },
@@ -155,64 +155,92 @@ const categoriesOptions = computed(() => {
         }))
     ];
 });
-// Fetch event
+
+/**
+ * Fetch the event data for editing
+ */
 const fetchEvent = async () => {
     try {
         const res = await axios.get(`/api/events/${route.params.id}`);
-        Object.assign(form, res.data.data);
-        if (form.banner_image) {
-            previews.value = [getImageUrl(form.banner_image)];
+        const event = res.data.data;
+
+        // Populate form
+        Object.assign(form, event);
+
+        // Set existing image previews for Dropzone
+        if (event.banner_image) {
+            previews.value = [getImageUrl(event.banner_image)];
         }
-        if (form.featured_image) {
-            previewsImage.value = [getImageUrl(form.featured_image)];
+        if (event.featured_image) {
+            previewsImage.value = [getImageUrl(event.featured_image)];
         }
-        // console.log({form})
     } catch (err) {
         toast.error('Failed to load event');
-        console.error(err);
+        console.error('Fetch event error:', err);
     }
 };
 
-// Fetch categories
+/**
+ * Load all event categories for the dropdown
+ */
 const fetchCategories = async () => {
     try {
         const res = await axios.get('/api/events-categories?all=1');
         categories.value = res.data.data;
     } catch (err) {
         toast.error('Failed to load categories');
+        console.error('Fetch categories error:', err);
     }
 };
 
-// Update event
+/**
+ * Update the event
+ * Uses FormData + spoofed PUT via _method=PUT
+ */
 const updateEvent = async () => {
     const payload = new FormData();
 
+    // Append all fields except image placeholders
     for (const key in form) {
-        if (key != 'banner_image' && key != 'featured_image') {
-            payload.append(key, form[key]);
+        if (key !== 'banner_image' && key !== 'featured_image') {
+            payload.append(key, form[key] ?? '');
         }
     }
+
+    // Append new banner image if uploaded
     if (fileUpload.value && fileUpload.value[0]) {
         payload.append('banner_image', fileUpload.value[0].file);
     }
+
+    // Append new featured image if uploaded
     if (imageUpload.value && imageUpload.value[0]) {
         payload.append('featured_image', imageUpload.value[0].file);
     }
+
     try {
         await axios.post(`/api/events/${form.id}?_method=PUT`, payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        router.push({ name: 'Events', query: { toast: 'Event updated successfully' } });
+
+        // Redirect to events list with success message
+        router.push({
+            name: 'Events',
+            query: { toast: 'Event updated successfully' }
+        });
     } catch (err) {
-        toast.validationError(err);
+        toast.validationError(err); // Handles Laravel validation errors
+        console.error('Update event error:', err);
     }
 };
+
+// Optional props (kept for compatibility, ID comes from route)
 defineProps({
     id: {
         type: [String, Number],
     }
 });
 
+// Load data on component mount
 onMounted(() => {
     fetchEvent();
     fetchCategories();

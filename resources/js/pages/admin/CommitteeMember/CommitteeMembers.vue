@@ -99,45 +99,69 @@ import { useToast } from '@/composables/useToast';
 import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
 import SearchBox from '@/components/SearchBox.vue';
 
+// Router & route instances
 const router = useRouter();
 const route = useRoute();
+
+// Reactive list of committee members (paginated response)
 const members = ref([]);
+
+// Toast notifications
 const toast = useToast();
+
+// SweetAlert2 instance (injected from app setup)
 const $swal = inject('$swal');
 
-// Fetch committee members with pagination + search
+// Image modal state
+const showModal = ref(false);
+const modalImage = ref('');
+
+/**
+ * Fetch committee members with pagination and optional search
+ * @param {number} page - Page number (default: 1)
+ * @param {string} term - Search term (default: empty)
+ */
 const fetchPage = async (page = 1, term = "") => {
     try {
         const res = await axios.get(`/api/committee-members?page=${page}&search=${term || ''}`);
-        members.value = res.data.data;
+        members.value = res.data.data; // Full paginated response (data + meta/links)
     } catch (error) {
-        console.error(error);
+        console.error('Failed to fetch members:', error);
         toast.error('Failed to load committee members.');
     }
 };
 
+/**
+ * Handle search - reset to page 1 with the search term
+ */
 const onSearch = async (term) => {
     fetchPage(1, term);
 };
 
-const showModal = ref(false);
-const modalImage = ref('');
-
+/**
+ * Open full-size image modal
+ */
 const openImageModal = (imagePath) => {
     modalImage.value = getImageUrl(imagePath);
     showModal.value = true;
 };
 
+/**
+ * Close image modal
+ */
 const closeImageModal = () => {
     showModal.value = false;
     modalImage.value = '';
 };
 
-
+// Load initial data on mount
 onMounted(() => {
     fetchPage();
+
+    // Show success toast from query param (e.g., after create/update)
     if (route.query.toast) {
         toast.success(route.query.toast);
+        // Clean up toast query param after display
         setTimeout(() => {
             const q = { ...route.query };
             delete q.toast;
@@ -146,23 +170,29 @@ onMounted(() => {
     }
 });
 
-// Update member status
+/**
+ * Toggle member status (active ↔ inactive)
+ */
 const updateStatus = async (member) => {
     try {
         const response = await axios.patch(`/api/committee-members/${member.id}/toggle-status`);
         member.status = response.data.data.status;
+
+        // Use message from backend if available
         if (member.status == 1) {
-            toast.success(response.data.message);
+            toast.success(response.data.message || 'Member activated');
         } else {
-            toast.info(response.data.message);
+            toast.info(response.data.message || 'Member deactivated');
         }
     } catch (error) {
-        toast.error('Failed to update status');
-        console.error(error);
+        toast.validationError(error);
+        console.error('Status update failed:', error);
     }
 };
 
-// Delete member
+/**
+ * Confirm and delete a committee member
+ */
 const confirmDelete = async (member) => {
     const result = await $swal({
         title: `Delete "${member.name}"?`,
@@ -178,9 +208,12 @@ const confirmDelete = async (member) => {
         try {
             await axios.delete(`/api/committee-members/${member.id}`);
             toast.success('Committee member deleted successfully!');
+
+            // Optimistic update: remove from local list
             members.value.data = members.value.data.filter(m => m.id !== member.id);
         } catch (error) {
             toast.validationError(error);
+            console.error('Delete failed:', error);
         }
     } else {
         toast.info('Deletion cancelled.');

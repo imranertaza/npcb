@@ -72,14 +72,17 @@ import { getImageUrl, truncateText } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
 
+/* Banner Slides Management Page */
+
 const router = useRouter();
 const route = useRoute();
-const notices = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
 
-// Fetch notices with pagination + search
+const notices = ref([]); // banner slides list
+
+/* Fetch banner slides */
 const fetchPage = async (page = 1, term = "") => {
   try {
     const res = await axios.get(`/api/sliders/banner_section`);
@@ -90,36 +93,24 @@ const fetchPage = async (page = 1, term = "") => {
   }
 };
 
+/* Handle search */
 const onSearch = async (term) => {
   fetchPage(1, term);
 };
 
-onMounted(() => {
-  fetchPage();
-  if (route.query.toast) {
-    toast.success(route.query.toast);
-    setTimeout(() => {
-      const q = { ...route.query };
-      delete q.toast;
-      router.replace({ query: q });
-    }, 2000);
-  }
-});
-
-// Update notice status
+/* Toggle slide enabled/disabled */
 const toggleStatus = async (notice) => {
   try {
     const response = await axios.patch(`/api/sliders/${notice.id}/toggle`);
     notice.enabled = response.data.data.enabled;
     toast.success(response.data.message);
-
   } catch (error) {
     toast.error('Failed to toggle status');
     console.error(error);
   }
 };
 
-// Delete notice
+/* Confirm and delete slide */
 const confirmDelete = async (notice) => {
   const result = await $swal({
     title: `Delete "${notice.title}"?`,
@@ -144,4 +135,15 @@ const confirmDelete = async (notice) => {
   }
 };
 
+onMounted(() => {
+  fetchPage();
+  if (route.query.toast) {
+    toast.success(route.query.toast);
+    setTimeout(() => {
+      const q = { ...route.query };
+      delete q.toast;
+      router.replace({ query: q });
+    }, 2000);
+  }
+});
 </script>

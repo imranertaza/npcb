@@ -7,42 +7,6 @@
         </router-link>
 
         <div class="sidebar">
-            <!-- User Panel -->
-            <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img :src="UserAvatar2" class="img-circle elevation-2" alt="User Image">
-        </div>
-        <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
-        </div>
-      </div> -->
-            <!-- SidebarSearch Form -->
-            <!-- <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
-            </button>
-          </div>
-        </div>
-        <div class="sidebar-search-results">
-          <div class="list-group"><a href="#" class="list-group-item">
-              <div class="search-title"><strong class="text-light"></strong>N<strong
-                  class="text-light"></strong>o<strong class="text-light"></strong> <strong
-                  class="text-light"></strong>e<strong class="text-light"></strong>l<strong
-                  class="text-light"></strong>e<strong class="text-light"></strong>m<strong
-                  class="text-light"></strong>e<strong class="text-light"></strong>n<strong
-                  class="text-light"></strong>t<strong class="text-light"></strong> <strong
-                  class="text-light"></strong>f<strong class="text-light"></strong>o<strong
-                  class="text-light"></strong>u<strong class="text-light"></strong>n<strong
-                  class="text-light"></strong>d<strong class="text-light"></strong>!<strong class="text-light"></strong>
-              </div>
-              <div class="search-path"></div>
-            </a></div>
-        </div>
-      </div> -->
-
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
@@ -528,26 +492,32 @@ import { ref, watch, onMounted } from 'vue'
 import { useAuthStore } from '../../store/auth'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
-import UserAvatar2 from '@/assets/dist/img/user2-160x160.jpg'
 import adminLogo from '@/assets/dist/img/AdminLTELogo.png'
 
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
-// Track multiple open menus
+// Track which sidebar sub-menus are currently open (allows multiple)
 const openMenus = ref({})
 
-// Toggle menu (supports multiple open)
+/**
+ * Toggle the open/closed state of a specific menu
+ */
 const toggle = (menu) => {
     openMenus.value[menu] = !openMenus.value[menu]
 }
 
+/**
+ * Check if a specific menu is currently open
+ */
 const isOpen = (menu) => {
     return !!openMenus.value[menu]
 }
 
-// Auto-open parent menus based on current route
+/**
+ * Automatically open parent menus based on the current route name
+ */
 const openParentMenus = () => {
     const map = {
         // Pages
@@ -596,8 +566,6 @@ const openParentMenus = () => {
         'ShowSection': ['frontend', 'sections'],
         'UpdateSection': ['frontend', 'sections'],
 
-
-
         // Blog Categories (nested under Blogs)
         'BlogCategoryIndex': ['blog', 'blogCategories'],
         'BlogCategoryCreate': ['blog', 'blogCategories'],
@@ -636,6 +604,7 @@ const openParentMenus = () => {
         'CreateNotice': ['notices'],
         'ShowNotice': ['notices'],
         'UpdateNotice': ['notices'],
+
         // Player
         'Players': ['players'],
         'CreatePlayer': ['players'],
@@ -647,7 +616,6 @@ const openParentMenus = () => {
         'CreateCommitteeMembers': ['committee-members'],
         'ShowCommitteeMembers': ['committee-members'],
         'UpdateCommitteeMembers': ['committee-members'],
-
 
         // Results
         'Results': ['results'],
@@ -664,10 +632,13 @@ const openParentMenus = () => {
     }
 }
 
-// Run on mount and route change
+// Open correct menus on initial load and when route changes
 onMounted(openParentMenus)
 watch(() => route.name, openParentMenus)
 
+/**
+ * Handle admin logout: clear auth data and redirect to login
+ */
 const logout = async () => {
     await axios.post('/api/admin/logout')
     localStorage.clear()

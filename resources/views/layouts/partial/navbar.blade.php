@@ -1,15 +1,66 @@
   <header>
       @php
-          $headerMenu = App\Models\Menu::where('position', 'header')->with('menus.children')->first();
-          $menuItems = $headerMenu->menus;
+          $headerMenu = App\Models\Menu::where('position', 'header')
+              ->with([
+                  'menus' => function ($q) {
+                      $q->where('enabled', true)->with([
+                          'children' => function ($q2) {
+                              $q2->where('enabled', true);
+                          },
+                      ]);
+                  },
+              ])
+              ->first();
+          $menuItems = $headerMenu->menus->where('enabled', true);
       @endphp
-      <nav class="navbar navbar-expand-xl bg-common py-28 position-absolute z-3 w-100">
+      <nav class="navbar navbar-expand-xl bg-common position-absolute z-3 w-100 d-flex flex-column pb-2">
+          {{-- Logo  --}}
+          <div class="container d-flex w-100 justify-content-between align-items-center mb-3">
+              <!-- Left: Logo -->
+              <a class="navbar-brand d-inline" href="{{ route('home') }}">
+                  <img src="{{ getImageUrl($settings['store_logo']) }}" alt="Bangladesh Flag & NPC Logo" class="img-fluid"
+                      style="max-height:50px;">
+              </a>
+
+              <!-- Center: Search bar with filter -->
+              <form action="#" method="GET" class="d-flex mx-xl-3 flex-grow-1 justify-content-xl-center">
+                  <div class="input-group my-2 my-xl-0 mb-xl-0" style="max-width:400px;">
+                      <select class="form-select rounded-0" name="filter" style="max-width:95px;">
+                          <option value="news">News</option>
+                          <option value="players">Athletes</option>
+                          <option value="posts">Posts</option>
+                          <option value="events">Events</option>
+                      </select>
+                      <input type="text" class="form-control border-none" name="q" placeholder="Search..."
+                          aria-label="Search">
+                      <button class="btn btn-dark rounded-0" type="submit">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                              class="bi bi-search" viewBox="0 0 16 16">
+                              <path
+                                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                          </svg>
+                      </button>
+                  </div>
+              </form>
+
+              <!-- Right: Login/Register -->
+              <div class="d-flex">
+                  @guest
+                      <a href="#" class="btn btn-success me-2 rounded-0">Sponsor</a>
+                      <a href="#" class="btn btn-success me-2 rounded-0">Login/Register</a>
+                  @else
+                      <a href="#" class="btn btn-success me-2 rounded-0">Dashboard</a>
+                      <form action="#" method="POST">
+                          @csrf
+                          <button type="submit" class="btn btn-danger rounded-0">Logout</button>
+                      </form>
+                  @endguest
+              </div>
+          </div>
+
+          {{-- Logo  --}}
           <div class="container">
 
-              {{-- Logo  --}}
-              <a class="navbar-brand d-inline" href="{{ route('home') }}">
-                  <img src="{{ getImageUrl($settings['store_logo']) }}" alt="Bangladesh Flag & NPC Logo" class="img-fluid">
-              </a>
 
               {{-- Mobile Menu Button --}}
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -17,7 +68,7 @@
               </button>
 
               {{-- Navigation Menu --}}
-              <div class="collapse navbar-collapse justify-content-end custom-nav-manu" id="navbarNav">
+              <div class="collapse navbar-collapse justify-content-start custom-nav-manu" id="navbarNav">
                   <ul class="navbar-nav gap-md-4 gap-3 mt-3 mt-lg-0 text-md-center text-lg-start">
 
                       @foreach ($menuItems as $item)

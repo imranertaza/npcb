@@ -43,7 +43,7 @@
                                     <td class="align-middle">
                                         <div class="d-flex ">
                                             <router-link v-if="authStore.hasPermission('view-news')"
-                                                :to="{ name: 'ShowNews', params: { slug: item.slug } }"
+                                                :to="{ name: 'ShowNews', params: { id: item.id } }"
                                                 class="btn btn-sm btn-outline-dark">
                                                 <i class="fas fa-eye"></i>
                                             </router-link>
@@ -68,7 +68,6 @@
         </div>
     </section>
 </template>
-
 <script setup>
 import axios from 'axios';
 import DashboardHeader from '@/components/DashboardHeader.vue';
@@ -80,36 +79,46 @@ import { getImageUrl, truncateText, getImageCacheUrl } from '@/layouts/helpers/h
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
 
+// Router & route
 const router = useRouter();
 const route = useRoute();
+
+// News list (paginated response)
 const news = ref([]);
+
+// Auth store (if needed for permissions)
 const authStore = useAuthStore();
+
+// Toast notifications
 const toast = useToast();
+
+// SweetAlert2 instance
 const $swal = inject('$swal');
 
-
-
-// Fetch news with pagination + search
+/**
+ * Fetch news with pagination and optional search
+ */
 const fetchPage = async (page = 1, term = "") => {
     try {
         const res = await axios.get(`/api/news?page=${page}&search=${term || ''}`);
-        news.value = res.data.data;
+        news.value = res.data.data; // Full paginated response
     } catch (error) {
         console.error(error);
         toast.error('Failed to load news.');
     }
 };
 
+/**
+ * Handle search - reset to page 1
+ */
 const onSearch = async (term) => {
     fetchPage(1, term);
 };
 
+// Load initial data + handle toast query param
 onMounted(async () => {
-    try {
-        fetchPage();
-    } catch (error) {
-        console.error('Error fetching news:', error);
-    }
+    await fetchPage();
+
     if (route.query.toast) {
         toast.success(route.query.toast);
         setTimeout(() => {
@@ -120,7 +129,9 @@ onMounted(async () => {
     }
 });
 
-// Update news status
+/**
+ * Toggle news publish status (published ↔ draft)
+ */
 const updateStatus = async (item) => {
     try {
         const response = await axios.patch(`/api/news/${item.slug}/status`, {
@@ -138,7 +149,9 @@ const updateStatus = async (item) => {
     }
 };
 
-// Delete news
+/**
+ * Confirm and delete a news item
+ */
 const confirmDelete = async (item) => {
     const result = await $swal({
         title: `Delete "${item.news_title}"?`,
@@ -154,6 +167,7 @@ const confirmDelete = async (item) => {
         try {
             await axios.delete(`/api/news/${item.slug}`);
             toast.success('News deleted successfully!');
+            // Optimistic update
             news.value.data = news.value.data.filter(n => n.id !== item.id);
         } catch (error) {
             toast.validationError(error);

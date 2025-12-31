@@ -60,19 +60,14 @@ import draggable from 'vuedraggable'
 
 const submenuInput = ref(false)
 
+/**
+ * Toggle the submenu input field visibility
+ */
 const toggleSubmenuInput = () => {
   submenuInput.value = !submenuInput.value
 }
 
-const confirmAddSubmenu = async (item) => {
-  try {
-    await addSubmenu(item)
-    toggleSubmenuInput
-  } catch (err) {
-    console.error('Error adding submenu', err)
-  }
-}
-// ✅ Define props correctly inside <script setup>
+// Props passed from parent component
 defineProps({
   item: {
     type: Object,

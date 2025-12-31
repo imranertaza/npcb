@@ -18,6 +18,7 @@
                                     <th style="width: 10px">#</th>
                                     <th>Title</th>
                                     <th>File</th>
+                                    <th>Type</th>
                                     <th v-if="authStore.hasPermission('edit-results')">Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -32,6 +33,8 @@
                                             View File
                                         </a>
                                     </td>
+                                    <td class="align-middle">{{ result.type == 1 ? 'National' : 'International' }}</td>
+
                                     <td v-if="authStore.hasPermission('edit-results')" class="align-middle">
                                         <select v-model="result.status" @change="updateStatus(result)"
                                             class="custom-select"
@@ -43,7 +46,7 @@
                                     <td class="align-middle">
                                         <div class="d-flex">
                                             <router-link v-if="authStore.hasPermission('view-results')"
-                                                :to="{ name: 'ShowResult', params: { slug: result.slug } }"
+                                                :to="{ name: 'ShowResult', params: { id: result.id } }"
                                                 class="btn btn-sm btn-outline-dark">
                                                 <i class="fas fa-eye"></i>
                                             </router-link>

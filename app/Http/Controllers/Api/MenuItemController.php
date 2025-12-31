@@ -74,18 +74,18 @@ class MenuItemController extends Controller
             'link_type'     => 'required|in:page,category,url',
             'page_id'       => 'nullable|required_if:link_type,page|exists:pages,id',
             'category_id'   => 'nullable|required_if:link_type,category|exists:categories,id',
-            'url'           => 'nullable|required_if:link_type,url|url|max:500',
+            'url'           => 'nullable|required_if:link_type,url|string|max:500',
             'enabled'       => 'boolean',
             'parent_id'     => 'nullable|exists:menu_items,id',
             'order'         => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
-            return ApiResponse::error($validator->errors(), 'Validation failed', 422);
+            return ApiResponse::error('Validation failed', 422, $validator->errors());
         }
 
         $validated = $validator->validated();
-        $validated['enabled'] = $validated['enabled'] ?? true;
+        $validated['enabled'] = $validated['enabled'] ? 1 : 0;
 
         $item = MenuItem::create($validated);
 
@@ -120,14 +120,14 @@ class MenuItemController extends Controller
             'link_type'     => 'sometimes|required|in:page,category,url',
             'page_id'       => 'nullable|required_if:link_type,page|exists:pages,id',
             'category_id'   => 'nullable|required_if:link_type,category|exists:categories,id',
-            'url'           => 'nullable|required_if:link_type,url|url|max:500',
+            'url'           => 'nullable|required_if:link_type,string|string|max:500',
             'enabled'       => 'boolean',
             'parent_id'     => 'nullable|exists:menu_items,id',
             'order'         => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
-            return ApiResponse::error($validator->errors(), 'Validation failed', 422);
+            return ApiResponse::error('Validation failed', 422, $validator->errors());
         }
 
         $menuItem->update($validator->validated());

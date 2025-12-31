@@ -158,7 +158,7 @@ button {
 
 .py-100 {
     padding-top: clamp(80px, 8vw, 100px) !important;
-    padding-bottom: clamp(80px, 8vw, 100px) !important;
+    padding-bottom: clamp(80px, 8vw, 100px);
 }
 
 .pt-30 {
@@ -470,7 +470,7 @@ button {
 }
 
 .navbar-brand img {
-    max-width: 300px;
+    max-width: 350px;
     /* or whatever size fits */
     height: auto;
 }
@@ -482,7 +482,7 @@ button {
 
 @media screen and (max-width: 768px) {
     .navbar-brand img {
-        max-width: 220px;
+        max-width: 100%;
     }
 }
 
@@ -738,7 +738,7 @@ ul.dropdown-menu.show {
 /*                 TOP NEWS CSS                         */
 /* ================================================== */
 .banner .swiper {
-    background-color: var(--common-color);
+    background-color: #0000005a;
 }
 
 

@@ -35,7 +35,7 @@ class AdminAuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $admin->tokens()->delete();
+        // $admin->tokens()->delete(); --- IGNORE ---
         $token = $admin->createToken('admin-token', ['*'])->plainTextToken;
         return ApiResponse::success(['admin' => $admin, 'token' => $token], 'Login successful');
     }

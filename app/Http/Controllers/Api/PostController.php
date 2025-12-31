@@ -61,7 +61,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::findOrFail($id)->with('categories.parent')->firstOrFail();
+        $post = Post::with('categories.parent')->findOrFail($id);
         return ApiResponse::success($post, 'Post retrieved successfully');
     }
 

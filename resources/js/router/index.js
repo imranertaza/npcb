@@ -15,11 +15,15 @@ import UpdatePost from "@/pages/admin/Post/UpdatePost.vue";
 import RolePermissionManager from "@/pages/admin/users/RolePermissionManager.vue";
 import GeneralSettings from "@/pages/admin/Settings/GeneralSettings.vue";
 
-import Home from "@/pages/Home.vue";
 import NotFound from "@/pages/NotFound.vue";
 import Unauthorized from "@/pages/Unauthorized.vue";
-import { useAuthStore } from "@/store/auth";
-import { createRouter, createWebHistory } from "vue-router";
+import {
+    useAuthStore
+} from "@/store/auth";
+import {
+    createRouter,
+    createWebHistory
+} from "vue-router";
 import MenuManager from "../pages/admin/menu/MenuManager.vue";
 import MenusIndex from "../pages/admin/menu/MenusIndex.vue";
 import NewsCategoryEdit from "../pages/admin/News/NewsCategory/NewsCategoryEdit.vue";
@@ -75,18 +79,22 @@ import UpdatePlayer from "../pages/admin/Player/UpdatePlayer.vue";
 import ShowPlayer from "../pages/admin/Player/ShowPlayer.vue";
 import Player from "../pages/admin/Player/Player.vue";
 
-const routes = [
-    { path: "/", name: "home", component: Home },
-    {
+const routes = [{
         path: "/admin",
         redirect: "/admin/dashboard",
-        children: [
-            { path: "login", name: "AdminLogin", component: AdminLogin },
+        children: [{
+                path: "login",
+                name: "AdminLogin",
+                component: AdminLogin
+            },
             {
                 path: "dashboard",
                 prefix: "admin",
                 component: AdminLayout,
-                meta: { requiresAuth: true, role: "admin" },
+                meta: {
+                    requiresAuth: true,
+                    role: "admin"
+                },
 
                 children: [
 
@@ -94,14 +102,18 @@ const routes = [
                         path: "",
                         name: "Dashboard",
                         component: Dashboard,
-                        meta: { permission: "view-dashboard" },
+                        meta: {
+                            permission: "view-dashboard"
+                        },
                     },
 
                     {
                         path: "admin-profile",
                         name: "adminProfile",
                         component: AdminDashboard,
-                        meta: { permission: "view-dashboard" },
+                        meta: {
+                            permission: "view-dashboard"
+                        },
                     },
 
                     // Role & Permission Management
@@ -109,19 +121,25 @@ const routes = [
                         path: "manage-admins-roles",
                         name: "RolePermission",
                         component: RolePermission,
-                        meta: { permission: "view-users" }, // viewing admins/roles
+                        meta: {
+                            permission: "view-users"
+                        }, // viewing admins/roles
                     },
                     {
                         path: "admins/:id/edit",
                         name: "AdminUserUpdate",
                         component: AdminUserUpdate,
-                        meta: { permission: "update-users" },
+                        meta: {
+                            permission: "update-users"
+                        },
                     },
                     {
                         path: "manage-role-permissions",
                         name: "RolePermissionManager",
                         component: RolePermissionManager,
-                        meta: { permission: "update-user-role" }, // updating role permissions
+                        meta: {
+                            permission: "update-user-role"
+                        }, // updating role permissions
                     },
 
                     // Pages CRUD
@@ -129,54 +147,70 @@ const routes = [
                         path: "manage-pages",
                         name: "Pages",
                         component: Pages,
-                        meta: { permission: "view-pages" },
+                        meta: {
+                            permission: "view-pages"
+                        },
                     },
                     {
-                        path: "pages/:slug",
+                        path: "pages/:id",
                         name: "ShowPage",
                         component: ShowPage,
                         props: true,
-                        meta: { permission: "view-pages" },
+                        meta: {
+                            permission: "view-pages"
+                        },
                     },
                     {
-                        path: "edit-pages/:slug",
+                        path: "edit-pages/:id",
                         name: "UpdatePages",
                         component: UpdatePages,
                         props: true,
-                        meta: { permission: "edit-pages" },
+                        meta: {
+                            permission: "edit-pages"
+                        },
                     },
                     {
                         path: "create-page",
                         name: "CreatePage",
                         component: CreatePage,
-                        meta: { permission: "create-pages" },
+                        meta: {
+                            permission: "create-pages"
+                        },
                     },
                     // Posts CRUD
                     {
                         path: "manage-posts",
                         name: "Posts",
                         component: Post,
-                        meta: { permission: "view-posts" },
+                        meta: {
+                            permission: "view-posts"
+                        },
                     },
                     {
-                        path: "posts/:slug",
+                        path: "posts/:id",
                         name: "ShowPost",
                         component: ShowPost,
                         props: true,
-                        meta: { permission: "view-posts" },
+                        meta: {
+                            permission: "view-posts"
+                        },
                     },
                     {
                         path: "edit-posts/:id",
                         name: "UpdatePost",
                         component: UpdatePost,
                         props: true,
-                        meta: { permission: "edit-posts" },
+                        meta: {
+                            permission: "edit-posts"
+                        },
                     },
                     {
                         path: "create-posts",
                         name: "CreatePost",
                         component: CreatePost,
-                        meta: { permission: "create-posts" },
+                        meta: {
+                            permission: "create-posts"
+                        },
                     },
 
                     // Settings
@@ -184,7 +218,9 @@ const routes = [
                         path: "generale-settings",
                         name: "GeneralSettings",
                         component: GeneralSettings,
-                        meta: { permission: "update-settings" },
+                        meta: {
+                            permission: "update-settings"
+                        },
                     },
 
                     {
@@ -226,27 +262,35 @@ const routes = [
                         path: "manage-news",
                         name: "News",
                         component: News,
-                        meta: { permission: "view-news" },
+                        meta: {
+                            permission: "view-news"
+                        },
                     },
                     {
-                        path: "news/:slug",
+                        path: "news/:id",
                         name: "ShowNews",
                         component: ShowNews,
                         props: true,
-                        meta: { permission: "view-news" },
+                        meta: {
+                            permission: "view-news"
+                        },
                     },
                     {
                         path: "edit-news/:id",
                         name: "UpdateNews",
                         component: UpdateNews,
                         props: true,
-                        meta: { permission: "edit-news" },
+                        meta: {
+                            permission: "edit-news"
+                        },
                     },
                     {
                         path: "create-news",
                         name: "CreateNews",
                         component: CreateNews,
-                        meta: { permission: "create-news" },
+                        meta: {
+                            permission: "create-news"
+                        },
                     },
 
                     {
@@ -288,27 +332,35 @@ const routes = [
                         path: "manage-blogs",
                         name: "Blog",
                         component: Blog,
-                        meta: { permission: "view-blog" },
+                        meta: {
+                            permission: "view-blog"
+                        },
                     },
                     {
-                        path: "blogs/:slug",
+                        path: "blogs/:id",
                         name: "ShowBlog",
                         component: ShowBlog,
                         props: true,
-                        meta: { permission: "view-blog" },
+                        meta: {
+                            permission: "view-blog"
+                        },
                     },
                     {
                         path: "edit-blogs/:id",
                         name: "UpdateBlog",
                         component: UpdateBlog,
                         props: true,
-                        meta: { permission: "edit-blog" },
+                        meta: {
+                            permission: "edit-blog"
+                        },
                     },
                     {
                         path: "create-blogs",
                         name: "CreateBlog",
                         component: CreateBlog,
-                        meta: { permission: "create-blog" },
+                        meta: {
+                            permission: "create-blog"
+                        },
                     },
 
                     {
@@ -367,53 +419,69 @@ const routes = [
                         path: "manage-galleries",
                         name: "Gallery",
                         component: Gallery,
-                        meta: { permission: "view-galleries" },
+                        meta: {
+                            permission: "view-galleries"
+                        },
                     },
                     {
                         path: "galleries/:id",
                         name: "ShowGallery",
                         component: ShowGallery,
                         props: true,
-                        meta: { permission: "view-galleries" },
+                        meta: {
+                            permission: "view-galleries"
+                        },
                     },
                     {
                         path: "edit-galleries/:id",
                         name: "UpdateGallery",
                         component: UpdateGallery,
                         props: true,
-                        meta: { permission: "edit-galleries" },
+                        meta: {
+                            permission: "edit-galleries"
+                        },
                     },
                     {
                         path: "create-gallery",
                         name: "CreateGallery",
                         component: CreateGallery,
-                        meta: { permission: "create-galleries" },
+                        meta: {
+                            permission: "create-galleries"
+                        },
                     },
                     {
                         path: "manage-events",
                         name: "Events",
                         component: Event,
-                        meta: { permission: "view-events" },
+                        meta: {
+                            permission: "view-events"
+                        },
                     },
                     {
-                        path: "events/:slug",
+                        path: "events/:id",
                         name: "ShowEvent",
                         component: ShowEvent,
                         props: true,
-                        meta: { permission: "view-events" },
+                        meta: {
+                            permission: "view-events"
+                        },
                     },
                     {
                         path: "edit-events/:id",
                         name: "UpdateEvent",
                         component: UpdateEvent,
                         props: true,
-                        meta: { permission: "edit-events" },
+                        meta: {
+                            permission: "edit-events"
+                        },
                     },
                     {
                         path: "create-events",
                         name: "CreateEvent",
                         component: CreateEvent,
-                        meta: { permission: "create-events" },
+                        meta: {
+                            permission: "create-events"
+                        },
                     },
                     {
                         path: "event-categories",
@@ -453,132 +521,172 @@ const routes = [
                         path: "manage-notices",
                         name: "Notices",
                         component: Notice,
-                        meta: { permission: "view-notices" },
+                        meta: {
+                            permission: "view-notices"
+                        },
                     },
                     {
-                        path: "notices/:slug",
+                        path: "notices/:id",
                         name: "ShowNotice",
                         component: ShowNotice,
                         props: true,
-                        meta: { permission: "view-notices" },
+                        meta: {
+                            permission: "view-notices"
+                        },
                     },
                     {
                         path: "edit-notices/:id",
                         name: "UpdateNotice",
                         component: UpdateNotice,
                         props: true,
-                        meta: { permission: "edit-notices" },
+                        meta: {
+                            permission: "edit-notices"
+                        },
                     },
                     {
                         path: "create-notices",
                         name: "CreateNotice",
                         component: CreateNotice,
-                        meta: { permission: "create-notices" },
+                        meta: {
+                            permission: "create-notices"
+                        },
                     },
                     {
                         path: "manage-players",
                         name: "Players",
                         component: Player,
-                        meta: { permission: "view-players" },
+                        meta: {
+                            permission: "view-players"
+                        },
                     },
                     {
-                        path: "players/:slug",
+                        path: "players/:id",
                         name: "ShowPlayer",
                         component: ShowPlayer,
                         props: true,
-                        meta: { permission: "view-players" },
+                        meta: {
+                            permission: "view-players"
+                        },
                     },
                     {
                         path: "edit-players/:id",
                         name: "UpdatePlayer",
                         component: UpdatePlayer,
                         props: true,
-                        meta: { permission: "edit-players" },
+                        meta: {
+                            permission: "edit-players"
+                        },
                     },
                     {
                         path: "create-players",
                         name: "CreatePlayer",
                         component: CreatePlayer,
-                        meta: { permission: "create-players" },
+                        meta: {
+                            permission: "create-players"
+                        },
                     },
                     {
                         path: "manage-results",
                         name: "Results",
                         component: Result,
-                        meta: { permission: "view-results" },
+                        meta: {
+                            permission: "view-results"
+                        },
                     },
                     {
-                        path: "results/:slug",
+                        path: "results/:id",
                         name: "ShowResult",
                         component: ShowResult,
                         props: true,
-                        meta: { permission: "view-results" },
+                        meta: {
+                            permission: "view-results"
+                        },
                     },
                     {
                         path: "edit-results/:id",
                         name: "UpdateResult",
                         component: UpdateResult,
                         props: true,
-                        meta: { permission: "edit-results" },
+                        meta: {
+                            permission: "edit-results"
+                        },
                     },
                     {
                         path: "create-results",
                         name: "CreateResult",
                         component: CreateResult,
-                        meta: { permission: "create-results" },
+                        meta: {
+                            permission: "create-results"
+                        },
                     },
                     {
                         path: "manage-sections",
                         name: "Section",
                         component: Section,
-                        meta: { permission: "manage-frontend" },
+                        meta: {
+                            permission: "manage-frontend"
+                        },
                     },
                     {
                         path: "edit-sections/:id",
                         name: "UpdateSection",
                         component: UpdateSection,
                         props: true,
-                        meta: { permission: "manage-frontend" },
+                        meta: {
+                            permission: "manage-frontend"
+                        },
                     },
                     {
                         path: "banner-sliders",
                         name: "Sliders",
                         component: Sliders,
                         props: true,
-                        meta: { permission: "manage-frontend" },
+                        meta: {
+                            permission: "manage-frontend"
+                        },
                     },
                     {
                         path: "edit-sliders/:id",
                         name: "UpdateSlider",
                         component: UpdateSlider,
                         props: true,
-                        meta: { permission: "manage-frontend" },
+                        meta: {
+                            permission: "manage-frontend"
+                        },
                     },
                     {
                         path: "create-sliders",
                         name: "CreateSlider",
                         component: CreateSlider,
-                        meta: { permission: "manage-frontend" },
+                        meta: {
+                            permission: "manage-frontend"
+                        },
                     },
                     {
                         path: "manage-committee-members",
                         name: "CommitteeMembers",
                         component: CommitteeMembers,
                         props: true,
-                        meta: { permission: "manage-committee-members" },
+                        meta: {
+                            permission: "manage-committee-members"
+                        },
                     },
                     {
                         path: "edit-committee-members/:id",
                         name: "UpdateCommitteeMembers",
                         component: UpdateCommitteeMembers,
                         props: true,
-                        meta: { permission: "manage-committee-members" },
+                        meta: {
+                            permission: "manage-committee-members"
+                        },
                     },
                     {
                         path: "create-committee-members",
                         name: "CreateCommitteeMembers",
                         component: CreateCommitteeMembers,
-                        meta: { permission: "manage-committee-members" },
+                        meta: {
+                            permission: "manage-committee-members"
+                        },
                     },
                 ],
             },
@@ -633,7 +741,9 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (requiredPermission && !authStore.hasPermission(requiredPermission)) {
-        return next({ name: "Unauthorized" });
+        return next({
+            name: "Unauthorized"
+        });
     }
     next();
 });

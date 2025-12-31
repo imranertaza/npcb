@@ -74,26 +74,36 @@ import axios from 'axios';
 import { reactive, ref } from 'vue';
 import { useToast } from '@/composables/useToast';
 
+// Toast notifications
 const toast = useToast();
+
+// Dropzone reference for member image upload
 const fileUpload = ref(null);
 
+// Reactive form state for new committee member
 const form = reactive({
     name: '',
     designation: '',
-    order: 1,
-    status: '1',
-    image: null
+    order: 1,                 // Display/sort order
+    status: '1',              // '1' = active, '0' = inactive
+    image: null               // Preview URL (not sent to server)
 });
 
+/**
+ * Submit the committee member creation form
+ * Builds FormData payload including optional image
+ */
 const submitMember = async () => {
     const payload = new FormData();
 
+    // Append all text fields
     for (const key in form) {
         if (key !== 'image') {
-            payload.append(key, form[key]);
+            payload.append(key, form[key] ?? '');
         }
     }
 
+    // Append image file if uploaded via Dropzone
     if (fileUpload.value && fileUpload.value[0]) {
         payload.append('image', fileUpload.value[0].file);
     }
@@ -102,10 +112,14 @@ const submitMember = async () => {
         await axios.post('/api/committee-members', payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
+
         toast.success('Committee member created successfully!');
+
+        Object.assign(form, { name: '', designation: '', order: 1, status: '1', image: null });
+        fileUpload.value = null;
     } catch (error) {
-        toast.error('Failed to create committee member');
-        console.error(error);
+        toast.validationError(error); // Better handling for validation (422) errors
+        console.error('Committee member creation failed:', error);
     }
 };
 </script>
