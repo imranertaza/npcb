@@ -108,20 +108,22 @@ const router = useRouter();
 
 const route = useRoute();
 const posts = ref([]);
+const currentSearchTerm = ref("");
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject("$swal");
 
-const fetchPage = async (page = 1, term = "") => {
+const fetchPage = async (page = 1) => {
   try {
-    const res = await axios.get(`/api/posts?page=${page}&search=${term || ""}`);
+    const res = await axios.get(`/api/posts?page=${page}&search=${currentSearchTerm.value}`);
     posts.value = res.data.data;
   } catch (error) {
     console.error(error);
   }
 };
 const onSearch = async (term) => {
-  fetchPage(1, term);
+  currentSearchTerm.value = term; // save current search
+  fetchPage();
 };
 onMounted(async () => {
   try {
