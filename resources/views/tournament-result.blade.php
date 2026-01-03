@@ -17,7 +17,7 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
-                        <a href="{{ getImageUrl($result->file) }}" class="d-flex align-items-center gap-3">
+                        <a href="{{ getImageUrl($result->file) }}" download="{{ $result->title }}" target="_blank" class="d-flex align-items-center gap-3">
                             <p class="my-0 content-text">Download</p>
                             <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">

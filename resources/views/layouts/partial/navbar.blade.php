@@ -13,7 +13,7 @@
               ->first();
           $menuItems = $headerMenu->menus->where('enabled', true);
       @endphp
-      <nav class="navbar navbar-expand-xl bg-common position-absolute z-3 w-100 d-flex flex-column pb-2">
+      <nav class="navbar navbar-expand-xl bg-common  z-3 w-100 d-flex flex-column pb-2">
           {{-- Logo  --}}
           <div class="container d-flex w-100 justify-content-between align-items-center mb-3">
               <!-- Left: Logo -->
@@ -69,7 +69,7 @@
 
               {{-- Navigation Menu --}}
               <div class="collapse navbar-collapse justify-content-start custom-nav-manu" id="navbarNav">
-                  <ul class="navbar-nav gap-md-4 gap-3 mt-3 mt-lg-0 text-md-center text-lg-start">
+                  <ul class="navbar-nav gap-md-4 gap-8px gap-3 mt-3 mt-lg-0 text-md-center text-lg-start flex-wrap">
 
                       @foreach ($menuItems as $item)
                           @if ($item->children->count() > 0)
