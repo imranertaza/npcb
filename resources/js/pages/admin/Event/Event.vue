@@ -121,7 +121,7 @@ const $swal = inject('$swal');
 // Image modal state
 const showModal = ref(false);
 const modalImage = ref('');
-
+const currentSearchTerm = ref("");
 /**
  * Open full-size image modal (banner or featured image)
  */
@@ -143,9 +143,9 @@ const closeImageModal = () => {
  * @param {number} page - Page number (default: 1)
  * @param {string} term - Search term (default: empty)
  */
-const fetchPage = async (page = 1, term = "") => {
+const fetchPage = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/events?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/events?page=${page}&search=${currentSearchTerm.value}`);
         events.value = res.data.data; // Full paginated response (data + meta/links)
     } catch (error) {
         console.error('Failed to fetch events:', error);
@@ -157,7 +157,8 @@ const fetchPage = async (page = 1, term = "") => {
  * Handle search - reset to page 1 with the search term
  */
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 // Load initial data on mount

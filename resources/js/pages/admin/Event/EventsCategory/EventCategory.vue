@@ -95,15 +95,15 @@ const authStore = useAuthStore();
 
 // SweetAlert2 instance (injected from app setup)
 const $swal = inject('$swal');
-
+const currentSearchTerm = ref("");
 /**
  * Fetch event categories with pagination and optional search
  * @param {number} page - Page number (default: 1)
  * @param {string} searchTerm - Search query (default: empty)
  */
-const fetchCategory = async (page = 1, searchTerm = "") => {
+const fetchCategory = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/events-categories?page=${page}&search=${searchTerm || ''}`);
+        const res = await axios.get(`/api/events-categories?page=${page}&search=${currentSearchTerm.value}`);
         categories.value = res.data.data; // Full paginated response (data + meta/links)
     } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -115,6 +115,7 @@ const fetchCategory = async (page = 1, searchTerm = "") => {
  * Handle search input - reset to page 1 with the search term
  */
 const onSearch = (term) => {
+    currentSearchTerm.value = term
     fetchCategory(1, term);
 };
 

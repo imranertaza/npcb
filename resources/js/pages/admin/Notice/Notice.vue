@@ -87,11 +87,11 @@ const notices = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
-
+const currentSearchTerm = ref("");
 // Fetch notices with pagination + search
 const fetchPage = async (page = 1, term = "") => {
     try {
-        const res = await axios.get(`/api/notices?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/notices?page=${page}&search=${currentSearchTerm.value}`);
         notices.value = res.data.data;
     } catch (error) {
         console.error(error);
@@ -100,7 +100,8 @@ const fetchPage = async (page = 1, term = "") => {
 };
 
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 onMounted(() => {

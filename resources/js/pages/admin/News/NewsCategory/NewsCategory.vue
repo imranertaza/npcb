@@ -93,16 +93,16 @@ const categories = ref([]);
 
 // Auth store (if needed for permissions)
 const authStore = useAuthStore();
-
+const currentSearchTerm = ref("");
 // SweetAlert2 instance
 const $swal = inject('$swal');
 
 /**
  * Fetch news categories with pagination and optional search
  */
-const fetchCategory = async (page = 1, searchTerm = "") => {
+const fetchCategory = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/news-categories?page=${page}&search=${searchTerm}`);
+        const res = await axios.get(`/api/news-categories?page=${page}&search=${currentSearchTerm.value}`);
         categories.value = res.data.data;
     } catch (error) {
         console.error(error);
@@ -113,7 +113,8 @@ const fetchCategory = async (page = 1, searchTerm = "") => {
  * Handle search - reset to first page
  */
 const onSearch = (term) => {
-    fetchCategory(1, term);
+    currentSearchTerm.value = term;
+    fetchCategory();
 };
 
 // Load categories on component mount

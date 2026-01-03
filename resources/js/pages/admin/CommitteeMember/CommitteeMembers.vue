@@ -115,15 +115,15 @@ const $swal = inject('$swal');
 // Image modal state
 const showModal = ref(false);
 const modalImage = ref('');
-
+const currentSearchTerm = ref("");
 /**
  * Fetch committee members with pagination and optional search
  * @param {number} page - Page number (default: 1)
  * @param {string} term - Search term (default: empty)
  */
-const fetchPage = async (page = 1, term = "") => {
+const fetchPage = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/committee-members?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/committee-members?page=${page}&search=${currentSearchTerm.value}`);
         members.value = res.data.data; // Full paginated response (data + meta/links)
     } catch (error) {
         console.error('Failed to fetch members:', error);
@@ -135,7 +135,8 @@ const fetchPage = async (page = 1, term = "") => {
  * Handle search - reset to page 1 with the search term
  */
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 /**
