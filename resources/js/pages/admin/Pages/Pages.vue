@@ -123,7 +123,7 @@ onMounted(async () => {
 
 const updateStatus = async (page) => {
     try {
-        const response = await axios.patch(`/api/pages/${page.slug}/status`, {
+        const response = await axios.patch(`/api/pages/${page.id}/status`, {
             status: page.status,
         });
 
@@ -150,7 +150,7 @@ const confirmDelete = async (page) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/pages/${page.slug}`);
+            await axios.delete(`/api/pages/${page.id}`);
             toast.success("Page deleted successfully!");
             pages.value.data = pages.value.data.filter((p) => p.id !== page.id);
         } catch (error) {

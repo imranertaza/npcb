@@ -169,9 +169,9 @@ class PageController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $page = Page::whereSlug($slug)->firstOrFail();
+        $page = Page::findOrFail($id);
         $page->status = $page->status === 'Active' ? 'Inactive' : 'Active';
         $page->save();
 
@@ -191,9 +191,9 @@ class PageController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $page = Page::whereSlug($slug)->firstOrFail();
+        $page = Page::findOrFail($id);
 
         if ($page->f_image && Storage::disk('public')->exists($page->f_image)) {
             Storage::disk('public')->delete($page->f_image);

@@ -79,7 +79,7 @@ class BlogController extends Controller
                 'meta_title'       => 'nullable|string',
                 'meta_keyword'     => 'nullable|string',
                 'meta_description' => 'nullable|string',
-                'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
                 'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
                 'alt_name'         => 'nullable|string|max:255',
                 'publish_date'     => 'nullable|date',
@@ -217,9 +217,9 @@ class BlogController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $blog            = Blog::where('slug', $slug)->firstOrFail();
+        $blog            = Blog::findOrFail($id);
         $blog->status    = $blog->status == 1 ? "0" : "1";
         $blog->updatedBy = Auth::id();
         $blog->save();
@@ -236,9 +236,9 @@ class BlogController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $blog = Blog::where('slug', $slug)->firstOrFail();
+        $blog = Blog::findOrFail($id);
 
         if ($blog->image && Storage::disk('public')->exists($blog->image)) {
             Storage::disk('public')->delete($blog->image);

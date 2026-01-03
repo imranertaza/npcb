@@ -122,7 +122,7 @@ onMounted(() => {
 // Update result status
 const updateStatus = async (result) => {
     try {
-        const response = await axios.patch(`/api/results/${result.slug}/toggle-status`);
+        const response = await axios.patch(`/api/results/${result.id}/toggle-status`);
         result.status = response?.data?.data?.status;
         if (result.status == 1) {
             toast.success(response.data.message);
@@ -149,7 +149,7 @@ const confirmDelete = async (result) => {
 
     if (resultConfirm.isConfirmed) {
         try {
-            await axios.delete(`/api/results/${result.slug}`);
+            await axios.delete(`/api/results/${result.id}`);
             toast.success('Result deleted successfully!');
             results.value.data = results.value.data.filter(r => r.id !== result.id);
         } catch (error) {

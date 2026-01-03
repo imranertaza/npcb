@@ -135,7 +135,7 @@ onMounted(async () => {
  */
 const updateStatus = async (item) => {
     try {
-        const response = await axios.patch(`/api/news/${item.slug}/status`, {
+        const response = await axios.patch(`/api/news/${item.id}/status`, {
             status: item.status
         });
 
@@ -166,7 +166,7 @@ const confirmDelete = async (item) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/news/${item.slug}`);
+            await axios.delete(`/api/news/${item.id}`);
             toast.success('News deleted successfully!');
             // Optimistic update
             news.value.data = news.value.data.filter(n => n.id !== item.id);

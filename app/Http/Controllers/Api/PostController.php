@@ -227,9 +227,9 @@ class PostController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post = Post::findOrFail($id);
         $post->status = $post->status === '1' ? '0' : '1';
         $post->save();
 
@@ -249,9 +249,9 @@ class PostController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post = Post::findOrFail($id);
 
         if ($post->image && Storage::disk('public')->exists($post->image)) {
             Storage::disk('public')->delete($post->image);

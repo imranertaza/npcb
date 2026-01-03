@@ -17,15 +17,25 @@
                                     <!-- Name -->
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input v-model="form.name" type="text" class="form-control" required />
+                                        <input v-model="form.name" @input="form.slug = generateSlug(form.name)"
+                                            type="text" class="form-control" required />
                                     </div>
-
+                                    <div class="form-group">
+                                        <label>Slug</label>
+                                        <input v-model="form.slug" type="text" class="form-control" required />
+                                    </div>
                                     <!-- Designation -->
                                     <div class="form-group">
                                         <label>Designation</label>
                                         <input v-model="form.designation" type="text" class="form-control" required />
                                     </div>
-
+                                    <!-- Description -->
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <RichTextEditor v-model="form.description"
+                                            placeholder="Write your amazing post here..." class="editor">
+                                        </RichTextEditor>
+                                    </div>
                                     <!-- Order -->
                                     <div class="form-group">
                                         <label>Order</label>
@@ -85,6 +95,8 @@ import { useToast } from '@/composables/useToast';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 import Vue3Dropzone from '@jaxtheprime/vue3-dropzone';
 import '@jaxtheprime/vue3-dropzone/dist/style.css';
+import RichTextEditor from '../../../components/RichTextEditor.vue';
+import { generateSlug, getImageCacheUrl } from '../../../layouts/helpers/helpers';
 
 // Toast notifications
 const toast = useToast();
@@ -103,7 +115,9 @@ const fileUpload = ref(null);
 const form = reactive({
     id: null,
     name: '',
+    slug: '',
     designation: '',
+    description: '',
     image: '',      // Existing image path (used only for preview)
     order: 1,       // Display/sort order
     status: '1'     // '1' = active, '0' = inactive
@@ -117,12 +131,17 @@ const fetchMember = async () => {
         const res = await axios.get(`/api/committee-members/${route.params.id}`);
         const member = res.data.data;
 
+        // Normalize description: if null/undefined, set to empty string
+        member.description = member.description ?? '';
+
         // Populate form with fetched data
         Object.assign(form, member);
 
+        console.log(getImageCacheUrl(member.image));
+
         // Show existing image in Dropzone preview if present
         if (member.image) {
-            previews.value = [{ url: getImageUrl(member.image) }];
+            previews.value = [getImageCacheUrl(member.image)];
         }
     } catch (err) {
         toast.error('Failed to load committee member');
@@ -170,4 +189,10 @@ onMounted(() => {
     form.id = route.params.id;
     fetchMember();
 });
+defineProps({
+    id: {
+        type: [String, Number], // accepts both string and number
+        required: true
+    }
+})
 </script>

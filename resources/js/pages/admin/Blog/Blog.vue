@@ -139,7 +139,7 @@ onMounted(async () => {
  */
 const updateStatus = async (item) => {
     try {
-        const response = await axios.patch(`/api/blogs/${item.slug}/status`, {
+        const response = await axios.patch(`/api/blogs/${item.id}/status`, {
             status: item.status
         });
 
@@ -170,7 +170,7 @@ const confirmDelete = async (item) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/blogs/${item.slug}`);
+            await axios.delete(`/api/blogs/${item.id}`);
             toast.success('Blog deleted successfully!');
 
             // Remove deleted item from local list (optimistic update)

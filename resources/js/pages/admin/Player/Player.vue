@@ -157,7 +157,7 @@ onMounted(() => {
 // Update player status
 const updateStatus = async (player) => {
     try {
-        const response = await axios.patch(`/api/players/${player.slug}/toggle-status`);
+        const response = await axios.patch(`/api/players/${player.id}/toggle-status`);
         player.status = response.data.data.status;
         toast.success(response.data.message);
     } catch (error) {
@@ -180,7 +180,7 @@ const confirmDelete = async (player) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/players/${player.slug}`);
+            await axios.delete(`/api/players/${player.id}`);
             toast.success('Player deleted successfully!');
             players.value.data = players.value.data.filter(p => p.id !== player.id);
         } catch (error) {

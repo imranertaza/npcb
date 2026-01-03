@@ -221,9 +221,9 @@ class NewsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $news = News::where('slug', $slug)->firstOrFail();
+        $news = News::findOrFail($id);
         $news->status = $news->status == 1 ? 0 : 1;
         $news->updatedBy = Auth::id();
         $news->save();
@@ -240,9 +240,9 @@ class NewsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $news = News::where('slug', $slug)->firstOrFail();
+        $news = News::findOrFail($id);
 
         if ($news->image && Storage::disk('public')->exists($news->image)) {
             Storage::disk('public')->delete($news->image);

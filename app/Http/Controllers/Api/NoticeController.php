@@ -148,9 +148,9 @@ class NoticeController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $notice = Notice::where('slug', $slug)->firstOrFail();
+        $notice = Notice::findOrFail($id);
         $notice->status = $notice->status === '1' ? '0' : '1';
         $notice->updatedBy = Auth::id();
         $notice->save();
@@ -167,9 +167,9 @@ class NoticeController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $notice = Notice::where('slug', $slug)->firstOrFail();
+        $notice = Notice::findOrFail($id);
 
         if ($notice->file && Storage::disk('public')->exists($notice->file)) {
             Storage::disk('public')->delete($notice->file);

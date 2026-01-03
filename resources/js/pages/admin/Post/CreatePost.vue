@@ -31,7 +31,7 @@
                                         <input v-model="form.short_des" type="text" class="form-control" required />
                                     </div>
 
-                                    <!-- Description (Summernote) -->
+                                    <!-- Description () -->
                                     <div class="form-group">
                                         <label>Description</label>
                                         <RichTextEditor v-model="form.description"

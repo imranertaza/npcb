@@ -313,7 +313,19 @@ class FrontendController extends Controller
             ->orderBy('order')
             ->get();
 
-        return view('committee-members', compact('members'));
+        return view('ec-members.committee-members', compact('members'));
+    }
+
+    /**
+     * Display details of a single committee member.
+     *
+     * @param string $slug
+     * @return \Illuminate\View\View
+     */
+    public function committeeMembersDetails($slug)
+    {
+        $member = CommitteeMember::where('status', 1)->where('slug', $slug)->firstOrFail();
+        return view('ec-members.details', compact('member'));
     }
 
     /**

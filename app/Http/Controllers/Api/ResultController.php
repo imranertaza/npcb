@@ -147,9 +147,9 @@ class ResultController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $result = Result::where('slug', $slug)->firstOrFail();
+        $result = Result::findOrFail($id);
         $result->status = $result->status === '1' ? '0' : '1';
         $result->updatedBy = Auth::id();
         $result->save();
@@ -166,9 +166,9 @@ class ResultController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $result = Result::where('slug', $slug)->firstOrFail();
+        $result = Result::findOrFail($id);
 
         if ($result->file && Storage::disk('public')->exists($result->file)) {
             Storage::disk('public')->delete($result->file);

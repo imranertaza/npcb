@@ -124,7 +124,7 @@ const currentSearchTerm = ref("");
 const fetchPage = async (page = 1) => {
     try {
         const res = await axios.get(`/api/committee-members?page=${page}&search=${currentSearchTerm.value}`);
-        members.value = res.data.data; // Full paginated response (data + meta/links)
+        members.value = res.data.data;
     } catch (error) {
         console.error('Failed to fetch members:', error);
         toast.error('Failed to load committee members.');

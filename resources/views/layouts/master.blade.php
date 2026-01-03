@@ -72,9 +72,6 @@
         <!-- Breadcrumb Section Start -->
         @yield('content')
     </main>
-    <button id="backToTop" class="back-to-top">
-        ↑
-    </button>
     @include('layouts.partial.footer')
 
     {{-- Global Bootstrap JS --}}

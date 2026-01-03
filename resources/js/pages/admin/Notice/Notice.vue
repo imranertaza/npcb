@@ -119,7 +119,7 @@ onMounted(() => {
 // Update notice status
 const updateStatus = async (notice) => {
     try {
-        const response = await axios.patch(`/api/notices/${notice.slug}/toggle-status`);
+        const response = await axios.patch(`/api/notices/${notice.id}/toggle-status`);
         notice.status = response.data.data.status;
         if (notice.status == 1) {
             toast.success(response.data.message);
@@ -146,7 +146,7 @@ const confirmDelete = async (notice) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/notices/${notice.slug}`);
+            await axios.delete(`/api/notices/${notice.id}`);
             toast.success('Notice deleted successfully!');
             notices.value.data = notices.value.data.filter(n => n.id !== notice.id);
         } catch (error) {

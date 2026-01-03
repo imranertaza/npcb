@@ -182,7 +182,7 @@ onMounted(() => {
  */
 const updateStatus = async (event) => {
     try {
-        const response = await axios.patch(`/api/events/${event.slug}/toggle-status`);
+        const response = await axios.patch(`/api/events/${event.id}/toggle-status`);
         event.status = response.data.data.status; // Update local status
 
         toast.success(response.data.message || 'Status updated');
@@ -208,7 +208,7 @@ const confirmDelete = async (event) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/events/${event.slug}`);
+            await axios.delete(`/api/events/${event.id}`);
             toast.success('Event deleted successfully!');
 
             // Optimistic update: remove from local list

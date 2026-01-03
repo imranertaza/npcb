@@ -395,6 +395,9 @@
             </div>
         </div>
     </section>
+    <button id="backToTop" class="back-to-top">
+        ↑
+    </button>
     @push('styles')
         <style>
             /* Back To top */

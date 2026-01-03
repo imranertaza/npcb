@@ -69,7 +69,9 @@ class CommitteeMemberController extends Controller
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:committee_members,slug',
             'designation' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
             'order'       => 'required|integer|min:0',
             'status'      => 'required|in:0,1',
@@ -108,6 +110,7 @@ class CommitteeMemberController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'designation' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
             'order'       => 'required|integer|min:0',
             'status'      => 'required|in:0,1',
