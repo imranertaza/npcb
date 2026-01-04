@@ -6,7 +6,7 @@
 @section('meta_keywords', $news->meta_keywords)
 @section('meta_title', $news->meta_title)
 @section('og_image', getImageUrl($news->image ?? $news->f_image))
-@section('og_title', $news->meta_title)
+@section('og_title', $news->meta_title ?? $news->news_title)
 @section('content')
 
     <section class="container py-100">
