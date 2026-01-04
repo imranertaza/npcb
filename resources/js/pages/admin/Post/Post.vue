@@ -144,7 +144,7 @@ onMounted(async () => {
 
 const updateStatus = async (post) => {
   try {
-    const response = await axios.patch(`/api/posts/${post.slug}/status`, {
+    const response = await axios.patch(`/api/posts/${post.id}/status`, {
       status: post.status,
     });
 
@@ -174,7 +174,7 @@ const confirmDelete = async (post) => {
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(`/api/posts/${post.slug}`);
+      await axios.delete(`/api/posts/${post.id}`);
       toast.success("Post deleted successfully!");
 
       posts.value.data = posts.value.data.filter((p) => p.id !== post.id);

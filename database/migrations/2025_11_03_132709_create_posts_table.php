@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('meta_keyword')->nullable();
             $table->text('meta_description')->nullable();
             $table->string('f_image', 255);
-            $table->string('image', 255);
+            $table->string('image', 255)->nullable();
             $table->string('alt_name', 255)->nullable();
             $table->timestamp('publish_date')->useCurrent();
             $table->enum('status', ['0', '1'])->default('1');

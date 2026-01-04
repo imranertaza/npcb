@@ -94,16 +94,16 @@ const router = useRouter();
 
 // Gallery list (paginated)
 const galleries = ref([]);
-
+const currentSearchTerm = ref("");
 // SweetAlert2 instance
 const $swal = inject('$swal');
 
 /**
  * Fetch galleries with pagination and search
  */
-const fetchGalleries = async (page = 1, searchTerm = "") => {
+const fetchGalleries = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/gallery?page=${page}&search=${searchTerm}`);
+        const res = await axios.get(`/api/gallery?page=${page}&search=${currentSearchTerm.value}`);
         galleries.value = res.data.data; // Full paginated response
     } catch (error) {
         console.error(error);
@@ -114,7 +114,8 @@ const fetchGalleries = async (page = 1, searchTerm = "") => {
  * Handle search - reset to page 1
  */
 const onSearch = (term) => {
-    fetchGalleries(1, term);
+    currentSearchTerm.value = term;
+    fetchGalleries();
 };
 
 /**

@@ -187,9 +187,9 @@ class PlayerController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $player = Player::where('slug', $slug)->firstOrFail();
+        $player = Player::findOrFail($id);
         $player->status = $player->status == 1 ? 0 : 1;
         $player->updatedBy = Auth::id();
         $player->save();
@@ -206,10 +206,9 @@ class PlayerController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $player = Player::where('slug', $slug)->firstOrFail();
-
+        $player = Player::findOrFail($id);
         if ($player->image && Storage::disk('public')->exists($player->image)) {
             Storage::disk('public')->delete($player->image);
         }

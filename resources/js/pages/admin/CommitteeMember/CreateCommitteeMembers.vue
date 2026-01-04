@@ -16,13 +16,24 @@
                                     <!-- Name -->
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input v-model="form.name" type="text" class="form-control" required />
+                                        <input v-model="form.name" @input="form.slug = generateSlug(form.name)" type="text" class="form-control" required />
                                     </div>
-
+                                    <div class="form-group">
+                                        <label>Slug</label>
+                                        <input v-model="form.slug" type="text" class="form-control" required />
+                                    </div>
                                     <!-- Designation -->
                                     <div class="form-group">
                                         <label>Designation</label>
                                         <input v-model="form.designation" type="text" class="form-control" required />
+                                    </div>
+
+                                    <!-- Description () -->
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <RichTextEditor v-model="form.description"
+                                            placeholder="Write your amazing post here..." class="editor">
+                                        </RichTextEditor>
                                     </div>
 
                                     <!-- Order -->
@@ -73,6 +84,8 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import axios from 'axios';
 import { reactive, ref } from 'vue';
 import { useToast } from '@/composables/useToast';
+import RichTextEditor from '../../../components/RichTextEditor.vue';
+import { generateSlug } from '../../../layouts/helpers/helpers';
 
 // Toast notifications
 const toast = useToast();
@@ -83,7 +96,9 @@ const fileUpload = ref(null);
 // Reactive form state for new committee member
 const form = reactive({
     name: '',
+    slug: '',
     designation: '',
+    description: '',
     order: 1,                 // Display/sort order
     status: '1',              // '1' = active, '0' = inactive
     image: null               // Preview URL (not sent to server)
@@ -115,7 +130,7 @@ const submitMember = async () => {
 
         toast.success('Committee member created successfully!');
 
-        Object.assign(form, { name: '', designation: '', order: 1, status: '1', image: null });
+        Object.assign(form, { name: '', designation: '', slug: '', description: '', order: 1, status: '1', image: null });
         fileUpload.value = null;
     } catch (error) {
         toast.validationError(error); // Better handling for validation (422) errors

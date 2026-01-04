@@ -116,7 +116,7 @@ const $swal = inject('$swal');
 
 const showModal = ref(false);
 const modalImage = ref('');
-
+const currentSearchTerm = ref("");
 const openImageModal = (imagePath) => {
     modalImage.value = getImageUrl(imagePath);
     showModal.value = true;
@@ -129,7 +129,7 @@ const closeImageModal = () => {
 // Fetch players with pagination + search
 const fetchPage = async (page = 1, term = "") => {
     try {
-        const res = await axios.get(`/api/players?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/players?page=${page}&search=${currentSearchTerm.value}`);
         players.value = res.data.data;
     } catch (error) {
         console.error(error);
@@ -138,7 +138,8 @@ const fetchPage = async (page = 1, term = "") => {
 };
 
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 onMounted(() => {
@@ -156,7 +157,7 @@ onMounted(() => {
 // Update player status
 const updateStatus = async (player) => {
     try {
-        const response = await axios.patch(`/api/players/${player.slug}/toggle-status`);
+        const response = await axios.patch(`/api/players/${player.id}/toggle-status`);
         player.status = response.data.data.status;
         toast.success(response.data.message);
     } catch (error) {
@@ -179,7 +180,7 @@ const confirmDelete = async (player) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/players/${player.slug}`);
+            await axios.delete(`/api/players/${player.id}`);
             toast.success('Player deleted successfully!');
             players.value.data = players.value.data.filter(p => p.id !== player.id);
         } catch (error) {

@@ -20,8 +20,8 @@ class SettingsSeeder extends Seeder
             ['label' => 'address', 'title' => 'Address', 'value' => 'National Sports Council Old Building
 Room #202 (1st Floor), 62/3 Purana Paltan
 Dkaka-1000, Bangladesh', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'email', 'title' => 'Email', 'value' => 'bdnpc@yahoo.com', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'phone', 'title' => 'Phone', 'value' => '+8801712054411', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'email', 'title' => 'Email', 'value' => 'info@npcbangladesh.org', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'phone', 'title' => 'Phone', 'value' => '+880 1336097353;  +880 1777-131517', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'state', 'title' => 'State', 'value' => '322', 'createdBy' => $userId, 'updatedBy' => $userId],
 
             // Branding
@@ -32,10 +32,10 @@ Dkaka-1000, Bangladesh', 'createdBy' => $userId, 'updatedBy' => $userId],
 
             // Mail settings
             ['label' => 'mail_protocol', 'title' => 'Mail Protocol', 'value' => 'smtp', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'mail_address', 'title' => 'Mail Address', 'value' => 'rahimuddin5915@gmail.com', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'smtp_host', 'title' => 'SMTP Host', 'value' => 'smtp.gmail.com', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'smtp_username', 'title' => 'SMTP Username', 'value' => 'rahimuddin5915@gmail.com', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'smtp_password', 'title' => 'SMTP Password', 'value' => 'yrdy dzdb lfug emqy', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'mail_address', 'title' => 'Mail Address', 'value' => 'imranertaza12@gmail.com', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'smtp_host', 'title' => 'SMTP Host', 'value' => 'staging.test.npcbangladesh.org', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'smtp_username', 'title' => 'SMTP Username', 'value' => 'support@staging.test.npcbangladesh.org', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'smtp_password', 'title' => 'SMTP Password', 'value' => '[zfLhqfsDcI+', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'smtp_port', 'title' => 'SMTP Port', 'value' => '465', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'smtp_timeout', 'title' => 'SMTP Timeout', 'value' => '300', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'smtp_crypto', 'title' => 'SMTP Crypto', 'value' => 'ssl', 'createdBy' => $userId, 'updatedBy' => $userId],

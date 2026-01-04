@@ -24,7 +24,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Parent Category</label>
                                 <Multiselect v-model="form.parent_id" :options="categoriesOptions"
-                                    :reduce="option => option.value" placeholder="Select parent category" searchable
+                                    :reduce="(option) => option.value" placeholder="Select parent category" searchable
                                     allow-empty />
                             </div>
 
@@ -57,7 +57,8 @@
                                     <img :src="getImageUrl(form.image)" alt="Category Image" height="80"
                                         class="rounded" />
                                 </div>
-                                <Vue3Dropzone v-model="imageFile" :allowSelectOnPreview="true" />
+                                <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
+                                    :allowSelectOnPreview="true" />
                                 <small class="text-muted">Recommended: 1140 × 586px</small>
                             </div>
 
@@ -95,73 +96,82 @@
                         </div>
                     </div>
                 </form>
-
             </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
-import { useRoute } from 'vue-router';
-import DashboardHeader from '@/components/DashboardHeader.vue';
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
+import { useRoute } from "vue-router";
+import DashboardHeader from "@/components/DashboardHeader.vue";
 import Vue3Dropzone from "@jaxtheprime/vue3-dropzone";
-import '@jaxtheprime/vue3-dropzone/dist/style.css';
-import { getImageUrl } from '@/layouts/helpers/helpers';
-import { useToast } from '@/composables/useToast';
-import Multiselect from '@vueform/multiselect';
+import "@jaxtheprime/vue3-dropzone/dist/style.css";
+import { getImageUrl } from "@/layouts/helpers/helpers";
+import { useToast } from "@/composables/useToast";
+import Multiselect from "@vueform/multiselect";
 const toast = useToast();
 const route = useRoute();
 const form = ref(null);
 const categories = ref([]);
 const imageFile = ref(null);
+const previews = ref([]);
 
 const fetchCategory = async () => {
     try {
         const res = await axios.get(`/api/categories/${route.params.id}`);
         form.value = res.data.data;
+        previews.value = [getImageUrl(form.value.image)];
     } catch (error) {
-        toast.error('Failed to load category');
+        toast.error("Failed to load category");
     }
 };
 
 const fetchCategories = async () => {
     try {
-        const res = await axios.get('/api/categories?all=1');
+        const res = await axios.get("/api/categories?all=1");
         categories.value = res.data.data;
     } catch (error) {
-        toast.error('Failed to load categories');
+        toast.error("Failed to load categories");
     }
 };
 const categoriesOptions = computed(() => {
     return [
-        { label: '-- None --', value: '' },
-        ...categories.value.map(cat => ({
+        { label: "-- None --", value: "" },
+        ...categories.value.map((cat) => ({
             label: cat.category_name,
-            value: cat.id
-        }))
+            value: cat.id,
+        })),
     ];
 });
 const updateCategory = async () => {
     const payload = new FormData();
 
     for (const key in form.value) {
-        if (key !== 'image') {
-            payload.append(key, form.value[key] ?? '');
+        if (key !== "image") {
+            payload.append(key, form.value[key] ?? "");
         }
     }
 
     if (imageFile.value && imageFile.value[0]) {
-        payload.append('image', imageFile.value[0].file);
+        payload.append("image", imageFile.value[0].file);
+    }
+
+    if (!previews.value[0]) {
+        payload.append("remove_f_image", 1);
     }
 
     try {
-        const res = await axios.post(`/api/categories/${route.params.id}?_method=PUT`, payload, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await axios.post(
+            `/api/categories/${route.params.id}?_method=PUT`,
+            payload,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        );
         form.value = res.data.data;
-        toast.success('Category updated successfully!');
+        toast.success("Category updated successfully!");
     } catch (error) {
         toast.validationError(error);
     }
@@ -170,8 +180,8 @@ const updateCategory = async () => {
 defineProps({
     id: {
         type: [String, Number],
-    }
-})
+    },
+});
 onMounted(() => {
     fetchCategory();
     fetchCategories();

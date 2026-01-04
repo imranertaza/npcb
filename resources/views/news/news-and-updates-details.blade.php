@@ -30,35 +30,38 @@
                 </div>
             </div>
         </div>
-        <div class="">
-            @php
-                $fileUrl = getImageUrl($news->image);
-                $extension = pathinfo($fileUrl, PATHINFO_EXTENSION);
-            @endphp
+        @if ($news->image)
+            <div class="">
+                @php
+                    $fileUrl = getImageUrl($news->image);
+                    $extension = pathinfo($fileUrl, PATHINFO_EXTENSION);
+                @endphp
 
-            @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']))
-                <img class="img-fluid" src="{{ getImageCacheUrl($news->image, 1140, 375) }}" alt="{{ $news->alt_name }}">
-            @elseif(in_array(strtolower($extension), ['mp4', 'avi', 'mov', 'wmv', 'webm']))
-                <div class="position-relative">
-                    <video id="myVideo" class="w-100 rounded shadow" controls>
-                        <source src="{{ $fileUrl }}" type="video/{{ $extension }}">
-                        Your browser does not support the video tag.
-                    </video>
+                @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']))
+                    <img class="img-fluid" src="{{ getImageCacheUrl($news->image, 1140, 375) }}"
+                        alt="{{ $news->alt_name }}">
+                @elseif(in_array(strtolower($extension), ['mp4', 'avi', 'mov', 'wmv', 'webm']))
+                    <div class="position-relative">
+                        <video id="myVideo" class="w-100 rounded shadow" controls>
+                            <source src="{{ $fileUrl }}" type="video/{{ $extension }}">
+                            Your browser does not support the video tag.
+                        </video>
 
-                    <div id="playIcon" class="play-icon">
-                        <svg width="101" height="101" viewBox="0 0 101 101" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M50.4999 8.41602C42.1766 8.41602 34.0402 10.8842 27.1196 15.5083C20.199 20.1325 14.8051 26.705 11.6199 34.3948C8.43474 42.0845 7.60135 50.546 9.22514 58.7094C10.8489 66.8728 14.857 74.3713 20.7424 80.2568C26.6279 86.1422 34.1264 90.1503 42.2898 91.7741C50.4532 93.3979 58.9147 92.5645 66.6045 89.3793C74.2942 86.1941 80.8667 80.8002 85.4909 73.8796C90.115 66.959 92.5832 58.8226 92.5832 50.4994C92.5832 44.9729 91.4947 39.5005 89.3798 34.3948C87.2649 29.289 84.1651 24.6497 80.2573 20.7419C76.3495 16.8341 71.7102 13.7343 66.6045 11.6194C61.4987 9.50453 56.0263 8.41602 50.4999 8.41602ZM42.0832 69.4369V31.5618L67.3332 50.4994L42.0832 69.4369Z"
-                                fill="#ED1E24" />
-                        </svg>
+                        <div id="playIcon" class="play-icon">
+                            <svg width="101" height="101" viewBox="0 0 101 101" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M50.4999 8.41602C42.1766 8.41602 34.0402 10.8842 27.1196 15.5083C20.199 20.1325 14.8051 26.705 11.6199 34.3948C8.43474 42.0845 7.60135 50.546 9.22514 58.7094C10.8489 66.8728 14.857 74.3713 20.7424 80.2568C26.6279 86.1422 34.1264 90.1503 42.2898 91.7741C50.4532 93.3979 58.9147 92.5645 66.6045 89.3793C74.2942 86.1941 80.8667 80.8002 85.4909 73.8796C90.115 66.959 92.5832 58.8226 92.5832 50.4994C92.5832 44.9729 91.4947 39.5005 89.3798 34.3948C87.2649 29.289 84.1651 24.6497 80.2573 20.7419C76.3495 16.8341 71.7102 13.7343 66.6045 11.6194C61.4987 9.50453 56.0263 8.41602 50.4999 8.41602ZM42.0832 69.4369V31.5618L67.3332 50.4994L42.0832 69.4369Z"
+                                    fill="#ED1E24" />
+                            </svg>
+                        </div>
                     </div>
-                </div>
-            @else
-                <img class="img-fluid" src="{{ getImageCacheUrl($news->image, 1140, 375) }}" alt="{{ $news->alt_name }}">
-            @endif
-        </div>
-
+                @else
+                    <img class="img-fluid" src="{{ getImageCacheUrl($news->image, 1140, 375) }}"
+                        alt="{{ $news->alt_name }}">
+                @endif
+            </div>
+        @endif
         <div class="text-start text-dark-emphasis mt-40">
             {!! $news->description !!}
         </div>

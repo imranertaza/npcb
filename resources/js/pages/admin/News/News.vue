@@ -78,7 +78,7 @@ import { useToast } from '@/composables/useToast';
 import { getImageUrl, truncateText, getImageCacheUrl } from '@/layouts/helpers/helpers';
 import { useAuthStore } from '@/store/auth';
 import SearchBox from '@/components/SearchBox.vue';
-
+const currentSearchTerm = ref("");
 // Router & route
 const router = useRouter();
 const route = useRoute();
@@ -98,9 +98,9 @@ const $swal = inject('$swal');
 /**
  * Fetch news with pagination and optional search
  */
-const fetchPage = async (page = 1, term = "") => {
+const fetchPage = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/news?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/news?page=${page}&search=${currentSearchTerm.value}`);
         news.value = res.data.data; // Full paginated response
     } catch (error) {
         console.error(error);
@@ -112,7 +112,8 @@ const fetchPage = async (page = 1, term = "") => {
  * Handle search - reset to page 1
  */
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 // Load initial data + handle toast query param
@@ -134,7 +135,7 @@ onMounted(async () => {
  */
 const updateStatus = async (item) => {
     try {
-        const response = await axios.patch(`/api/news/${item.slug}/status`, {
+        const response = await axios.patch(`/api/news/${item.id}/status`, {
             status: item.status
         });
 
@@ -165,7 +166,7 @@ const confirmDelete = async (item) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/news/${item.slug}`);
+            await axios.delete(`/api/news/${item.id}`);
             toast.success('News deleted successfully!');
             // Optimistic update
             news.value.data = news.value.data.filter(n => n.id !== item.id);

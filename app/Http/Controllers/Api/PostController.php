@@ -78,22 +78,34 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'post_title'       => 'required|string|max:155',
-            'slug'             => 'required|string|unique:posts,slug',
-            'short_des'        => 'required|string|max:155',
-            'description'      => 'required|string',
-            'meta_title'       => 'nullable|string',
-            'meta_keyword'     => 'nullable|string',
-            'meta_description' => 'nullable|string',
-            'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'         => 'nullable|string|max:255',
-            'publish_date'     => 'nullable|date',
-            'status'           => ['required', Rule::in(['0', '1'])],
-            'categories'       => 'required|array',
-            'categories.*'     => 'exists:categories,id',
-        ]);
+        $validated = $request->validate(
+            [
+                'post_title'       => 'required|string|max:155',
+                'slug'             => 'required|string|unique:posts,slug',
+                'short_des'        => 'required|string|max:155',
+                'description'      => 'required|string',
+                'meta_title'       => 'nullable|string',
+                'meta_keyword'     => 'nullable|string',
+                'meta_description' => 'nullable|string',
+                'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'alt_name'         => 'nullable|string|max:255',
+                'publish_date'     => 'nullable|date',
+                'status'           => ['required', Rule::in(['0', '1'])],
+                'categories'       => 'required|array',
+                'categories.*'     => 'exists:categories,id',
+            ],
+            [
+                'f_image.required' => 'The Featured image or video is required.',
+                'f_image.image' => 'Please upload a valid image file.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                'image.required' => 'The Banner image or video is required.',
+                'image.file' => 'Please upload a valid file.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
+                'image.max' => 'That file is too large! Keep it under 500MB.',
+            ]
+        );
 
         $validated['createdBy']    = Auth::user()->id;
         $validated['updatedBy']    = Auth::user()->id;
@@ -142,21 +154,33 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        $validated = $request->validate([
-            'post_title'       => 'required|string|max:155',
-            'slug'             => ['required', 'string', Rule::unique('posts', 'slug')->ignore($post->id)],
-            'short_des'        => 'required|string|max:155',
-            'description'      => 'required|string',
-            'meta_title'       => 'nullable|string',
-            'meta_keyword'     => 'nullable|string',
-            'meta_description' => 'nullable|string',
-            'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'         => 'nullable|string|max:255',
-            'status'           => ['required', Rule::in(['0', '1'])],
-            'categories'       => 'required|array',
-            'categories.*'     => 'exists:categories,id',
-        ]);
+        $validated = $request->validate(
+            [
+                'post_title'       => 'required|string|max:155',
+                'slug'             => ['required', 'string', Rule::unique('posts', 'slug')->ignore($post->id)],
+                'short_des'        => 'required|string|max:155',
+                'description'      => 'required|string',
+                'meta_title'       => 'nullable|string',
+                'meta_keyword'     => 'nullable|string',
+                'meta_description' => 'nullable|string',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'alt_name'         => 'nullable|string|max:255',
+                'status'           => ['required', Rule::in(['0', '1'])],
+                'categories'       => 'required|array',
+                'categories.*'     => 'exists:categories,id',
+            ],
+            [
+                'f_image.required' => 'The Featured image or video is required.',
+                'f_image.image' => 'Please upload a valid image file.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                'image.required' => 'The Banner image or video is required.',
+                'image.file' => 'Please upload a valid file.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
+                'image.max' => 'That file is too large! Keep it under 500MB.',
+            ]
+        );
 
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;
@@ -203,9 +227,9 @@ class PostController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post = Post::findOrFail($id);
         $post->status = $post->status === '1' ? '0' : '1';
         $post->save();
 
@@ -225,9 +249,9 @@ class PostController extends Controller
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
+        $post = Post::findOrFail($id);
 
         if ($post->image && Storage::disk('public')->exists($post->image)) {
             Storage::disk('public')->delete($post->image);

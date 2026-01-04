@@ -129,6 +129,7 @@ class CategoryController extends Controller
             'meta_keyword'     => 'nullable|string|max:255',
             'image'            => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'alt_name'         => 'nullable|string|max:255',
+            'remove_f_image'   => 'nullable|numeric|in:1,0',
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
@@ -147,6 +148,13 @@ class CategoryController extends Controller
             $validated['image'] = $path;
         } else {
             $validated['image'] = $category->image;
+        }
+
+        if (isset($validated['remove_f_image']) && $validated['remove_f_image'] == 1 && ! $request->hasFile('image')) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $validated['image'] = null;
         }
 
         $validated['updatedBy'] = Auth::id();

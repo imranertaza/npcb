@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 /**
  * API Controller for managing admin users, roles, and permissions.
  *
- * Provides full CRUD for admin users (with role assignment),
+ * Provides full CRUD for admin users (with role assiglnment),
  * role/permission management, and safe guards for super-admin.
  */
 class AdminRoleController extends Controller

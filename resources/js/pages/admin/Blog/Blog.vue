@@ -94,15 +94,15 @@ const toast = useToast();
 
 // SweetAlert2 instance injected from main.js
 const $swal = inject('$swal');
-
+const currentSearchTerm = ref("");
 /**
  * Fetch blogs with optional pagination and search term
  * @param {number} page - Page number (default: 1)
  * @param {string} term - Search query (default: empty)
  */
-const fetchPage = async (page = 1, term = "") => {
+const fetchPage = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/blogs?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/blogs?page=${page}&search=${currentSearchTerm.value}`);
         news.value = res.data.data; // Full paginated response (data + pagination meta)
     } catch (error) {
         console.error(error);
@@ -114,7 +114,8 @@ const fetchPage = async (page = 1, term = "") => {
  * Trigger search - resets to page 1 with the given term
  */
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 // Load initial data on component mount
@@ -138,7 +139,7 @@ onMounted(async () => {
  */
 const updateStatus = async (item) => {
     try {
-        const response = await axios.patch(`/api/blogs/${item.slug}/status`, {
+        const response = await axios.patch(`/api/blogs/${item.id}/status`, {
             status: item.status
         });
 
@@ -169,7 +170,7 @@ const confirmDelete = async (item) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/blogs/${item.slug}`);
+            await axios.delete(`/api/blogs/${item.id}`);
             toast.success('Blog deleted successfully!');
 
             // Remove deleted item from local list (optimistic update)

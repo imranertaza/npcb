@@ -1,36 +1,40 @@
 @extends('layouts.master')
 
-@section('title', 'Committee Members')
-@section('breadcrumb', 'Committee Members')
+@section('title', $page->page_title)
+@section('breadcrumb', $page->page_title)
 @section('content')
     <section class="container position-relative profile-section">
         <h2 class="visually-hidden">Executive Committee Profiles</h2>
         <div class="text-center">
             @php
+                $members = \App\Models\CommitteeMember::where('status', 1)->orderBy('order')->get();
                 $member1 = count($members) > 0 ? $members[0] : null;
             @endphp
             @if ($member1)
                 <div class="profile-card top d-inline-block">
                     <img draggable="false" src="{{ getImageCacheUrl($member1->image, 265, 379) }}" alt="{{ $member1->name }}">
                     <div class="card-body">
-                        <p class="mb-0 name content-text">{{ $member1->name }}</p>
+                        <p class="mb-0 name content-text"><a
+                                href="{{ route('committee-members-details', $member1->slug) }}">{{ $member1->name }}</a></p>
                         <p class="profession content-text">{{ $member1->designation }}</p>
                     </div>
                 </div>
             @endif
         </div>
 
-        <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2 g-4 justify-content-evenly mt-md-5 pb-100">
+        <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2 g-4 justify-content-evenly mt-md-5 ">
             @forelse ($members as $key => $member)
                 @if ($key == 0)
                     @continue
                 @endif
                 <div>
-                    <div class="profile-card">
+                    <div class="profile-card mx-auto">
                         <img draggable="false" src="{{ getImageCacheUrl($member->image, 265, 379) }}"
                             alt="{{ $member->name }}">
                         <div class="card-body">
-                            <p class="mb-0 name content-text">{{ $member->name }}</p>
+                            <p class="mb-0 name content-text"><a
+                                    href="{{ route('committee-members-details', $member->slug) }}">{{ $member->name }}</a>
+                            </p>
                             <p class="profession content-text">{{ $member->designation }}</p>
                         </div>
                     </div>
@@ -40,11 +44,18 @@
                     <p class="text-center content-text">No committee members found.</p>
                 </div>
             @endforelse
-
+        </div>
+        <div class="mb-5 pb-3 pb-100 page-content">
+            @yield('page-content')
         </div>
     </section>
     @push('styles')
         <style>
+            .page-content img {
+                max-width: 100%;
+                height: auto;
+            }
+
             .profile-card.top {
                 margin-top: -8%;
             }

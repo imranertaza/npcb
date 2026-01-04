@@ -78,13 +78,22 @@ class NewsController extends Controller
             'meta_title'       => 'nullable|string',
             'meta_keyword'     => 'nullable|string',
             'meta_description' => 'nullable|string',
-            'image'            => 'required|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov,wmv|max:500000',
-            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'image'            => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov,wmv|max:500000',
+            'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'alt_name'         => 'nullable|string|max:255',
             'publish_date'     => 'nullable|date',
             'status'           => ['required', Rule::in(['0', '1'])],
             'categories'       => 'required|array',
             'categories.*'     => 'exists:news_categories,id',
+        ], [
+            'f_image.required' => 'The Featured image or video is required.',
+            'f_image.image' => 'Please upload a valid image file.',
+            'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+            'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+            'image.required' => 'The Banner image or video is required.',
+            'image.file' => 'Please upload a valid file.',
+            'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF, MP4, AVI, MOV, WMV.',
+            'image.max' => 'That file is too large! Keep it under 500MB.',
         ]);
 
         $validated['createdBy'] = Auth::id();
@@ -133,25 +142,35 @@ class NewsController extends Controller
         try {
             $news = News::findOrFail($id);
 
-            $validated = $request->validate([
-                'news_title'       => 'required|string|max:255',
-                'slug'             => [
-                    'required',
-                    'string',
-                    Rule::unique('news', 'slug')->ignore($news->id),
+            $validated = $request->validate(
+                [
+                    'news_title'       => 'required|string|max:255',
+                    'slug'             => [
+                        'required',
+                        'string',
+                        Rule::unique('news', 'slug')->ignore($news->id),
+                    ],
+                    'short_des'        => 'required|string|max:255',
+                    'description'      => 'required|string',
+                    'meta_title'       => 'nullable|string',
+                    'meta_keyword'     => 'nullable|string',
+                    'meta_description' => 'nullable|string',
+                    'image'            => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov,wmv|max:500000',
+                    'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                    'alt_name'         => 'nullable|string|max:255',
+                    'status'           => ['required', Rule::in(['0', '1'])],
+                    'categories'       => 'required|array',
+                    'categories.*'     => 'exists:news_categories,id',
                 ],
-                'short_des'        => 'required|string|max:255',
-                'description'      => 'required|string',
-                'meta_title'       => 'nullable|string',
-                'meta_keyword'     => 'nullable|string',
-                'meta_description' => 'nullable|string',
-                'image'            => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov,wmv|max:500000',
-                'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-                'alt_name'         => 'nullable|string|max:255',
-                'status'           => ['required', Rule::in(['0', '1'])],
-                'categories'       => 'required|array',
-                'categories.*'     => 'exists:news_categories,id',
-            ]);
+                [
+                    'f_image.image' => 'Please upload a valid image file.',
+                    'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                    'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                    'image.file' => 'Please upload a valid file.',
+                    'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF, MP4, AVI, MOV, WMV.',
+                    'image.max' => 'That file is too large! Keep it under 500MB.',
+                ]
+            );
 
             $validated['updatedBy'] = Auth::id();
 
@@ -202,9 +221,9 @@ class NewsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $news = News::where('slug', $slug)->firstOrFail();
+        $news = News::findOrFail($id);
         $news->status = $news->status == 1 ? 0 : 1;
         $news->updatedBy = Auth::id();
         $news->save();
@@ -221,9 +240,9 @@ class NewsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $news = News::where('slug', $slug)->firstOrFail();
+        $news = News::findOrFail($id);
 
         if ($news->image && Storage::disk('public')->exists($news->image)) {
             Storage::disk('public')->delete($news->image);

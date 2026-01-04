@@ -28,9 +28,11 @@
                 </div>
             </div>
         </div>
-        <div class="">
-            <img class="img-fluid" src="{{ getImageCacheUrl($post->image, 1140, 375) }}" alt="{{ $post->alt_name }}">
-        </div>
+        @if ($post->image)
+            <div class="">
+                <img class="img-fluid" src="{{ getImageCacheUrl($post->image, 1140, 375) }}" alt="{{ $post->alt_name }}">
+            </div>
+        @endif
         <div class="text-start text-dark-emphasis mt-40">
             {!! $post->description !!}
         </div>

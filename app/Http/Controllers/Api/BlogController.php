@@ -70,22 +70,34 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'slug'             => 'required|string|unique:blogs,slug',
-            'short_des'        => 'required|string|max:255',
-            'description'      => 'required|string',
-            'meta_title'       => 'nullable|string',
-            'meta_keyword'     => 'nullable|string',
-            'meta_description' => 'nullable|string',
-            'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'         => 'nullable|string|max:255',
-            'publish_date'     => 'nullable|date',
-            'status'           => ['required', Rule::in(['0', '1'])],
-            'categories'       => 'required|array',
-            'categories.*'     => 'exists:blog_categories,id',
-        ]);
+        $validated = $request->validate(
+            [
+                'title'            => 'required|string|max:255',
+                'slug'             => 'required|string|unique:blogs,slug',
+                'short_des'        => 'required|string|max:255',
+                'description'      => 'required|string',
+                'meta_title'       => 'nullable|string',
+                'meta_keyword'     => 'nullable|string',
+                'meta_description' => 'nullable|string',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'alt_name'         => 'nullable|string|max:255',
+                'publish_date'     => 'nullable|date',
+                'status'           => ['required', Rule::in(['0', '1'])],
+                'categories'       => 'required|array',
+                'categories.*'     => 'exists:blog_categories,id',
+            ],
+            [
+                'f_image.required' => 'The Featured image or video is required.',
+                'f_image.image' => 'Please upload a valid image file.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                'image.required' => 'The Banner image or video is required.',
+                'image.file' => 'Please upload a valid file.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
+                'image.max' => 'That file is too large! Keep it under 500MB.',
+            ]
+        );
 
         $validated['createdBy']    = Auth::id();
         $validated['updatedBy']    = Auth::id();
@@ -132,25 +144,37 @@ class BlogController extends Controller
     {
         $blog = Blog::findOrFail($id);
 
-        $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'slug'             => [
-                'required',
-                'string',
-                Rule::unique('blogs', 'slug')->ignore($blog->id),
+        $validated = $request->validate(
+            [
+                'title'            => 'required|string|max:255',
+                'slug'             => [
+                    'required',
+                    'string',
+                    Rule::unique('blogs', 'slug')->ignore($blog->id),
+                ],
+                'short_des'        => 'required|string|max:255',
+                'description'      => 'required|string',
+                'meta_title'       => 'nullable|string',
+                'meta_keyword'     => 'nullable|string',
+                'meta_description' => 'nullable|string',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'alt_name'         => 'nullable|string|max:255',
+                'status'           => ['required', Rule::in(['0', '1'])],
+                'categories'       => 'required|array',
+                'categories.*'     => 'exists:blog_categories,id',
             ],
-            'short_des'        => 'required|string|max:255',
-            'description'      => 'required|string',
-            'meta_title'       => 'nullable|string',
-            'meta_keyword'     => 'nullable|string',
-            'meta_description' => 'nullable|string',
-            'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'alt_name'         => 'nullable|string|max:255',
-            'status'           => ['required', Rule::in(['0', '1'])],
-            'categories'       => 'required|array',
-            'categories.*'     => 'exists:blog_categories,id',
-        ]);
+            [
+                'f_image.required' => 'The Featured image or video is required.',
+                'f_image.image' => 'Please upload a valid image file.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                'image.required' => 'The Banner image or video is required.',
+                'image.file' => 'Please upload a valid file.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
+                'image.max' => 'That file is too large! Keep it under 500MB.',
+            ]
+        );
 
         $validated['updatedBy'] = Auth::id();
 
@@ -193,9 +217,9 @@ class BlogController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $blog            = Blog::where('slug', $slug)->firstOrFail();
+        $blog            = Blog::findOrFail($id);
         $blog->status    = $blog->status == 1 ? "0" : "1";
         $blog->updatedBy = Auth::id();
         $blog->save();
@@ -212,9 +236,9 @@ class BlogController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $blog = Blog::where('slug', $slug)->firstOrFail();
+        $blog = Blog::findOrFail($id);
 
         if ($blog->image && Storage::disk('public')->exists($blog->image)) {
             Storage::disk('public')->delete($blog->image);

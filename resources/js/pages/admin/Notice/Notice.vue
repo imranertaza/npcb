@@ -87,11 +87,11 @@ const notices = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
-
+const currentSearchTerm = ref("");
 // Fetch notices with pagination + search
 const fetchPage = async (page = 1, term = "") => {
     try {
-        const res = await axios.get(`/api/notices?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/notices?page=${page}&search=${currentSearchTerm.value}`);
         notices.value = res.data.data;
     } catch (error) {
         console.error(error);
@@ -100,7 +100,8 @@ const fetchPage = async (page = 1, term = "") => {
 };
 
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 onMounted(() => {
@@ -118,7 +119,7 @@ onMounted(() => {
 // Update notice status
 const updateStatus = async (notice) => {
     try {
-        const response = await axios.patch(`/api/notices/${notice.slug}/toggle-status`);
+        const response = await axios.patch(`/api/notices/${notice.id}/toggle-status`);
         notice.status = response.data.data.status;
         if (notice.status == 1) {
             toast.success(response.data.message);
@@ -145,7 +146,7 @@ const confirmDelete = async (notice) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`/api/notices/${notice.slug}`);
+            await axios.delete(`/api/notices/${notice.id}`);
             toast.success('Notice deleted successfully!');
             notices.value.data = notices.value.data.filter(n => n.id !== notice.id);
         } catch (error) {

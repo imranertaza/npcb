@@ -168,9 +168,9 @@ class EventController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function toggleStatus($slug)
+    public function toggleStatus($id)
     {
-        $event = Event::where('slug', $slug)->firstOrFail();
+        $event = Event::findOrFail($id);
         $event->status = $event->status === '1' ? '0' : '1';
         $event->save();
 
@@ -186,9 +186,9 @@ class EventController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws ModelNotFoundException
      */
-    public function destroy($slug)
+    public function destroy($id)
     {
-        $event = Event::where('slug', $slug)->firstOrFail();
+        $event = Event::findOrFail($id);
 
         if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
             Storage::disk('public')->delete($event->banner_image);

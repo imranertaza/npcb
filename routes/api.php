@@ -61,18 +61,18 @@ Route::middleware('auth:user')->prefix('posts')->controller(PostController::clas
     Route::post('/', 'store')->middleware('permission:create-posts');
     Route::get('{id}', 'show')->middleware('permission:view-posts');
     Route::put('{id}', 'update')->middleware('permission:edit-posts');
-    Route::delete('{slug}', 'destroy')->middleware('permission:delete-posts');
-    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-posts');
+    Route::delete('{id}', 'destroy')->middleware('permission:delete-posts');
+    Route::patch('{id}/status', 'toggleStatus')->middleware('permission:publish-posts');
 });
 
 /* Pages Management */
 Route::middleware('auth:user')->prefix('pages')->controller(PageController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-pages');
     Route::post('/', 'store')->middleware('permission:create-pages');
-    Route::get('{slug}', 'show')->middleware('permission:view-pages');
+    Route::get('{id}', 'show')->middleware('permission:view-pages');
     Route::put('{id}', 'update')->middleware('permission:edit-pages');
-    Route::delete('{slug}', 'destroy')->middleware('permission:delete-pages');
-    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-pages');
+    Route::delete('{id}', 'destroy')->middleware('permission:delete-pages');
+    Route::patch('{id}/status', 'toggleStatus')->middleware('permission:publish-pages');
 });
 
 /* Frontend Sections & Sliders */
@@ -115,10 +115,10 @@ Route::prefix('categories')->middleware(['auth:user'])->controller(CategoryContr
 Route::middleware('auth:user')->prefix('news')->controller(NewsController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-news');
     Route::post('/', 'store')->middleware('permission:create-news');
-    Route::get('{slug}', 'show')->middleware('permission:view-news');
+    Route::get('{id}', 'show')->middleware('permission:view-news');
     Route::put('{id}', 'update')->middleware('permission:edit-news');
-    Route::delete('{slug}', 'destroy')->middleware('permission:delete-news');
-    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-news');
+    Route::delete('{id}', 'destroy')->middleware('permission:delete-news');
+    Route::patch('{id}/status', 'toggleStatus')->middleware('permission:publish-news');
 });
 
 Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCategoryController::class)->group(function () {
@@ -137,10 +137,10 @@ Route::prefix('news-categories')->middleware(['auth:user'])->controller(NewsCate
 Route::middleware('auth:user')->prefix('blogs')->controller(BlogController::class)->group(function () {
     Route::get('/', 'index')->middleware('permission:view-blog');
     Route::post('/', 'store')->middleware('permission:create-blog');
-    Route::get('{slug}', 'show')->middleware('permission:view-blog');
+    Route::get('{id}', 'show')->middleware('permission:view-blog');
     Route::put('{id}', 'update')->middleware('permission:edit-blog');
-    Route::delete('{slug}', 'destroy')->middleware('permission:delete-blog');
-    Route::patch('{slug}/status', 'toggleStatus')->middleware('permission:publish-blog');
+    Route::delete('{id}', 'destroy')->middleware('permission:delete-blog');
+    Route::patch('{id}/status', 'toggleStatus')->middleware('permission:publish-blog');
 });
 
 Route::prefix('blog-categories')->middleware(['auth:user'])->controller(BlogCategoryController::class)->group(function () {
@@ -201,10 +201,10 @@ Route::middleware(['auth:user'])->prefix('gallery')->controller(GalleryControlle
 Route::prefix('events')->middleware(['auth:user'])->controller(EventController::class)->group(function () {
     Route::get('/', 'index')->name('events.index')->middleware('permission:view-events');
     Route::post('/', 'store')->name('events.store')->middleware('permission:create-events');
-    Route::get('{slug}', 'show')->name('events.show')->middleware('permission:view-events');
+    Route::get('{id}', 'show')->name('events.show')->middleware('permission:view-events');
     Route::put('{id}', 'update')->name('events.update')->middleware('permission:edit-events');
-    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('events.toggle')->middleware('permission:edit-events');
-    Route::delete('{slug}', 'destroy')->name('events.destroy')->middleware('permission:delete-events');
+    Route::patch('{id}/toggle-status', 'toggleStatus')->name('events.toggle')->middleware('permission:edit-events');
+    Route::delete('{id}', 'destroy')->name('events.destroy')->middleware('permission:delete-events');
 });
 
 Route::prefix('events-categories')->middleware(['auth:user'])->controller(EventCategoryController::class)->group(function () {
@@ -223,30 +223,30 @@ Route::prefix('events-categories')->middleware(['auth:user'])->controller(EventC
 Route::prefix('notices')->middleware(['auth:user'])->controller(NoticeController::class)->group(function () {
     Route::get('/', 'index')->name('notices.index')->middleware('permission:view-notices');
     Route::post('/', 'store')->name('notices.store')->middleware('permission:create-notices');
-    Route::get('{slug}', 'show')->name('notices.show')->middleware('permission:view-notices');
+    Route::get('{id}', 'show')->name('notices.show')->middleware('permission:view-notices');
     Route::put('{id}', 'update')->name('notices.update')->middleware('permission:edit-notices');
-    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('notices.toggle')->middleware('permission:edit-notices');
-    Route::delete('{slug}', 'destroy')->name('notices.destroy')->middleware('permission:delete-notices');
+    Route::patch('{id}/toggle-status', 'toggleStatus')->name('notices.toggle')->middleware('permission:edit-notices');
+    Route::delete('{id}', 'destroy')->name('notices.destroy')->middleware('permission:delete-notices');
 });
 
 /* Players */
 Route::prefix('players')->middleware(['auth:user'])->controller(PlayerController::class)->group(function () {
     Route::get('/', 'index')->name('players.index')->middleware('permission:view-players');
     Route::post('/', 'store')->name('players.store')->middleware('permission:create-players');
-    Route::get('{slug}', 'show')->name('players.show')->middleware('permission:view-players');
+    Route::get('{id}', 'show')->name('players.show')->middleware('permission:view-players');
     Route::put('{id}', 'update')->name('players.update')->middleware('permission:edit-players');
-    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('players.toggle')->middleware('permission:edit-players');
-    Route::delete('{slug}', 'destroy')->name('players.destroy')->middleware('permission:delete-players');
+    Route::patch('{id}/toggle-status', 'toggleStatus')->name('players.toggle')->middleware('permission:edit-players');
+    Route::delete('{id}', 'destroy')->name('players.destroy')->middleware('permission:delete-players');
 });
 
 /* Results */
 Route::prefix('results')->middleware(['auth:user'])->controller(ResultController::class)->group(function () {
     Route::get('/', 'index')->name('results.index')->middleware('permission:view-results');
     Route::post('/', 'store')->name('results.store')->middleware('permission:create-results');
-    Route::get('{slug}', 'show')->name('results.show')->middleware('permission:view-results');
+    Route::get('{id}', 'show')->name('results.show')->middleware('permission:view-results');
     Route::put('{id}', 'update')->name('results.update')->middleware('permission:edit-results');
-    Route::patch('{slug}/toggle-status', 'toggleStatus')->name('results.toggle')->middleware('permission:edit-results');
-    Route::delete('{slug}', 'destroy')->name('results.destroy')->middleware('permission:delete-results');
+    Route::patch('{id}/toggle-status', 'toggleStatus')->name('results.toggle')->middleware('permission:edit-results');
+    Route::delete('{id}', 'destroy')->name('results.destroy')->middleware('permission:delete-results');
 });
 
 /* Committee Members */

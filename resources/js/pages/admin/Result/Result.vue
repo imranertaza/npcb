@@ -90,11 +90,11 @@ const results = ref([]);
 const authStore = useAuthStore();
 const toast = useToast();
 const $swal = inject('$swal');
-
+const currentSearchTerm = ref("");
 // Fetch results with pagination + search
-const fetchPage = async (page = 1, term = "") => {
+const fetchPage = async (page = 1) => {
     try {
-        const res = await axios.get(`/api/results?page=${page}&search=${term || ''}`);
+        const res = await axios.get(`/api/results?page=${page}&search=${currentSearchTerm.value}`);
         results.value = res.data.data;
     } catch (error) {
         console.error(error);
@@ -103,7 +103,8 @@ const fetchPage = async (page = 1, term = "") => {
 };
 
 const onSearch = async (term) => {
-    fetchPage(1, term);
+    currentSearchTerm.value = term;
+    fetchPage();
 };
 
 onMounted(() => {
@@ -121,7 +122,7 @@ onMounted(() => {
 // Update result status
 const updateStatus = async (result) => {
     try {
-        const response = await axios.patch(`/api/results/${result.slug}/toggle-status`);
+        const response = await axios.patch(`/api/results/${result.id}/toggle-status`);
         result.status = response?.data?.data?.status;
         if (result.status == 1) {
             toast.success(response.data.message);
@@ -148,7 +149,7 @@ const confirmDelete = async (result) => {
 
     if (resultConfirm.isConfirmed) {
         try {
-            await axios.delete(`/api/results/${result.slug}`);
+            await axios.delete(`/api/results/${result.id}`);
             toast.success('Result deleted successfully!');
             results.value.data = results.value.data.filter(r => r.id !== result.id);
         } catch (error) {

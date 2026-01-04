@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
             nextEl: ".custom-swiper-button-next",
             prevEl: ".custom-swiper-button-prev",
         },
-        speed: 400,
+        speed: 600,
         effect: "slide",
         allowTouchMove: false,
         autoplay: {
