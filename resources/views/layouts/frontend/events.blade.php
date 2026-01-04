@@ -18,7 +18,7 @@
                             <img src="{{ getImageCacheUrl($event->featured_image, 262, 230) }}" class="card-img-top"
                                 alt="{{ $event->title }}">
                             <div class="card-body">
-                                <h5 class="title-five">
+                                <h5 class="title-five min-h-38">
                                     <a href="{{ route('event-details', $event->slug) }}"
                                         class="">{{ truncateText($event->title, 40) }}</a>
                                 </h5>

@@ -33,6 +33,7 @@ Dkaka-1000, Bangladesh', 'createdBy' => $userId, 'updatedBy' => $userId],
             // Mail settings
             ['label' => 'mail_protocol', 'title' => 'Mail Protocol', 'value' => 'smtp', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'mail_address', 'title' => 'Mail Address', 'value' => 'imranertaza12@gmail.com', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'send_from', 'title' => 'Send From Mail Address', 'value' => 'support@staging.test.npcbangladesh.org', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'smtp_host', 'title' => 'SMTP Host', 'value' => 'staging.test.npcbangladesh.org', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'smtp_username', 'title' => 'SMTP Username', 'value' => 'support@staging.test.npcbangladesh.org', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'smtp_password', 'title' => 'SMTP Password', 'value' => '[zfLhqfsDcI+', 'createdBy' => $userId, 'updatedBy' => $userId],

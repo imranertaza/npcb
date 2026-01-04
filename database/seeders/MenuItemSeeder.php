@@ -22,7 +22,7 @@ class MenuItemSeeder extends Seeder
         /**
          * Header Menu Items
          */
-        // fresh the table first 
+        // fresh the table first
         $home = MenuItem::updateOrCreate(
             ['name' => 'Home'],
             [

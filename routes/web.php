@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Route;
 /* Utility route for clearing all caches */
 
 Route::get('/clear', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
 
     // Remove the public/cache directory
     $cacheDir = public_path('cache');
@@ -29,7 +26,7 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('/', 'index')->name('home');
     Route::get('match-fixtures', 'matchFixtures')->name('match-fixtures');
     Route::get('notice-board', 'noticeBoard')->name('notice-board');
-    Route::get('tournament-result', 'tournamentResult')->name('tournament-result');
+    // Route::get('tournament-result', 'tournamentResult')->name('tournament-result');
     Route::get('/photo-gallery', 'gallery')->name('gallery');
     Route::get('gallery-details/{id}', 'galleryDetails')->name('gallery-details');
     Route::get('news-and-updates', 'newsAndUpdates')->name('news-and-updates');
@@ -37,15 +34,15 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('news-and-updates/{slug}', 'newsAndUpdatesDetails')->name('news-and-updates-details');
     Route::get('blogs', 'blogs')->name('blogs');
     Route::get('blogs/{slug}', 'blogsDetails')->name('blogs-details');
-    Route::get('players', 'players')->name('player.index');
+    // Route::get('players', 'players')->name('player.index');
     Route::get('players/{slug}', 'playerDetails')->name('player.details');
     Route::get('post-categories/{slug}', 'postCategoryDetails')->name('post-categories');
     Route::get('sports/{slug}', 'postDetails')->name('sports-details');
 
     Route::get('running-events', 'runningEvents')->name('running-events');
-    Route::get('upcoming-events', 'upcomingEvents')->name('upcoming-events');
-    Route::get('running-events/{slug}', 'runningEventsDetails')->name('event-details');
-    Route::get('executive-committee', 'committeeMembers')->name('committee-members');
+    // Route::get('upcoming-events', 'upcomingEvents')->name('upcoming-events');
+    Route::get('events/{slug}', 'runningEventsDetails')->name('event-details');
+    // Route::get('executive-committee', 'committeeMembers')->name('committee-members');
     Route::get('executive-committee/{slug}', 'committeeMembersDetails')->name('committee-members-details');
     Route::post('contact-us', 'contactSubmit')->name('contact.submit');
 

@@ -14,7 +14,7 @@
                                 alt="{{ $item->alt_name }}">
                             <div class="card-body">
                                 <h5 class="title-five min-h-38">
-                                    {{ truncateText($item->name, 45) }}
+                                    {{ truncateText($item->name, 40) }}
                                 </h5>
                             </div>
                         </div>

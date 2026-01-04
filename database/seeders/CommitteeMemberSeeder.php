@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\CommitteeMember;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class CommitteeMemberSeeder extends Seeder
 {
@@ -107,8 +108,9 @@ class CommitteeMemberSeeder extends Seeder
         ];
 
         foreach ($members as $member) {
+            $member['slug'] = Str::slug($member['name'] . '-' . ($member['designation'] ?? ''));
             CommitteeMember::updateOrCreate(
-                ['name' => $member['name']], // match by name
+                ['name' => $member['name']],
                 $member
             );
         }

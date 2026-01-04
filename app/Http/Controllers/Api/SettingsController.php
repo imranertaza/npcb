@@ -57,6 +57,7 @@ class SettingsController extends Controller
             // Mail Settings
             'mail_protocol'       => 'sometimes|in:smtp,mail,sendmail',
             'mail_address'        => 'sometimes|email|max:155',
+            'send_from'        => 'sometimes|email|max:155',
             'smtp_host'           => 'sometimes|string|max:155',
             'smtp_username'       => 'sometimes|string|max:155',
             'smtp_password'       => 'sometimes|string|max:255',

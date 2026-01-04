@@ -93,7 +93,7 @@
                     </div>
                 </div>
                 <div class="">
-                    <div class="row px-md-0 row-cols-sm-2 justify-content-center g-4">
+                    <div class="row px-md-0 row-cols-sm-2 justify-content-start g-4">
                         @foreach ($topNews as $key => $news)
                             @if ($key == 0)
                                 @continue
@@ -204,7 +204,7 @@
                                             class="card-img-top" alt="news image">
                                         <div class="card-body">
                                             <h5 class="title-four min-h-38">
-                                                {{ truncateText($item->title, 45) }}
+                                                {{ truncateText($item->title, 40) }}
                                             </h5>
                                         </div>
                                     </div>

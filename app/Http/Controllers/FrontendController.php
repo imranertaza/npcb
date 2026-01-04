@@ -50,7 +50,7 @@ class FrontendController extends Controller
 
         $blogs                = Blog::where('status', "1")->latest()->paginate(7);
 
-        $topNews              = News::where('status', 1)->latest()->paginate(5);
+        $topNews              = News::getFeaturedNews();
 
         $gamesNews            = News::getGamesNews();
 
@@ -376,6 +376,7 @@ class FrontendController extends Controller
         $settings = Setting::whereIn('label', [
             'mail_protocol',
             'mail_address',
+            'send_from',
             'smtp_host',
             'smtp_username',
             'smtp_password',
@@ -402,9 +403,9 @@ class FrontendController extends Controller
                 $mail->Timeout    = (int) ($settings['smtp_timeout'] ?? 30);
             }
 
-            $mail->setFrom($request->email, 'Website Contact Form');
+            $mail->setFrom($settings['send_from'], 'Website Contact Form');
             $mail->addAddress($settings['mail_address'] ?? config('mail.from.address'));
-
+            $mail->addReplyTo($request->email, $request->name ?? 'Website User');
             $mail->isHTML(true);
             $mail->Subject = $request->subject ?: 'Contact Form Submission';
             $mail->Body    = nl2br(e($request->description));
