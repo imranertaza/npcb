@@ -51,7 +51,7 @@ class SettingsController extends Controller
             'store_icon'          => 'sometimes|image|mimes:png,jpg,jpeg,ico,webp|max:2048',
             'footer_logo'         => 'sometimes|image|mimes:png,jpg,jpeg,svg,webp|max:4096',
             'breadcrumb'          => 'sometimes|image|mimes:png,jpg,jpeg,svg,webp|max:4096',
-            'og_image'            => 'sometimes|image|mimes:png,jpg,jpeg,webp|max:5120',
+            'og_image'            => 'sometimes|image|mimes:png,jpg,jpeg,svg,webp|max:5120',
             'twitter_image'       => 'sometimes|image|mimes:png,jpg,jpeg,webp|max:5120',
 
             // Mail Settings
