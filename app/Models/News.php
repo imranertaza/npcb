@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -65,5 +66,11 @@ class News extends Model
         return self::where('status', 1)->whereHas('categories', function ($query) {
             $query->where('category_name', 'like', '%spotlight%');
         })->paginate(10);
+    }
+    public static function getFeaturedNews()
+    {
+        return self::where('status', 1)->whereHas('categories', function ($query) {
+            $query->where('category_name', 'like', '%featured%');
+        })->paginate(5);
     }
 }

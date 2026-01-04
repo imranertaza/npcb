@@ -128,8 +128,12 @@
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Mail Address</label>
+                                <label class="form-label">Receive Mail Address</label>
                                 <input v-model="form.mail_address" type="email" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Send From Mail Address</label>
+                                <input v-model="form.send_from" type="email" class="form-control" />
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">SMTP Host</label>
@@ -144,15 +148,15 @@
                                 <input v-model="form.smtp_password" type="password" class="form-control"
                                     autocomplete="new-password" />
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">SMTP Port</label>
                                 <input v-model="form.smtp_port" type="text" class="form-control" />
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">SMTP Timeout</label>
                                 <input v-model="form.smtp_timeout" type="text" class="form-control" />
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">SMTP Crypto</label>
                                 <select v-model="form.smtp_crypto" class="form-control">
                                     <option value="ssl">SSL</option>
@@ -355,6 +359,7 @@ const form = ref({
     brand_name: '',
     mail_protocol: '',
     mail_address: '',
+    send_from: '',
     smtp_host: '',
     smtp_username: '',
     smtp_password: '',
