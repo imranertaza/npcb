@@ -83,6 +83,7 @@ class NewsController extends Controller
             'alt_name'         => 'nullable|string|max:255',
             'publish_date'     => 'nullable|date',
             'status'           => ['required', Rule::in(['0', '1'])],
+            'featured'         => ['required', Rule::in([0, 1])],
             'categories'       => 'required|array',
             'categories.*'     => 'exists:news_categories,id',
         ], [
@@ -159,6 +160,7 @@ class NewsController extends Controller
                     'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
                     'alt_name'         => 'nullable|string|max:255',
                     'status'           => ['required', Rule::in(['0', '1'])],
+                    'featured'         => ['required', Rule::in([0, 1])],
                     'categories'       => 'required|array',
                     'categories.*'     => 'exists:news_categories,id',
                 ],

@@ -16,7 +16,7 @@ class SliderSeeder extends Seeder
         Slider::create(
             [
                 'key' => 'banner_section',
-                'image'       => 'web/banner/banner-1.jpg',
+                'image'       => 'https://placehold.co/1300x500',
                 'title'       => 'Amputee Football Festival Showcases Rising Talent in Dhaka',
                 'description' => 'A spirited celebration of amputee football brought together 45 players...',
                 'link'        => '/news-and-updates',
@@ -27,7 +27,7 @@ class SliderSeeder extends Seeder
         Slider::create(
             [
                 'key' => 'banner_section',
-                'image'       => 'web/banner/banner-2.jpeg',
+                'image'       => 'https://placehold.co/1300x500',
                 'title'       => 'Another Inspiring Paralympic Event',
                 'description' => 'Highlights from the latest para-sports activities in Bangladesh...',
                 'link'        => '/blogs',
@@ -38,7 +38,7 @@ class SliderSeeder extends Seeder
         Slider::create(
             [
                 'key' => 'banner_section',
-                'image'       => 'web/banner/banner-3.jpeg',
+                'image'       => 'https://placehold.co/1300x500',
                 'title'       => 'Future Paralympic Dreams',
                 'description' => 'Bangladesh continues its journey in para-sports with new talent...',
                 'link'        => '/photo-gallery',
