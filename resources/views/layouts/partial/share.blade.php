@@ -19,7 +19,7 @@
 
             <!-- Social Icons -->
             <div class="d-flex gap-sm-3 gap-2">
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank"
+                <a aria-label="Facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank"
                     class="social-icon facebook"><svg width="29" height="29" viewBox="0 0 29 29" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -27,7 +27,7 @@
                             fill="#272727" />
                     </svg>
                 </a>
-                <a href="javascript:void(0);"
+                <a aria-label="Instagram" href="#"
                     onclick="if(navigator.share){navigator.share({title: '{{ config('app.name') }}', url: '{{ url()->current() }}'})} return false;"
                     class="social-icon instagram">
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
@@ -44,7 +44,7 @@
                     </svg>
 
                 </a>
-                <a href="https://api.whatsapp.com/send?text={{ urlencode(url()->current()) }}" target="_blank"
+                <a aria-label="WhatsApp" href="https://api.whatsapp.com/send?text={{ urlencode(url()->current()) }}" target="_blank"
                     class="social-icon whatsapp">
                     <svg width="29" height="29" viewBox="0 0 29 29" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -53,7 +53,7 @@
                             fill="#272727" />
                     </svg>
                 </a>
-                <a href="https://pinterest.com/pin/create/button/?url={{ urlencode(url()->current()) }}" target="_blank"
+                <a aria-label="Pinterest" href="https://pinterest.com/pin/create/button/?url={{ urlencode(url()->current()) }}" target="_blank"
                     class="social-icon pinterest"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path

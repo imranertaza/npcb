@@ -25,7 +25,8 @@
               <!-- Center: Search bar with filter -->
               <form action="#" method="GET" class="d-flex mx-xl-3 flex-grow-1 justify-content-xl-center">
                   <div class="input-group my-2 my-xl-0 mb-xl-0" style="max-width:400px;">
-                      <select class="form-select rounded-0" name="filter" style="max-width:95px;">
+                      <select aria-label="Filter content type" class="form-select rounded-0" name="filter"
+                          style="max-width:95px;">
                           <option value="news">News</option>
                           <option value="players">Athletes</option>
                           <option value="posts">Posts</option>
@@ -33,7 +34,7 @@
                       </select>
                       <input type="text" class="form-control border-none" name="q" placeholder="Search..."
                           aria-label="Search">
-                      <button class="btn btn-dark rounded-0" type="submit">
+                      <button aria-label="Search" class="btn btn-dark rounded-0" type="submit">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                               class="bi bi-search" viewBox="0 0 16 16">
                               <path
@@ -52,7 +53,7 @@
                       <a href="#" class="btn btn-success me-2 rounded-0">Dashboard</a>
                       <form action="#" method="POST">
                           @csrf
-                          <button type="submit" class="btn btn-danger rounded-0">Logout</button>
+                          <button aria-label="Logout" type="submit" class="btn btn-danger rounded-0">Logout</button>
                       </form>
                   @endguest
               </div>
@@ -63,7 +64,8 @@
 
 
               {{-- Mobile Menu Button --}}
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <button aria-label="Toggle navigation" class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#navbarNav">
                   <span class="navbar-toggler-icon"></span>
               </button>
 
