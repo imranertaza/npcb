@@ -29,13 +29,13 @@
                   <!-- Position -->
                   <div class="form-group">
                     <label>Position</label>
-                    <input v-model="form.position" type="text" class="form-control" />
+                    <input v-model="form.position" type="text" class="form-control" required/>
                   </div>
 
                   <!-- Team -->
                   <div class="form-group">
                     <label>Team</label>
-                    <input v-model="form.team" type="text" class="form-control" />
+                    <input v-model="form.team" type="text" class="form-control" required/>
                   </div>
 
                   <!-- Country -->
@@ -47,7 +47,7 @@
                   <!-- Birthdate -->
                   <div class="form-group">
                     <label>Birthdate</label>
-                    <input v-model="form.birthdate" type="date" class="form-control" />
+                    <input v-model="form.birthdate" type="date" class="form-control" required/>
                   </div>
 
                   <!-- Height -->

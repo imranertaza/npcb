@@ -180,7 +180,6 @@ const updateMember = async () => {
         });
     } catch (err) {
         toast.validationError(err); // Handles Laravel validation errors nicely
-        console.error('Update failed:', err);
     }
 };
 

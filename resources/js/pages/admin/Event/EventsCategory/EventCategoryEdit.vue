@@ -189,7 +189,6 @@ const updateCategory = async () => {
         toast.success('Category updated successfully!');
     } catch (error) {
         toast.validationError(error); // Handles Laravel 422 validation errors
-        console.error('Update failed:', error);
     }
 };
 

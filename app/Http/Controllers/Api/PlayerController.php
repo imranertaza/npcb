@@ -73,16 +73,16 @@ class PlayerController extends Controller
         $validated = $request->validate([
             'name'              => 'required|string|max:255',
             'sport'             => 'required|string|max:255',
-            'position'          => 'nullable|string|max:255',
-            'team'              => 'nullable|string|max:255',
+            'position'          => 'required|string|max:255',
+            'team'              => 'required|string|max:255',
             'country'           => 'nullable|string|max:255',
-            'birthdate'         => 'nullable|date',
+            'birthdate'         => 'required|date',
             'height'            => 'nullable|string|max:50',
             'weight'            => 'nullable|string|max:50',
             'hometown'          => 'nullable|string|max:255',
             'asian_ranking'     => 'nullable|string|max:50',
             'national_ranking'  => 'nullable|string|max:50',
-            'image'             => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
+            'image'             => 'required|image|mimes:jpg,jpeg,png,gif|max:4096',
             'status'            => 'required|in:0,1',
         ]);
 
@@ -129,55 +129,55 @@ class PlayerController extends Controller
      * @param int $id The ID of the player to update
      * @return \Illuminate\Http\JsonResponse
      */
-   public function update(Request $request, $id)
-{
-    $player = Player::findOrFail($id);
+    public function update(Request $request, $id)
+    {
+        $player = Player::findOrFail($id);
 
-    $validated = $request->validate([
-        'name'              => 'required|string|max:255',
-        'sport'             => 'required|string|max:255',
-        'position'          => 'nullable|string|max:255',
-        'team'              => 'nullable|string|max:255',
-        'country'           => 'nullable|string|max:255',
-        'birthdate'         => 'nullable|date',
-        'height'            => 'nullable|string|max:50',
-        'weight'            => 'nullable|string|max:50',
-        'hometown'          => 'nullable|string|max:255',
-        'asian_ranking'     => 'nullable|string|max:50',
-        'national_ranking'  => 'nullable|string|max:50',
-        'image'             => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
-        'status'            => 'required|in:0,1',
-    ]);
+        $validated = $request->validate([
+            'name'              => 'required|string|max:255',
+            'sport'             => 'required|string|max:255',
+            'position'          => 'nullable|string|max:255',
+            'team'              => 'nullable|string|max:255',
+            'country'           => 'nullable|string|max:255',
+            'birthdate'         => 'nullable|date',
+            'height'            => 'nullable|string|max:50',
+            'weight'            => 'nullable|string|max:50',
+            'hometown'          => 'nullable|string|max:255',
+            'asian_ranking'     => 'nullable|string|max:50',
+            'national_ranking'  => 'nullable|string|max:50',
+            'image'             => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
+            'status'            => 'required|in:0,1',
+        ]);
 
-    // Regenerate slug with uniqueness check (excluding current record)
-    $baseSlug = Str::slug("{$validated['name']}-{$validated['sport']}" . ($validated['country'] ? "-{$validated['country']}" : ''));
-    $slug = $baseSlug;
-    $counter = 1;
+        // Regenerate slug with uniqueness check (excluding current record)
+        $baseSlug = Str::slug("{$validated['name']}-{$validated['sport']}" . ($validated['country'] ? "-{$validated['country']}" : ''));
+        $slug = $baseSlug;
+        $counter = 1;
 
-    while (Player::where('slug', $slug)->where('id', '!=', $player->id)->exists()) {
-        $slug = "{$baseSlug}-{$counter}";
-        $counter++;
-    }
-
-    $validated['slug'] = $slug;
-
-    if ($request->hasFile('image')) {
-        if ($player->image && Storage::disk('public')->exists($player->image)) {
-            Storage::disk('public')->delete($player->image);
+        while (Player::where('slug', $slug)->where('id', '!=', $player->id)->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
         }
 
-        $filename = uniqid('player_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+        $validated['slug'] = $slug;
 
-        $validated['image'] = $request->file('image')
-            ->storeAs("players/{$player->id}/images", $filename, 'public');
+        if ($request->hasFile('image')) {
+            if ($player->image && Storage::disk('public')->exists($player->image)) {
+                Storage::disk('public')->delete($player->image);
+            }
+
+            $filename = uniqid('player_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+
+            $validated['image'] = $request->file('image')
+                ->storeAs("players/{$player->id}/images", $filename, 'public');
+        }
+
+        $validated['updatedBy'] = Auth::id();
+
+        $player->update($validated);
+
+        return ApiResponse::success($player, 'Player updated successfully');
     }
-
-    $validated['updatedBy'] = Auth::id();
-
-    $player->update($validated);
-
-    return ApiResponse::success($player, 'Player updated successfully');
-}
 
 
     /**

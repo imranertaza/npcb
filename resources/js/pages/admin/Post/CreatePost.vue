@@ -197,8 +197,7 @@ const submitPost = async () => {
         });
         toast.success('Post created successfully!');
     } catch (error) {
-        toast.error('Failed to create post');
-        console.error(error);
+        toast.validationError(error);
     }
 };
 </script>

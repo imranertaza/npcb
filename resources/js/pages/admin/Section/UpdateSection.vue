@@ -9,7 +9,7 @@
                         <h3 class="card-title">Edit Section - {{ form.key }}</h3>
                     </div>
 
-                    <form @submit.prevent="updateNotice">
+                    <form @submit.prevent="updateSections">
                         <div class="card-body">
                             <div class="row">
                                 <!-- Left Column -->
@@ -116,7 +116,7 @@ const previewsPdf = ref([]);     // Preview URLs for PDFs (not defined in origin
 const isPdf = (filename) => /\.pdf$/i.test(filename);
 
 // Fetch existing section data on mount
-const fetchNotice = async () => {
+const fetchSections = async () => {
     try {
         const res = await axios.get(`/api/sections/${route.params.id}`);
         const sectionData = res.data.data;
@@ -136,12 +136,11 @@ const fetchNotice = async () => {
         }
     } catch (err) {
         toast.error("Failed to load section data");
-        console.error("Fetch section error:", err);
     }
 };
 
 // Submit updated section
-const updateNotice = async () => {
+const updateSections = async () => {
     let data = {};
 
     // Conditional payload based on section type
@@ -187,6 +186,6 @@ defineProps({
 
 // Load section data when component mounts
 onMounted(() => {
-    fetchNotice();
+    fetchSections();
 });
 </script>

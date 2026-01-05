@@ -113,8 +113,7 @@ const submitNotice = async () => {
     });
     toast.success('Notice created successfully!');
   } catch (error) {
-    toast.error('Failed to create notice');
-    console.error(error);
+    toast.validationError(error);
   }
 };
 </script>

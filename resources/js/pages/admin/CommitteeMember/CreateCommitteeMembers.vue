@@ -134,7 +134,6 @@ const submitMember = async () => {
         fileUpload.value = null;
     } catch (error) {
         toast.validationError(error); // Better handling for validation (422) errors
-        console.error('Committee member creation failed:', error);
     }
 };
 </script>

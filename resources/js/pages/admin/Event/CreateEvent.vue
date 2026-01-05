@@ -207,7 +207,6 @@ const submitEvent = async () => {
     // Optional: reset form or redirect here
   } catch (error) {
     toast.validationError(error); // Better handling for validation (422) errors
-    console.error("Event creation failed:", error);
   }
 };
 

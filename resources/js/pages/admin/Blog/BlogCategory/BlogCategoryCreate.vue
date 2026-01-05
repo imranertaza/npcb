@@ -186,7 +186,6 @@ const createCategory = async () => {
         imageFile.value = null;
     } catch (error) {
         toast.validationError(error); // Handles Laravel 422 validation nicely
-        console.error('Category creation failed:', error);
     }
 };
 
