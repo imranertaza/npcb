@@ -119,7 +119,6 @@ const submitSlide = async () => {
         toast.success('Slide created successfully!');
     } catch (error) {
         toast.validationError(error);
-        console.error(error);
     }
 };
 </script>

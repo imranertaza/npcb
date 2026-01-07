@@ -114,8 +114,7 @@ const submitResult = async () => {
         });
         toast.success('Result created successfully!');
     } catch (error) {
-        toast.error('Failed to create result');
-        console.error(error);
+        toast.validationError(error);
     }
 };
 </script>

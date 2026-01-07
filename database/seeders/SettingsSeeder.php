@@ -25,10 +25,10 @@ Dkaka-1000, Bangladesh', 'createdBy' => $userId, 'updatedBy' => $userId],
             ['label' => 'state', 'title' => 'State', 'value' => '322', 'createdBy' => $userId, 'updatedBy' => $userId],
 
             // Branding
-            ['label' => 'store_logo', 'title' => 'Store Logo', 'value' => 'settings/store_logo_1765197887_6936c83f8814c.png', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'store_icon', 'title' => 'Store Icon', 'value' => 'settings/store_icon_1765195985_6936c0d12bdaf.png', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'footer_logo', 'title' => 'Footer Logo', 'value' => 'settings/footer_logo_1765197832_6936c80849598.svg', 'createdBy' => $userId, 'updatedBy' => $userId],
-            ['label' => 'breadcrumb', 'title' => 'Footer Logo', 'value' => 'settings/breadcrumb_1766415619_69495d03dcc4b.webp', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'store_logo', 'title' => 'Store Logo', 'value' => 'https://placehold.co/340x46', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'store_icon', 'title' => 'Store Icon', 'value' => 'https://placehold.co/60x60', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'footer_logo', 'title' => 'Footer Logo', 'value' => 'https://placehold.co/340x46', 'createdBy' => $userId, 'updatedBy' => $userId],
+            ['label' => 'breadcrumb', 'title' => 'Footer Logo', 'value' => 'https://placehold.co/1351x300', 'createdBy' => $userId, 'updatedBy' => $userId],
 
             // Mail settings
             ['label' => 'mail_protocol', 'title' => 'Mail Protocol', 'value' => 'smtp', 'createdBy' => $userId, 'updatedBy' => $userId],

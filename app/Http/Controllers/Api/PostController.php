@@ -87,7 +87,7 @@ class PostController extends Controller
                 'meta_title'       => 'nullable|string',
                 'meta_keyword'     => 'nullable|string',
                 'meta_description' => 'nullable|string',
-                'image'            => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
                 'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
                 'alt_name'         => 'nullable|string|max:255',
                 'publish_date'     => 'nullable|date',

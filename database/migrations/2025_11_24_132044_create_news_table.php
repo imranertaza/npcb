@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('slug');
             $table->string('short_des', 255);
             $table->string('f_image', 255);
+            $table->tinyInteger('featured')->default(0);
             $table->longText('description');
             $table->text('meta_title')->nullable();
             $table->text('meta_keyword')->nullable();

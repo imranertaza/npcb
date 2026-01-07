@@ -255,7 +255,6 @@ const updateBlog = async () => {
         router.push({ name: 'Blog', query: { toast: 'Blog updated successfully' } });
     } catch (err) {
         toast.validationError(err); // Handles 422 validation errors nicely
-        console.error('Update blog error:', err);
     }
 };
 
@@ -267,8 +266,7 @@ const fetchCategories = async () => {
         const res = await axios.get('/api/blog-categories?per_page=0');
         categories.value = res.data.data;
     } catch (err) {
-        toast.error('Failed to load categories');
-        console.error('Fetch categories error:', err);
+        toast.validationError(err);
     }
 };
 

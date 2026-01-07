@@ -229,7 +229,6 @@ const updateEvent = async () => {
         });
     } catch (err) {
         toast.validationError(err); // Handles Laravel validation errors
-        console.error('Update event error:', err);
     }
 };
 

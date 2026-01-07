@@ -173,8 +173,7 @@ const fetchCategories = async () => {
         const res = await axios.get('/api/blog-categories?per_page=0');
         categories.value = res.data.data;
     } catch (err) {
-        toast.error('Failed to load categories');
-        console.error(err);
+        toast.validationError(err);
     }
 };
 

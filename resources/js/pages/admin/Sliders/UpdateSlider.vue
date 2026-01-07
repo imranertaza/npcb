@@ -119,7 +119,6 @@ const getSlider = async () => {
         previews.value = [getImageUrl(form.image)];
     } catch (error) {
         toast.error("Failed to fetch slide details");
-        console.error(error);
     }
 };
 
@@ -144,7 +143,6 @@ const updateSlide = async () => {
         toast.success("Slide updated successfully!");
     } catch (error) {
         toast.validationError(error);
-        console.error(error);
     }
 };
 

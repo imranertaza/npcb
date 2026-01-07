@@ -204,7 +204,6 @@ const updateCategory = async () => {
     toast.success("Category updated successfully!");
   } catch (error) {
     toast.validationError(error); // Handles 422 validation errors
-    console.error("Update failed:", error);
   }
 };
 

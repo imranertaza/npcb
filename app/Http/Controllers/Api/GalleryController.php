@@ -61,7 +61,7 @@ class GalleryController extends Controller
     {
         $validated = $request->validate([
             'name'       => 'required|string|max:100',
-            'thumb'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
+            'thumb'      => 'required|image|mimes:jpg,jpeg,png,gif|max:4096',
             'sort_order' => 'nullable|integer',
             'alt_name'   => 'nullable|string|max:255',
         ]);

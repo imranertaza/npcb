@@ -84,6 +84,21 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Featured</label>
+
+                                        <div class="icheck-primary">
+                                            <input type="radio" class="form-radio-input" id="yes" :value="1"
+                                                v-model="form.featured" />
+                                            <label class="form-check-label" for="yes">Yes</label>
+                                        </div>
+
+                                        <div class="icheck-primary">
+                                            <input type="radio" class="form-radio-input" id="no" :value="0"
+                                                v-model="form.featured" />
+                                            <label class="form-check-label" for="no">No</label>
+                                        </div>
+                                    </div>
                                     <!-- Image & Alt -->
                                     <div class="form-group">
                                         <label>Upload Featured Image</label>
@@ -153,6 +168,7 @@ const form = reactive({
     publish_date: "",
     status: "1",               // 1 = published, 0 = draft
     meta_title: "",
+    featured: 0,
     meta_keyword: "",
     meta_description: "",
     image: null,               // Preview only

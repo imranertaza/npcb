@@ -123,7 +123,10 @@ class NewsSeeder extends Seeder
                 'updatedBy'        => null,
             ],
         ];
-        foreach ($gamingNews as $item) {
+        foreach ($gamingNews as $key => $item) {
+            if ($key < 6) {
+                $item['featured'] = 1;
+            }
             News::updateOrCreate(
                 ['slug' => Str::slug($item['news_title'])],
                 array_merge($item, ['slug' => Str::slug($item['news_title'])])

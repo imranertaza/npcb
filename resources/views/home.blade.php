@@ -10,7 +10,7 @@
                 @foreach ($slides as $slide)
                     @if ($slide->enabled)
                         <div class="swiper-slide justify-content-start">
-                            <img draggable="false" class=""
+                            <img draggable="false" fetchpriority="high" class=""
                                 src="{{ getImageCacheUrl($slide->image, 1351, 617, 'webp') }}" alt="{{ $slide->title }}">
                         </div>
                     @endif
@@ -26,7 +26,8 @@
                                 <div class="slider-content">
                                     <h1 class="title-three">{{ $slide->title }}</h1>
                                     @if (!empty($slide->link))
-                                        <a href="{{ $slide->link }}" class="read-more mt-16 btn-1 slower">Read More</a>
+                                        <a href="{{ $slide->link }}" aria-label="{{ $slide->title }}"
+                                            class="read-more mt-16 btn-1 slower">Read More</a>
                                     @endif
                                 </div>
                             </div>
@@ -395,7 +396,7 @@
             </div>
         </div>
     </section>
-    <button id="backToTop" class="back-to-top">
+    <button aria-label="Back to top" id="backToTop" class="back-to-top">
         ↑
     </button>
     @push('styles')

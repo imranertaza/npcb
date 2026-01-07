@@ -85,6 +85,21 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Featured</label>
+
+                                        <div class="icheck-primary">
+                                            <input type="radio" class="form-radio-input" id="yes" :value="1"
+                                                v-model="form.featured" />
+                                            <label class="form-check-label" for="yes">Yes</label>
+                                        </div>
+
+                                        <div class="icheck-primary">
+                                            <input type="radio" class="form-radio-input" id="no" :value="0"
+                                                v-model="form.featured" />
+                                            <label class="form-check-label" for="no">No</label>
+                                        </div>
+                                    </div>
 
                                     <!-- Banner Image Upload -->
                                     <div class="form-group">
@@ -195,6 +210,7 @@ const form = reactive({
     image: "",               // Existing image path (preview only)
     f_image: "",             // Existing featured image path (preview only)
     alt_name: "",
+    featured: 0,
     publish_date: "",
     status: "1",
     meta_title: "",

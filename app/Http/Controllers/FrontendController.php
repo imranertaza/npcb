@@ -50,7 +50,7 @@ class FrontendController extends Controller
 
         $blogs                = Blog::where('status', "1")->latest()->paginate(7);
 
-        $topNews              = News::getFeaturedNews();
+        $topNews              = News::where('featured', 1)->where('status', '1')->orderBy('updated_at', 'desc')->paginate(5);
 
         $gamesNews            = News::getGamesNews();
 

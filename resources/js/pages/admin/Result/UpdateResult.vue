@@ -134,8 +134,7 @@ const fetchResult = async () => {
             previewsPdf.value = [getImageUrl(form.file)];
         }
     } catch (err) {
-        toast.error('Failed to load result');
-        console.error(err);
+        toast.validationError(err);
     }
 };
 

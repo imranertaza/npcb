@@ -7,9 +7,9 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="{{ $settings['og_type'] ?? 'website' }}">
-<meta property="og:title" content="{{ $settings['og_title'] ?? '' }}">
+<meta property="og:title" content="@yield('og_title', $settings['og_title'] ?? '')">
 <meta property="og:description" content="{{ $settings['og_description'] ?? '' }}">
-<meta property="og:image" content="{{ getImageUrl($settings['og_image'] ?? '') }}">
+<meta property="og:image" content="@yield('og_image', getImageUrl($settings['og_image']) ?? '')">
 <meta property="og:image:width" content="{{ $settings['og_image_width'] ?? '' }}">
 <meta property="og:image:height" content="{{ $settings['og_image_height'] ?? '' }}">
 <meta property="og:url" content="{{ url()->current() }}">
