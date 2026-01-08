@@ -11,7 +11,7 @@
                     @if ($slide->enabled)
                         <div class="swiper-slide justify-content-start">
                             <img draggable="false" fetchpriority="high" class=""
-                                src="{{ getImageCacheUrl($slide->image, 1351, 617, 'webp') }}" alt="{{ $slide->title }}">
+                                src="{{ getImageCacheUrl($slide->image, 1400, 617, 'webp') }}" alt="{{ $slide->title }}">
                         </div>
                     @endif
                 @endforeach

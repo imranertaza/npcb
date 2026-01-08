@@ -1,5 +1,5 @@
 <template>
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <aside class="main-sidebar sidebar-dark-primary elevation-4 z-50">
         <!-- Brand Logo -->
         <router-link :to="{ name: 'Dashboard' }" class="brand-link">
             <img :src="adminLogo" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -646,3 +646,8 @@ const logout = async () => {
     router.push({ name: 'AdminLogin' })
 }
 </script>
+<style scoped>
+.main-sidebar {
+    z-index: 100 !important;
+}
+</style>

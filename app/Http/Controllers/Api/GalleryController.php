@@ -61,7 +61,7 @@ class GalleryController extends Controller
     {
         $validated = $request->validate([
             'name'       => 'required|string|max:100',
-            'thumb'      => 'required|image|mimes:jpg,jpeg,png,gif|max:4096',
+            'thumb'      => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
             'sort_order' => 'nullable|integer',
             'alt_name'   => 'nullable|string|max:255',
         ]);
@@ -69,7 +69,7 @@ class GalleryController extends Controller
         $gallery = Gallery::create($validated);
 
         if ($request->hasFile('thumb')) {
-            $path               = $request->file('thumb')->store('gallery/' . $gallery->id . '/thumbs', 'public');
+            $path = $request->file('thumb')->store('gallery/' . $gallery->id . '/thumbs', 'public');
             $gallery->update(['thumb' => $path]);
         }
 
@@ -102,7 +102,7 @@ class GalleryController extends Controller
     {
         $validated = $request->validate([
             'name'       => 'required|string|max:100',
-            'thumb'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'thumb'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
             'alt_name'   => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
         ]);
@@ -111,9 +111,8 @@ class GalleryController extends Controller
             if ($gallery->thumb && Storage::disk('public')->exists($gallery->thumb)) {
                 Storage::disk('public')->delete($gallery->thumb);
             }
-
             $path = $request->file('thumb')->store('gallery/' . $gallery->id . '/thumbs', 'public');
-            $gallery->update(['thumb' => $path]);
+            $validated['thumb'] = $path;
         }
 
         $gallery->update($validated);
@@ -173,7 +172,7 @@ class GalleryController extends Controller
     {
         $request->validate([
             'gallery_id' => 'required|exists:gallery,id',
-            'image'      => 'required|image|max:2048',
+            'image'      => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
             'alt_name'   => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
         ]);
@@ -185,7 +184,7 @@ class GalleryController extends Controller
             'sort_order' => $request->sort_order ?? 0,
             'createdBy'  => Auth::id(),
         ]);
-        $path = $request->file('image')->store('gallery/' . $request->gallery_id . "/details\/".$detail->id, 'public');
+        $path = $request->file('image')->store('gallery/' . $request->gallery_id . "/details\/" . $detail->id, 'public');
 
         $detail->update(['image' => $path]);
 

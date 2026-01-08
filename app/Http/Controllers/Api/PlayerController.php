@@ -82,7 +82,7 @@ class PlayerController extends Controller
             'hometown'          => 'nullable|string|max:255',
             'asian_ranking'     => 'nullable|string|max:50',
             'national_ranking'  => 'nullable|string|max:50',
-            'image'             => 'required|image|mimes:jpg,jpeg,png,gif|max:4096',
+            'image'             => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
             'status'            => 'required|in:0,1',
         ]);
 
@@ -145,7 +145,7 @@ class PlayerController extends Controller
             'hometown'          => 'nullable|string|max:255',
             'asian_ranking'     => 'nullable|string|max:50',
             'national_ranking'  => 'nullable|string|max:50',
-            'image'             => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
+            'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
             'status'            => 'required|in:0,1',
         ]);
 

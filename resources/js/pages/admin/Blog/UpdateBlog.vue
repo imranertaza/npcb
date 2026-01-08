@@ -206,10 +206,10 @@ const fetchNews = async () => {
 
         // Set existing image previews for Dropzone
         if (blog.image) {
-            previews.value = [{ url: getImageUrl(blog.image) }];
+            previews.value = [getImageUrl(blog.image)];
         }
         if (blog.f_image) {
-            f_previews.value = [{ url: getImageUrl(blog.f_image) }];
+            f_previews.value = [getImageUrl(blog.f_image)];
         }
     } catch (err) {
         toast.error('Failed to load blog');

@@ -71,7 +71,7 @@ class NoticeController extends Controller
             'title'       => 'required|string|max:255',
             'slug'        => 'required|string|unique:notices,slug',
             'description' => 'nullable|string',
-            'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
+            'file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,pdf,doc,docx|max:4096',
             'status'      => 'required|in:0,1',
             'type'        => 'required|in:0,1',
         ]);
@@ -117,7 +117,7 @@ class NoticeController extends Controller
                 Rule::unique('notices', 'slug')->ignore($notice->id),
             ],
             'description' => 'nullable|string',
-            'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
+            'file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,pdf,doc,docx|max:4096',
             'status'      => 'required|in:0,1',
             'type'        => 'required|in:0,1',
         ]);

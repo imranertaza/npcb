@@ -74,8 +74,8 @@ class EventController extends Controller
             'slug'              => 'required|string|unique:events,slug',
             'description'       => 'nullable|string',
             'type'              => 'required|integer|in:0,1',
-            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
-            'featured_image'    => 'required|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
+            'featured_image'    => 'required|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
         ]);
 
         $validated['createdBy'] = Auth::id();
