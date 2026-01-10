@@ -27,7 +27,7 @@
                                     <h1 class="title-three">{{ $slide->title }}</h1>
                                     @if (!empty($slide->link))
                                         <a href="{{ $slide->link }}" aria-label="{{ $slide->title }}"
-                                            class="read-more mt-16 btn-1 slower">Read More</a>
+                                            class="read-more mt-16 btn-1 slower">Read More <span class="visually-hidden">{{ $slide->title }}</span></a>
                                     @endif
                                 </div>
                             </div>

@@ -41,6 +41,10 @@
                                         <label>Upload Image</label>
                                         <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
                                             :allowSelectOnPreview="true" />
+                                        <small v-if="form.key == 'history_history'" class="text-muted">Recommended: 520
+                                            × 705px</small>
+                                        <small v-else class="text-muted">Recommended: 448 × 375px</small>
+
                                     </div>
 
                                     <!-- Status -->
@@ -56,7 +60,7 @@
                                         <button type="submit" class="btn btn-success btn-block">
                                             Update
                                         </button>
-                                        <RouterLink :to="{ name: 'Notices' }" class="btn btn-secondary btn-block mt-2">
+                                        <RouterLink :to="{ name: 'Section' }" class="btn btn-secondary btn-block mt-2">
                                             Cancel</RouterLink>
                                     </div>
                                 </div>

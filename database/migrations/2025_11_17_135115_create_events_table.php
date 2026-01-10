@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->tinyInteger('type')->default('0')->comment('2=Past,1=Running, 0=Upcoming')->in_array([0, 1]);
+            $table->tinyInteger('event_scope')->default(0)->comment('0 = National, 1 = International');
             $table->enum('status', ['1', '0'])->default('1');
             $table->foreignId('createdBy')->constrained('users');
             $table->foreignId('updatedBy')->nullable()->constrained('users');

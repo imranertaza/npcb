@@ -1,6 +1,6 @@
 <template>
   <div class="menu-manager">
-    <DashboardHeader title="Menu Manager">
+    <DashboardHeader title="Menu Manager" :back="true" @back="goBack()">
       <div class="input-group input-group-sm" style="max-width: 360px;">
         <input v-model="newMenuName" class="form-control form-control-sm" placeholder="New menu name"
           @keyup.enter="addMenu" />
@@ -137,6 +137,8 @@ import Multiselect from '@vueform/multiselect';
 const route = useRoute()
 const menuId = route.params.id
 
+import { useNavigation } from '@/composables/useNavigation';
+const { goBack } = useNavigation();
 // Hierarchical menu items
 const menuItems = ref([]);
 

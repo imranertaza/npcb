@@ -124,7 +124,7 @@
 
                                     <div>
                                         <button type="submit" class="btn btn-success btn-block">Update</button>
-                                        <RouterLink :to="{ name: 'News' }" class="btn btn-secondary btn-block mt-2">
+                                        <RouterLink :to="{ name: 'Blog' }" class="btn btn-secondary btn-block mt-2">
                                             Cancel</RouterLink>
                                     </div>
                                 </div>

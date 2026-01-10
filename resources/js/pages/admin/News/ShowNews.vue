@@ -1,5 +1,5 @@
 <template>
-    <DashboardHeader :title="news?.news_title || 'News Details'" />
+    <DashboardHeader :title="news?.news_title || 'News Details'" :back="true" @back="goBack()" />
 
     <section class="content-header">
         <div class="container-fluid">
@@ -17,7 +17,8 @@
                     <div v-if="news.categories && news.categories.length" class="mt-3">
                         <h6 class="font-weight-bold">Categories</h6>
                         <a href="#" v-for="cat in news.categories" :key="cat.id">
-                            <span class="badge border ml-2">{{ cat.parent?.category_name ? cat.parent.category_name + '>' : ''}}{{ cat.category_name }}
+                            <span class="badge border ml-2">{{ cat.parent?.category_name ? cat.parent.category_name +
+                                '>' : ''}}{{ cat.category_name }}
                             </span>
                         </a>
                     </div>
@@ -36,7 +37,8 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getImageUrl } from '@/layouts/helpers/helpers';
-
+import { useNavigation } from '@/composables/useNavigation';
+const { goBack } = useNavigation();
 // Current route (to access slug param)
 const route = useRoute();
 

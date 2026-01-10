@@ -130,7 +130,7 @@ class GalleryController extends Controller
     public function toggleStatus($id)
     {
         $gallery         = Gallery::findOrFail($id);
-        $gallery->status = $gallery->status === 1 ? 0 : 1;
+        $gallery->status = $gallery->status == 1 ? 0 : 1;
         $gallery->save();
 
         return ApiResponse::success([
