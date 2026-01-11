@@ -50,6 +50,9 @@
                                         <label>Upload Featured Image</label>
                                         <Vue3Dropzone v-model="imageUpload" v-model:previews="previewsImage" mode="edit"
                                             :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Recommended: Running (262 x 230px) | Upcoming(252
+                                            x515px)</small>
+
                                     </div>
                                     <!-- File Upload -->
                                     <div class="form-group">

@@ -42,7 +42,7 @@
                                         <label>Upload File (Image/PDF)</label>
                                         <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
                                             :allowSelectOnPreview="true" />
-
+                                        <small class="text-muted">Maximum File Size: 4MB</small>
                                         <!-- Custom Preview -->
                                         <div v-if="previewsPdf && previewsPdf.length" class="mt-3">
                                             <div v-for="(preview, idx) in previewsPdf" :key="idx">
