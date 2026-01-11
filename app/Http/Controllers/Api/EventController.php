@@ -73,9 +73,11 @@ class EventController extends Controller
             'title'             => 'required|string|max:255',
             'slug'              => 'required|string|unique:events,slug',
             'description'       => 'nullable|string',
-            'type'              => 'required|integer|in:0,1',
-            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
-            'featured_image'    => 'required|file|mimes:jpg,jpeg,png,gif|max:4096',
+            'type'              => 'required|integer|in:0,1,2',
+            'event_scope'       => 'required|integer|in:0,1',
+            'status'            => 'required|string|in:0,1',
+            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
+            'featured_image'    => 'required|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
         ]);
 
         $validated['createdBy'] = Auth::id();
@@ -126,6 +128,8 @@ class EventController extends Controller
                 Rule::unique('events', 'slug')->ignore($event->id),
             ],
             'type'              => 'required|integer|in:0,1,2',
+            'event_scope'       => 'required|integer|in:0,1',
+            'status'            => 'required|string|in:0,1',
             'description'       => 'nullable|string',
             'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
             'featured_image'    => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',

@@ -553,6 +553,8 @@ ul.dropdown-menu.show {
 .banner img {
     width: 100%;
     height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
     object-fit: cover;
 }
 
@@ -587,6 +589,10 @@ ul.dropdown-menu.show {
 .mySwiper .swiper-slide {
     justify-content: start;
 
+}
+
+.mySwiperBg {
+    background-color: #EBFFFD !important;
 }
 
 .swiper-slide img {

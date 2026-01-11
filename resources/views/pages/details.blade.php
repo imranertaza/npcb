@@ -9,10 +9,18 @@
             </div>
         @endif
         @if ($page->page_description)
-            <div class="text-dark-emphasis pt-3">
+            <div class="text-dark-emphasis pt-3 page-description">
                 {!! $page->page_description !!}
             </div>
         @endif
     </section>
     <!-- About section End  -->
+    @push('styles')
+        <style>
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+        </style>
+    @endpush
 @endsection

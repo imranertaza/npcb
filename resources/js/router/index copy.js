@@ -81,13 +81,15 @@ import Player from "../pages/admin/Player/Player.vue";
 
 const routes = [{
         path: "/admin",
-        children: [{
+        redirect: "/admin/dashboard",
+        children: [
+            {
                 path: "login",
                 name: "AdminLogin",
                 component: AdminLogin
             },
             {
-                path: "",
+                path: "dashboard",
                 prefix: "admin",
                 component: AdminLayout,
                 meta: {

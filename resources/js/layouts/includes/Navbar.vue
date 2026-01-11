@@ -48,3 +48,8 @@ const logout = async () => {
     router.push({ name: 'AdminLogin' })
 }
 </script>
+<style scoped>
+.navbar-dark {
+    z-index: 100 !important;
+}
+</style>

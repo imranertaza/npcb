@@ -121,7 +121,7 @@
 
                             <div class="mb-3">
                                 <input type="text" class="form-control @error('subject') is-invalid @enderror"
-                                    name="subject" value="{{ old('subject') }}" placeholder="Subject">
+                                    name="subject" value="{{ old('subject') }}" placeholder="Subject" required>
                                 @error('subject')
                                     <span class="invalid-feedback d-block">{{ $message }}</span>
                                 @enderror
@@ -129,7 +129,7 @@
 
                             <div class="mb-4">
                                 <textarea class="form-control @error('description') is-invalid @enderror" name="description" rows="4"
-                                    placeholder="Descriptions">{{ old('description') }}</textarea>
+                                    placeholder="Descriptions" required>{{ old('description') }}</textarea>
                                 @error('description')
                                     <span class="invalid-feedback d-block">{{ $message }}</span>
                                 @enderror
@@ -394,6 +394,75 @@
     @endpush
     @push('scripts')
         {!! ToastMagic::scripts() !!}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const form = document.getElementById("contactForm");
+
+                form.addEventListener("submit", function(e) {
+                    let valid = true;
+
+                    // Clear previous errors
+                    form.querySelectorAll(".invalid-feedback.js-error").forEach(el => el.remove());
+                    form.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+
+                    // Email validation
+                    const email = form.querySelector("input[name='email']");
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+                        valid = false;
+                        showError(email, "Please enter a valid email address.");
+                    }
+
+                    // Subject validation
+                    const subject = form.querySelector("input[name='subject']");
+                    if (!subject.value.trim()) {
+                        valid = false;
+                        showError(subject, "Subject is required.");
+                    } else if (subject.value.trim().length < 4) {
+                        valid = false;
+                        showError(subject, "Subject must be at least 4 characters long.");
+                    } else if (subject.value.trim().length > 988) {
+                        valid = false;
+                        showError(subject, "Subject must be less than 988 characters long.");
+                    }
+
+                    // Description validation
+                    const description = form.querySelector("textarea[name='description']");
+                   else if (!description.value.trim()) {
+                        valid = false;
+                        showError(description, "Description is required.");
+                    } else if (description.value.trim().length < 4) {
+                        valid = false;
+                        showError(description, "Description must be at least 4 characters long.");
+                    }
+                    // reCAPTCHA response value const
+                    recaptchaResponse = document.querySelector("#g-recaptcha-response");
+                    // Clear old error
+                    const oldError = form.querySelector(".recaptcha-error");
+                    if (oldError) oldError.remove();
+                    if (!recaptchaResponse || !recaptchaResponse.value.trim()) {
+                        e.preventDefault();
+                        // Show inline error message
+                        const error = document.createElement("div");
+                        error.className = "text-danger recaptcha-error mt-2";
+                        error.innerText = "Please complete the reCAPTCHA before submitting.";
+                        form.querySelector(".mb-3").appendChild(error);
+                    }
+
+                    if (!valid) {
+                        e.preventDefault();
+                    }
+                });
+
+                function showError(field, message) {
+                    field.classList.add("is-invalid");
+                    const error = document.createElement("div");
+                    error.className = "invalid-feedback js-error d-block";
+                    error.innerText = message;
+                    field.insertAdjacentElement("afterend", error);
+                }
+            });
+        </script>
     @endpush
 
 @endsection

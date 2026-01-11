@@ -38,6 +38,7 @@
                                     <div class="form-group">
                                         <label>Upload File (Image/PDF)</label>
                                         <Vue3Dropzone v-model="fileUpload" :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Maximum File Size: 4MB</small>
                                     </div>
 
                                     <!-- type -->

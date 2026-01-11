@@ -29,18 +29,20 @@
 
                         <!-- Progress feedback -->
                         <div v-if="isUploading" class="fm-progress">
-                            <p>Uploading… {{ uploadProgress }}%</p>
-                            <progress :value="uploadProgress" max="100"></progress>
+                            <p>{{ uploadMessage }}</p>
+                            <!-- <progress :value="uploadProgress" max="100"></progress> -->
                         </div>
                     </div>
 
                     <!-- File grid -->
                     <div class="fm-grid">
-                        <div v-for="file in fileItems" :key="file.path" class="fm-item">
-                            <div class="fm-thumb-wrapper" style="width: 100%;" @click="selectFile(file)">
+                        <div v-for="file in fileItems" :key="file.path" class="fm-item rounded">
+                            <div class="fm-thumb-wrapper border overflow-hidden rounded" style="width: 100%;" @click="selectFile(file)">
                                 <!-- Image -->
-                                <img style="width: 100%;" v-if="['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(file.type)"
-                                    :src="file.url" alt="" class="fm-thumb" />
+                                <span v-if="['mp4', 'mov', 'avi', 'mkv'].includes(file.type)" class="badge badge-video">Video</span>
+                                <img style="width: 100%;"
+                                    v-if="['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(file.type)" :src="file.url"
+                                    alt="" class="fm-thumb" />
 
                                 <!-- Video -->
                                 <video v-else-if="['mp4', 'mov', 'avi', 'mkv'].includes(file.type)" controls
@@ -50,7 +52,8 @@
 
                                 <!-- PDF -->
                                 <div v-else-if="file.type === 'pdf'" class="fm-pdf">
-                                    📄 <span>PDF</span>
+                                    <span class="badge badge-video">Pdf</span>
+                                     <span class="text-wrap">📄{{ file.name }}</span>
                                 </div>
 
                                 <!-- Unknown -->
@@ -138,6 +141,7 @@ const currentFolder = ref('uploads');
 
 // NEW: progress state
 const uploadProgress = ref(0);
+const uploadMessage = ref('');
 const isUploading = ref(false);
 
 // Load files from backend
@@ -157,52 +161,50 @@ const loadFiles = async () => {
 
 // Upload file with progress
 const handleUpload = async (event) => {
-    const files = event.target.files;
-    if (!files || !files.length) return;
+  const files = event.target.files;
+  if (!files || !files.length) return;
 
-    for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folder', currentFolder.value);
+  for (const file of files) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', currentFolder.value);
 
-        try {
-            isUploading.value = true;
-            uploadProgress.value = 0;
+    try {
+      isUploading.value = true;
+      uploadMessage.value = "Uploading…";
 
-            const { data } = await axios.post('/api/media/upload', formData, {
-                headers: { 'Content-Type': 'multipart/form-data', 'Accept': 'application/json' },
-                onUploadProgress: (progressEvent) => {
-                    if (progressEvent.total) {
-                        uploadProgress.value = Math.round(
-                            (progressEvent.loaded * 100) / progressEvent.total
-                        );
-                    }
-                }
-            });
-
-            // Add each uploaded file to grid
-            fileItems.value.push({
-                name: data.path.split('/').pop(),
-                path: data.path,
-                url: data.url,
-                type: file.name.split('.').pop().toLowerCase()
-            });
-
-            // Once upload is complete (100%), close and select file
-            if (uploadProgress.value === 100) {
-                isUploading.value = false;
-                selectFile(fileItems.value[fileItems.value.length - 1]);
-                show.value = false; // close file manager modal
-            }
-        } catch (error) {
-            console.error(`Upload failed for ${file.name}`, error);
-            isUploading.value = false;
+      const { data } = await axios.post('/api/media/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json'
         }
-    }
+      });
 
-    // Reset input so same files can be reselected later
-    event.target.value = '';
+      // Add uploaded file to grid
+      fileItems.value.push({
+        name: data.path.split('/').pop(),
+        path: data.path,
+        url: data.url,
+        type: file.name.split('.').pop().toLowerCase()
+      });
+
+      // ✅ Success
+      uploadMessage.value = "Upload complete!";
+      isUploading.value = false;
+
+      selectFile(fileItems.value[fileItems.value.length - 1]);
+      show.value = false; // close modal
+    } catch (error) {
+      console.error(`Upload failed for ${file.name}`, error);
+      uploadMessage.value = "Something went wrong, try again later.";
+      isUploading.value = false;
+    }
+  }
+
+  // Reset input so same files can be reselected later
+  event.target.value = '';
 };
+
 
 // Delete file
 const deleteFile = async (path) => {
@@ -278,6 +280,19 @@ const config = computed(() => ({
         'numberedList', 'bulletedList', 'outdent', 'indent', '|',
         'removeFormat'
     ],
+    // Add the link configuration here
+    link: {
+        decorators: {
+            openInNewTab: {
+                mode: 'manual',
+                label: 'Open in a new tab',
+                attributes: {
+                    target: '_blank',
+                    rel: 'noopener noreferrer'
+                }
+            }
+        }
+    },
     image: {
         insert: { integrations: ['upload', 'url'] },
         toolbar: [
@@ -333,7 +348,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 999;
     animation: fadeIn 0.2s ease-out;
 }
 
@@ -447,7 +462,7 @@ onMounted(() => {
     cursor: pointer;
     position: relative;
     width: 100%;
-    /* height: 150px; */
+    min-height: 80px;
 }
 
 .fm-item:hover {
@@ -555,6 +570,17 @@ onMounted(() => {
 
 .fm-btn-secondary:hover {
     background: #f0f0f0;
+}
+
+.badge-video {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: #0A6847;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 /* Animations */

@@ -1,26 +1,26 @@
 <template>
-    <DashboardHeader :title="news?.title || 'Blog Details'" />
+    <DashboardHeader :title="news?.title || 'Blog Details'" :back="true" @back="goBack()" />
 
     <section class="content-header">
         <div class="container-fluid">
             <div v-if="news" class="card shadow-sm">
                 <!-- News image preview -->
-
-                <h6 class="font-weight-bold"> Banner Image</h6>
-                <img v-if="news.image" height="300" :src="getImageUrl(news.image)" class="card-img-top object-fit-cover"
-                    loading="lazy" :alt="news.alt_name || news.title" />
-                <h6 class="font-weight-bold"> Featured Image</h6>
-                <img v-if="news.image" height="300" :src="getImageUrl(news.f_image)"
-                    class="card-img-top object-fit-cover" loading="lazy" :alt="news.alt_name || news.title" />
                 <div class="card-body">
-                    <h5 class="card-title">{{ news.title }}</h5>
+                    <h6 class="font-weight-bold" v-if="news.image"> Banner Image</h6>
+                    <img v-if="news.image"  :src="getImageUrl(news.image)"
+                        class="card-img-top img-fluid" loading="lazy" :alt="news.alt_name || news.title" />
+                    <h6 v-if="news.f_image" class="font-weight-bold mt-3"> Featured Image</h6>
+                    <img v-if="news.f_image"  :src="getImageUrl(news.f_image)"
+                        class="card-img-top img-fluid" loading="lazy" :alt="news.alt_name || news.title" />
+
+                    <h5 class="card-title mt-3">{{ news.title }}</h5>
                     <p class="card-text" v-html="news.description"></p>
 
                     <!-- Categories -->
                     <div v-if="news.categories && news.categories.length" class="mt-3">
                         <h6 class="font-weight-bold">Categories</h6>
                         <a href="#" v-for="cat in news.categories" :key="cat.id">
-                            <span class="badge border ml-2">{{ cat.parent?.category_name ? cat.parent.category_name + '> ' : ''}}{{ cat.category_name }}
+                            <span class="badge border ml-2">{{ cat.parent?.category_name ? cat.parent.category_name + '>': ''}}{{ cat.category_name }}
                             </span>
                         </a>
                     </div>
@@ -44,7 +44,8 @@ const route = useRoute();
 
 // Single blog post data
 const news = ref(null);
-
+import { useNavigation } from '@/composables/useNavigation';
+const { goBack } = useNavigation();
 /**
  * Fetch the individual blog post by slug on component mount
  */

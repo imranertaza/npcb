@@ -74,7 +74,7 @@
                                     <div class="form-group">
                                         <label>Upload Image</label>
                                         <Vue3Dropzone v-model="fileUpload" :allowSelectOnPreview="true" required />
-                                        <small class="text-muted">Recommended: 265 × 379px</small>
+                                        <small class="text-muted">Recommended: 262 × 225px</small>
                                     </div>
 
                                     <!-- Status -->

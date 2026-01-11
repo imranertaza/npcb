@@ -70,7 +70,7 @@ class ResultController extends Controller
             'title'       => 'required|string|max:255',
             'slug'        => 'required|string|unique:results,slug',
             'description' => 'nullable|string',
-            'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
+            'file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,pdf,doc,docx|max:4096',
             'status'      => 'required|in:0,1',
             'type'      => 'required|in:0,1',
         ]);
@@ -116,7 +116,7 @@ class ResultController extends Controller
                 Rule::unique('results', 'slug')->ignore($result->id),
             ],
             'description' => 'nullable|string',
-            'file'        => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:4096',
+            'file'        => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,pdf,doc,docx|max:4096',
             'status'      => 'required|in:0,1',
             'type'      => 'required|in:0,1',
         ]);

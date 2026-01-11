@@ -79,8 +79,8 @@ class BlogController extends Controller
                 'meta_title'       => 'nullable|string',
                 'meta_keyword'     => 'nullable|string',
                 'meta_description' => 'nullable|string',
-                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-                'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
+                'f_image'          => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
                 'alt_name'         => 'nullable|string|max:255',
                 'publish_date'     => 'nullable|date',
                 'status'           => ['required', Rule::in(['0', '1'])],
@@ -90,19 +90,18 @@ class BlogController extends Controller
             [
                 'f_image.required' => 'The Featured image or video is required.',
                 'f_image.image' => 'Please upload a valid image file.',
-                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
                 'f_image.max'   => 'That file is too big! Keep it under 2MB.',
                 'image.required' => 'The Banner image or video is required.',
                 'image.file' => 'Please upload a valid file.',
-                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF.',
                 'image.max' => 'That file is too large! Keep it under 500MB.',
             ]
         );
 
         $validated['createdBy']    = Auth::id();
         $validated['updatedBy']    = Auth::id();
-        $validated['publish_date'] = $request->input('publish_date', now());
-
+        $validated['publish_date'] = now();
         // Create blog first (without images)
         $blog = Blog::create($validated);
 
@@ -157,8 +156,8 @@ class BlogController extends Controller
                 'meta_title'       => 'nullable|string',
                 'meta_keyword'     => 'nullable|string',
                 'meta_description' => 'nullable|string',
-                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-                'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
+                'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
                 'alt_name'         => 'nullable|string|max:255',
                 'status'           => ['required', Rule::in(['0', '1'])],
                 'categories'       => 'required|array',
@@ -167,11 +166,11 @@ class BlogController extends Controller
             [
                 'f_image.required' => 'The Featured image or video is required.',
                 'f_image.image' => 'Please upload a valid image file.',
-                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
                 'f_image.max'   => 'That file is too big! Keep it under 2MB.',
                 'image.required' => 'The Banner image or video is required.',
                 'image.file' => 'Please upload a valid file.',
-                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF.',
                 'image.max' => 'That file is too large! Keep it under 500MB.',
             ]
         );

@@ -80,7 +80,7 @@ class PageController extends Controller
             'short_des'        => 'nullable|string|max:255',
             'page_description' => 'nullable|string',
             'temp'             => 'nullable|string|max:255',
-            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'meta_keyword'     => 'nullable|string|max:255',
@@ -89,7 +89,7 @@ class PageController extends Controller
             'updatedBy'        => 'nullable|integer',
         ], [
             'f_image.image' => 'Please upload a valid image file.',
-            'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+            'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
             'f_image.max'   => 'That file is too big! Keep it under 2MB.',
         ]);
 
@@ -129,7 +129,7 @@ class PageController extends Controller
             'short_des'        => 'nullable|string|max:255',
             'page_description' => 'nullable|string',
             'temp'             => 'nullable|string|max:255',
-            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'f_image'          => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
             'remove_f_image'   => 'nullable|numeric',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',

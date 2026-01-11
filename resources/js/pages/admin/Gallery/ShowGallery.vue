@@ -1,5 +1,5 @@
 <template>
-    <DashboardHeader :title="gallery?.name || 'Gallery Details'" />
+    <DashboardHeader :title="gallery?.name || 'Gallery Details'" :back="true" @back="goBack()" />
 
     <section class="content-header">
         <div class="container-fluid">
@@ -48,6 +48,8 @@ const route = useRoute();
 // Single gallery item data
 const gallery = ref(null);
 
+import { useNavigation } from '@/composables/useNavigation';
+const { goBack } = useNavigation();
 /**
  * Fetch the gallery item by ID on mount
  */

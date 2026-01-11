@@ -53,6 +53,7 @@
                                         <label>Upload Image</label>
                                         <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
                                             :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Recommended: 1140 × 375px</small>
                                     </div>
 
                                     <!-- Page Type -->

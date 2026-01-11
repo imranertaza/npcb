@@ -137,8 +137,6 @@ const fetchMember = async () => {
         // Populate form with fetched data
         Object.assign(form, member);
 
-        console.log(getImageCacheUrl(member.image));
-
         // Show existing image in Dropzone preview if present
         if (member.image) {
             previews.value = [getImageCacheUrl(member.image)];

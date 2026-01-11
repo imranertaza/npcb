@@ -77,11 +77,8 @@ Route::controller(FrontendController::class)->group(function () {
 });
 
 /* Admin panel routes */
-Route::get('/admin', function () {
-    return redirect('/admin/dashboard');
-});
 
 /* Catch-all route for Vue SPA admin panel */
-Route::get('admin/{any}', function () {
+Route::get('admin/{any?}', function () {
     return view('welcome');
 })->where('any', '.*');

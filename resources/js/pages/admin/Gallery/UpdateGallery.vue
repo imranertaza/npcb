@@ -48,10 +48,6 @@
                                     <!-- Thumb Upload -->
                                     <div class="form-group">
                                         <label>Upload Thumbnail</label>
-                                        <div v-if="form.thumb" class="mb-2">
-                                            <img :src="getImageCacheUrl(form.thumb, 80, 80)" alt="Gallery Thumb"
-                                                height="80" class="rounded" />
-                                        </div>
                                         <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
                                             :allowSelectOnPreview="true" />
                                         <small class="text-muted">Recommended:262 × 230px</small>
@@ -222,7 +218,7 @@ const fetchGallery = async () => {
 
         // Set existing thumbnail preview
         if (form.thumb) {
-            previews.value = [{ url: getImageUrl(form.thumb) }];
+            previews.value = [getImageUrl(form.thumb)];
         }
     } catch (err) {
         console.error(err);

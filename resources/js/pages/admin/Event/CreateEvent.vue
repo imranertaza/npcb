@@ -1,116 +1,102 @@
 <template>
-  <DashboardHeader title="Create Event" />
-  <section class="content">
-    <div class="container-fluid">
-      <div class="row row-cols-1">
-        <div class="card card-purple">
-          <div class="card-header">
-            <h3 class="card-title">Create Event</h3>
-          </div>
+    <DashboardHeader title="Create Event" />
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row row-cols-1">
+                <div class="card card-purple">
+                    <div class="card-header">
+                        <h3 class="card-title">Create Event</h3>
+                    </div>
 
-          <form @submit.prevent="submitEvent">
-            <div class="card-body">
-              <div class="row">
-                <!-- Left Column -->
-                <div class="col-md-8">
-                  <!-- Title & Slug -->
-                  <div class="form-group">
-                    <label>Event Title</label>
-                    <input
-                      v-model="form.title"
-                      @input="form.slug = generateSlug(form.title)"
-                      type="text"
-                      class="form-control"
-                      required
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label>Slug</label>
-                    <input
-                      v-model="form.slug"
-                      type="text"
-                      class="form-control"
-                      required
-                    />
-                  </div>
+                    <form @submit.prevent="submitEvent">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Left Column -->
+                                <div class="col-md-8">
+                                    <!-- Title & Slug -->
+                                    <div class="form-group">
+                                        <label>Event Title</label>
+                                        <input v-model="form.title" @input="form.slug = generateSlug(form.title)"
+                                            type="text" class="form-control" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Slug</label>
+                                        <input v-model="form.slug" type="text" class="form-control" required />
+                                    </div>
 
-                  <!-- Description -->
-                  <div class="form-group">
-                    <label>Description</label>
-                    <RichTextEditor
-                      v-model="form.description"
-                      placeholder="Write event details here..."
-                      class="editor"
-                    ></RichTextEditor>
-                  </div>
+                                    <!-- Description -->
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <RichTextEditor v-model="form.description"
+                                            placeholder="Write event details here..." class="editor"></RichTextEditor>
+                                    </div>
 
-                  <!-- Category -->
-                  <div class="form-group">
-                    <label>Event Category</label>
-                    <Multiselect
-                      v-model="form.event_category_id"
-                      :options="categoriesOptions"
-                      :reduce="(option) => option.value"
-                      placeholder="Select Event category"
-                      searchable
-                      allow-empty
-                    />
-                  </div>
+                                    <!-- Category -->
+                                    <div class="form-group">
+                                        <label>Event Category</label>
+                                        <Multiselect v-model="form.event_category_id" :options="categoriesOptions"
+                                            :reduce="(option) => option.value" placeholder="Select Event category"
+                                            searchable allow-empty />
+                                    </div>
+                                </div>
+
+                                <!-- Right Column -->
+                                <div class="col-md-4">
+                                    <!-- File Upload -->
+                                    <div class="form-group">
+                                        <label>Upload Featured Image</label>
+                                        <Vue3Dropzone v-model="imageUpload" :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Recommended: Running (262 x 230px) | Upcoming(252 x
+                                            515px)</small>
+                                    </div>
+                                    <!-- File Upload -->
+                                    <div class="form-group">
+                                        <label>Upload Banner Image</label>
+                                        <Vue3Dropzone v-model="fileUpload" :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Recommended: 1140 × 375px</small>
+                                    </div>
+
+                                    <!-- Event Type -->
+                                    <div class="form-group">
+                                        <label>Event Type</label>
+                                        <select v-model="form.type" class="custom-select">
+                                            <option value="2">Past</option>
+                                            <option value="1">Running</option>
+                                            <option value="0">Upcoming</option>
+                                        </select>
+                                    </div>
+                                    <!-- Event Scope -->
+                                    <!-- <div class="form-group">
+                                        <label>Event Scope</label>
+                                        <select v-model="form.event_scope" class="custom-select">
+                                            <option value="0">National</option>
+                                            <option value="1">International</option>
+                                        </select>
+                                    </div> -->
+                                    <!-- Status -->
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select v-model="form.status" class="custom-select">
+                                            <option value="1">Active</option>
+                                            <option value="0">Inactive</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <button type="submit" class="btn btn-success btn-block">
+                                            Submit
+                                        </button>
+                                        <RouterLink :to="{ name: 'Events' }" class="btn btn-secondary btn-block mt-2">
+                                            Cancel</RouterLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Right Column -->
-                <div class="col-md-4">
-                  <!-- File Upload -->
-                  <div class="form-group">
-                    <label>Upload Featured Image</label>
-                    <Vue3Dropzone v-model="imageUpload" :allowSelectOnPreview="true" />
-                    <small class="text-muted"
-                      >Recommended: Running (262 x 230px) | Upcoming(252 x 515px)</small
-                    >
-                  </div>
-                  <!-- File Upload -->
-                  <div class="form-group">
-                    <label>Upload Banner Image</label>
-                    <Vue3Dropzone v-model="fileUpload" :allowSelectOnPreview="true" />
-                    <small class="text-muted">Recommended: 1140 × 375px</small>
-                  </div>
-
-                  <!-- Event Type -->
-                  <div class="form-group">
-                    <label>Event Type</label>
-                    <select v-model="form.type" class="custom-select">
-                      <option value="1">Running</option>
-                      <option value="0">Upcoming</option>
-                    </select>
-                  </div>
-                  <!-- Status -->
-                  <div class="form-group">
-                    <label>Status</label>
-                    <select v-model="form.status" class="custom-select">
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <button type="submit" class="btn btn-success btn-block">
-                      Submit
-                    </button>
-                    <RouterLink
-                      :to="{ name: 'Events' }"
-                      class="btn btn-secondary btn-block mt-2"
-                    >
-                      Cancel</RouterLink
-                    >
-                  </div>
-                </div>
-              </div>
             </div>
-          </form>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 </template>
 
 <script setup>
@@ -136,14 +122,15 @@ const categories = ref([]);
 
 // Reactive form state for new event
 const form = reactive({
-  title: "",
-  slug: "",
-  description: "",
-  event_category_id: "",   // '' = no category
-  status: "1",             // "1" = published/active, "0" = draft/inactive
-  banner_image: null,      // Preview only (not sent)
-  featured_image: null,    // Preview only (not sent)
-  type: 1                  // Event type (adjust based on your backend)
+    title: "",
+    slug: "",
+    description: "",
+    event_category_id: "",   // '' = no category
+    status: "1",             // "1" = published/active, "0" = draft/inactive
+    banner_image: null,      // Preview only (not sent)
+    featured_image: null,    // Preview only (not sent)
+    type: 1,                 // Event type (adjust based on your backend)
+    event_scope: 0
 });
 
 /**
@@ -151,26 +138,26 @@ const form = reactive({
  * Includes "-- None --" as the first option
  */
 const categoriesOptions = computed(() => {
-  return [
-    { label: "-- None --", value: "" },
-    ...categories.value.map((cat) => ({
-      label: cat.category_name,
-      value: cat.id,
-    })),
-  ];
+    return [
+        { label: "-- None --", value: "" },
+        ...categories.value.map((cat) => ({
+            label: cat.category_name,
+            value: cat.id,
+        })),
+    ];
 });
 
 /**
  * Fetch all event categories for the dropdown
  */
 const fetchCategories = async () => {
-  try {
-    const res = await axios.get("/api/events-categories?all=1");
-    categories.value = res.data.data;
-  } catch (error) {
-    toast.error("Failed to load categories");
-    console.error("Fetch categories error:", error);
-  }
+    try {
+        const res = await axios.get("/api/events-categories?all=1");
+        categories.value = res.data.data;
+    } catch (error) {
+        toast.error("Failed to load categories");
+        console.error("Fetch categories error:", error);
+    }
 };
 
 /**
@@ -178,41 +165,41 @@ const fetchCategories = async () => {
  * Builds FormData payload with text fields + optional images
  */
 const submitEvent = async () => {
-  const payload = new FormData();
+    const payload = new FormData();
 
-  // Append all fields except image placeholders
-  for (const key in form) {
-    if (key !== "banner_image" && key !== "featured_image") {
-      payload.append(key, form[key] ?? "");
+    // Append all fields except image placeholders
+    for (const key in form) {
+        if (key !== "banner_image" && key !== "featured_image") {
+            payload.append(key, form[key] ?? "");
+        }
     }
-  }
 
-  // Append banner image if uploaded
-  if (fileUpload.value && fileUpload.value[0]) {
-    payload.append("banner_image", fileUpload.value[0].file);
-  }
+    // Append banner image if uploaded
+    if (fileUpload.value && fileUpload.value[0]) {
+        payload.append("banner_image", fileUpload.value[0].file);
+    }
 
-  // Append featured image if uploaded
-  if (imageUpload.value && imageUpload.value[0]) {
-    payload.append("featured_image", imageUpload.value[0].file);
-  }
+    // Append featured image if uploaded
+    if (imageUpload.value && imageUpload.value[0]) {
+        payload.append("featured_image", imageUpload.value[0].file);
+    }
 
-  try {
-    await axios.post("/api/events", payload, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    try {
+        await axios.post("/api/events", payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
 
-    toast.success("Event created successfully!");
+        toast.success("Event created successfully!");
 
-    // Optional: reset form or redirect here
-  } catch (error) {
-    toast.validationError(error); // Better handling for validation (422) errors
-  }
+        // Optional: reset form or redirect here
+    } catch (error) {
+        toast.validationError(error); // Better handling for validation (422) errors
+    }
 };
 
 // Load categories when component mounts
 onMounted(() => {
-  fetchCategories();
+    fetchCategories();
 });
 
 // Optional: Auto-generate slug when title changes

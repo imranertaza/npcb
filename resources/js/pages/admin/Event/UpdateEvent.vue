@@ -50,6 +50,9 @@
                                         <label>Upload Featured Image</label>
                                         <Vue3Dropzone v-model="imageUpload" v-model:previews="previewsImage" mode="edit"
                                             :allowSelectOnPreview="true" />
+                                        <small class="text-muted">Recommended: Running (262 x 230px) | Upcoming(252
+                                            x515px)</small>
+
                                     </div>
                                     <!-- File Upload -->
                                     <div class="form-group">
@@ -66,9 +69,16 @@
                                             <option value="1">Running</option>
                                             <option value="0">Upcoming</option>
                                             <option value="2">Past</option>
-
                                         </select>
                                     </div>
+                                    <!-- Scope -->
+                                    <!-- <div class="form-group">
+                                        <label>Event Scope</label>
+                                        <select v-model="form.event_scope" class="custom-select">
+                                            <option value="0">National</option>
+                                            <option value="1">International</option>
+                                        </select>
+                                    </div> -->
                                     <!-- Status -->
                                     <div class="form-group">
                                         <label>Status</label>
@@ -139,6 +149,7 @@ const form = reactive({
     status: '1',              // '1' = active/published
     createdBy: 1,
     type: 0,
+    event_scope: 0,
     updatedBy: null
 });
 

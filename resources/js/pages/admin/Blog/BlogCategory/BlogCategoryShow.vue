@@ -1,5 +1,5 @@
 <template>
-    <DashboardHeader title="Blog Category Details" />
+    <DashboardHeader title="Blog Category Details" :back="true" @back="goBack()" />
 
     <section class="mt-3">
         <div class="card">
@@ -130,7 +130,8 @@ import { useAuthStore } from '@/store/auth';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-
+import { useNavigation } from '@/composables/useNavigation';
+const { goBack } = useNavigation();
 // Toast notifications
 const toast = useToast();
 

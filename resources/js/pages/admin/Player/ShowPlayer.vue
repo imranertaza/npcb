@@ -1,5 +1,5 @@
 <template>
-  <DashboardHeader :title="player?.name || 'Player Details'" />
+  <DashboardHeader :title="player?.name || 'Player Details'" :back="true" @back="goBack()" />
 
   <section class="content-header">
     <div class="container-fluid">
@@ -49,7 +49,8 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getImageUrl } from '@/layouts/helpers/helpers';
-
+import { useNavigation } from '@/composables/useNavigation';
+const { goBack } = useNavigation();
 const route = useRoute();
 const player = ref(null);
 
