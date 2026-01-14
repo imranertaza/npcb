@@ -125,7 +125,9 @@ const getSlider = async () => {
 /* Update slide */
 const updateSlide = async () => {
     const payload = new FormData();
-
+    if (!previews.value[0]) {
+        payload.append('remove_image', 1);
+    }
     for (const key in form) {
         if (key !== "image") {
             payload.append(key, String(form[key] ?? ""));

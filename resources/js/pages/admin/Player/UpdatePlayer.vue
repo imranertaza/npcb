@@ -17,25 +17,45 @@
                   <!-- Player Name -->
                   <div class="form-group">
                     <label>Player Name</label>
-                    <input v-model="form.name" type="text" class="form-control" required />
+                    <input
+                      v-model="form.name"
+                      type="text"
+                      class="form-control"
+                      required
+                    />
                   </div>
 
                   <!-- Sport -->
                   <div class="form-group">
                     <label>Sport</label>
-                    <input v-model="form.sport" type="text" class="form-control" required />
+                    <input
+                      v-model="form.sport"
+                      type="text"
+                      class="form-control"
+                      required
+                    />
                   </div>
 
                   <!-- Position -->
                   <div class="form-group">
                     <label>Position</label>
-                    <input v-model="form.position" type="text" class="form-control" required/>
+                    <input
+                      v-model="form.position"
+                      type="text"
+                      class="form-control"
+                      required
+                    />
                   </div>
 
                   <!-- Team -->
                   <div class="form-group">
                     <label>Team</label>
-                    <input v-model="form.team" type="text" class="form-control" required/>
+                    <input
+                      v-model="form.team"
+                      type="text"
+                      class="form-control"
+                      required
+                    />
                   </div>
 
                   <!-- Country -->
@@ -47,7 +67,12 @@
                   <!-- Birthdate -->
                   <div class="form-group">
                     <label>Birthdate</label>
-                    <input v-model="form.birthdate" type="date" class="form-control" required/>
+                    <input
+                      v-model="form.birthdate"
+                      type="date"
+                      class="form-control"
+                      required
+                    />
                   </div>
 
                   <!-- Height -->
@@ -71,11 +96,19 @@
                   <!-- Rankings -->
                   <div class="form-group">
                     <label>Asian Ranking</label>
-                    <input v-model="form.asian_ranking" type="text" class="form-control" />
+                    <input
+                      v-model="form.asian_ranking"
+                      type="text"
+                      class="form-control"
+                    />
                   </div>
                   <div class="form-group">
                     <label>National Ranking</label>
-                    <input v-model="form.national_ranking" type="text" class="form-control" />
+                    <input
+                      v-model="form.national_ranking"
+                      type="text"
+                      class="form-control"
+                    />
                   </div>
                 </div>
 
@@ -84,15 +117,23 @@
                   <!-- Image Upload -->
                   <div class="form-group">
                     <label>Upload Image</label>
-                    <Vue3Dropzone v-model="fileUpload" v-model:previews="previews" mode="edit"
-                      :allowSelectOnPreview="true" />
+                    <Vue3Dropzone
+                      v-model="fileUpload"
+                      v-model:previews="previews"
+                      mode="edit"
+                      :allowSelectOnPreview="true"
+                    />
                     <small class="text-muted">Recommended: 262 × 225px</small>
 
                     <!-- Preview -->
                     <div v-if="previews && previews.length" class="mt-3">
                       <div v-for="(preview, idx) in previews" :key="idx">
-                        <img :src="preview" alt="Preview" class="img-fluid rounded border"
-                          style="max-height: 120px" />
+                        <img
+                          :src="preview"
+                          alt="Preview"
+                          class="img-fluid rounded border"
+                          style="max-height: 120px"
+                        />
                       </div>
                     </div>
                   </div>
@@ -107,8 +148,13 @@
                   </div>
 
                   <div>
-                    <button type="submit" class="btn btn-success btn-block">Update</button>
-                    <RouterLink :to="{ name: 'Players' }" class="btn btn-secondary btn-block mt-2">
+                    <button type="submit" class="btn btn-success btn-block">
+                      Update
+                    </button>
+                    <RouterLink
+                      :to="{ name: 'Players' }"
+                      class="btn btn-secondary btn-block mt-2"
+                    >
                       Cancel
                     </RouterLink>
                   </div>
@@ -173,7 +219,9 @@ const fetchPlayer = async () => {
 // Update player
 const updatePlayer = async () => {
   const payload = new FormData();
-
+  if (!previews.value[0]) {
+    payload.append("remove_image", 1);
+  }
   for (const key in form) {
     if (key !== "image") {
       payload.append(key, form[key]);

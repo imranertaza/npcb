@@ -153,7 +153,9 @@ const fetchMember = async () => {
  */
 const updateMember = async () => {
     const payload = new FormData();
-
+    if (!previews.value[0]) {
+        payload.append('remove_image', 1);
+    }
     // Append all fields except image placeholder
     for (const key in form) {
         if (key !== 'image') {

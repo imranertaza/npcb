@@ -145,6 +145,16 @@ class BlogCategoryController extends Controller
             'status'           => 'in:0,1',
         ]);
 
+        if ($request->remove_image == 1) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $validated['image'] = null;
+        } else {
+            // Keep existing image if no new file uploaded
+            $validated['image'] = $category->image;
+        }
+
         if ($request->hasFile('image')) {
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
@@ -156,8 +166,6 @@ class BlogCategoryController extends Controller
                 ->storeAs("blogs/category/{$category->id}", $filename, 'public');
 
             $validated['image'] = $path;
-        } else {
-            $validated['image'] = $category->image;
         }
 
         $validated['updatedBy'] = Auth::id();

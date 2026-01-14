@@ -121,6 +121,18 @@ class NoticeController extends Controller
             'status'      => 'required|in:0,1',
             'type'        => 'required|in:0,1',
         ]);
+        if ($request->remove_f_image) {
+            $request->validate([
+                'featured_image'    => 'required|image|mimes:jpg,jpeg,png,gif|max:4096',
+            ]);
+        }
+        if ($request->remove_image == 1) {
+            if ($notice->file && Storage::disk('public')->exists($notice->file)) {
+                Storage::disk('public')->delete($notice->file);
+            }
+            $validated['file']   = null;
+        }
+
 
         $validated['updatedBy'] = Auth::id();
 

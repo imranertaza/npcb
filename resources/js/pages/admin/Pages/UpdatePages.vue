@@ -100,7 +100,7 @@ import { useToast } from '@/composables/useToast';
 import RichTextEditor from '../../../components/RichTextEditor.vue';
 
 const toast = useToast();
-const previews = ref();
+const previews = ref([]);
 const route = useRoute();
 const router = useRouter();
 const templates = ref([])
@@ -127,7 +127,10 @@ const fetchPage = async () => {
     try {
         const res = await axios.get(`/api/pages/${route.params.id}`);
         const normalized = Object.fromEntries(Object.entries(res.data.data).map(([key, value]) => [key, value ?? ""]));
-        Object.assign(form, normalized); previews.value = [getImageUrl(form.f_image)];
+        Object.assign(form, normalized);
+        if (form.f_image) {
+            previews.value = [getImageUrl(form.f_image)];
+        }
     } catch (err) {
         console.error(err);
     }

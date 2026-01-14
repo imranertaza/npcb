@@ -175,6 +175,29 @@ class BlogController extends Controller
             ]
         );
 
+        if ($request->remove_f_image == 1) {
+            $request->validate(
+                [
+                    'f_image'          => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
+                ],
+                [
+                    'f_image.required' => 'The Featured image is required.',
+                    'f_image.image' => 'Please upload a valid image file.',
+                    'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
+                    'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                    'image.required' => 'The Banner image is required.',
+                    'image.file' => 'Please upload a valid file.',
+                    'image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF.',
+                    'image.max' => 'That file is too large! Keep it under 500MB.',
+                ]
+            );
+        }
+        if ($request->remove_image == 1) {
+            if ($blog->image && Storage::disk('public')->exists($blog->image)) {
+                Storage::disk('public')->delete($blog->image);
+            }
+            $validated['image'] = null;
+        }
         $validated['updatedBy'] = Auth::id();
 
         // Handle main image replacement

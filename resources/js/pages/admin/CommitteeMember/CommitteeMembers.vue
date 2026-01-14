@@ -214,7 +214,6 @@ const confirmDelete = async (member) => {
             members.value.data = members.value.data.filter(m => m.id !== member.id);
         } catch (error) {
             toast.validationError(error);
-            console.error('Delete failed:', error);
         }
     } else {
         toast.info('Deletion cancelled.');

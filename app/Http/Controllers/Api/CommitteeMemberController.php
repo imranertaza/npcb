@@ -115,6 +115,11 @@ class CommitteeMemberController extends Controller
             'order'       => 'required|integer|min:0',
             'status'      => 'required|in:0,1',
         ]);
+        if ($request->remove_image == 1) {
+            $request->validate([
+                'image'       => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
+            ]);
+        };
 
         if ($request->hasFile('image')) {
             if ($member->image && Storage::disk('public')->exists($member->image)) {

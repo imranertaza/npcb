@@ -158,6 +158,9 @@ const updateSections = async () => {
     }
 
     const payload = new FormData();
+    if (!previews.value[0]) {
+        payload.append('remove_image', 1);
+    }
     payload.append("data", JSON.stringify(data));
 
     // Append new uploaded file if present
@@ -169,7 +172,6 @@ const updateSections = async () => {
         await axios.post(`/api/sections/${form.id}?_method=PUT`, payload, {
             headers: { "Content-Type": "multipart/form-data" },
         });
-
         // Redirect with success toast message
         router.push({
             name: "Section",

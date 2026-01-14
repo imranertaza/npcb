@@ -154,8 +154,8 @@ const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const postId = route.params.id;
-const previews = ref();
-const f_previews = ref();
+const previews = ref([]);
+const f_previews = ref([]);
 
 const form = reactive({
     post_title: "",
@@ -184,7 +184,9 @@ const fetchPost = async () => {
         Object.assign(form, res.data.data);
 
         form.categories = res.data.data.categories.map((c) => c.id);
-        previews.value = [getImageUrl(form.image)];
+        if (form.image) {
+            previews.value = [getImageUrl(form.image)];
+        }
         f_previews.value = [getImageUrl(form.f_image)];
     } catch (err) {
         toast.error("Failed to load post");
@@ -206,6 +208,12 @@ const fetchCategories = async () => {
 const updatePost = async () => {
     const payload = new FormData();
 
+    if (!f_previews.value[0]) {
+        payload.append("remove_f_image", 1);
+    }
+    if (!previews.value[0]) {
+        payload.append("remove_image", 1);
+    }
     // Append all non-file fields
     for (const key in form) {
         if (key !== "image" && key !== "f_image") {

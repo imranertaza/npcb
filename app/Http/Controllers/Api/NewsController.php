@@ -140,79 +140,93 @@ class NewsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        try {
-            $news = News::findOrFail($id);
+        $news = News::findOrFail($id);
 
-            $validated = $request->validate(
+        $validated = $request->validate(
+            [
+                'news_title'       => 'required|string|max:255',
+                'slug'             => [
+                    'required',
+                    'string',
+                    Rule::unique('news', 'slug')->ignore($news->id),
+                ],
+                'short_des'        => 'required|string|max:255',
+                'description'      => 'required|string',
+                'meta_title'       => 'nullable|string',
+                'meta_keyword'     => 'nullable|string',
+                'meta_description' => 'nullable|string',
+                'image'            => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,mp4,avi,mov,wmv|max:500000',
+                'f_image'          => 'nullable|image|mimes:jpg,jpeg,webp,png,gif|max:2048',
+                'alt_name'         => 'nullable|string|max:255',
+                'status'           => ['required', Rule::in(['0', '1'])],
+                'featured'         => ['required', Rule::in([0, 1])],
+                'categories'       => 'required|array',
+                'categories.*'     => 'exists:news_categories,id',
+                'remove_image'     => 'nullable',
+                'remove_f_image'   => 'nullable'
+            ],
+            [
+                'f_image.image' => 'Please upload a valid image file.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
+                'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+                'f_image.required' => 'Featured Image is Required',
+                'image.file' => 'Please upload a valid file.',
+                'image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF, MP4, AVI, MOV, WMV.',
+                'image.max' => 'That file is too large! Keep it under 500MB.',
+            ]
+        );
+
+        if ($request->remove_image == 1) {
+            if ($news->image && Storage::disk('public')->exists($news->image)) {
+                Storage::disk('public')->delete($news->image);
+            }
+            $validated['image'] = null;
+        }
+        if ($request->remove_f_image == 1) {
+            $request->validate(
                 [
-                    'news_title'       => 'required|string|max:255',
-                    'slug'             => [
-                        'required',
-                        'string',
-                        Rule::unique('news', 'slug')->ignore($news->id),
-                    ],
-                    'short_des'        => 'required|string|max:255',
-                    'description'      => 'required|string',
-                    'meta_title'       => 'nullable|string',
-                    'meta_keyword'     => 'nullable|string',
-                    'meta_description' => 'nullable|string',
-                    'image'            => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,mp4,avi,mov,wmv|max:500000',
-                    'f_image'          => 'nullable|image|mimes:jpg,jpeg,webp,png,gif|max:2048',
-                    'alt_name'         => 'nullable|string|max:255',
-                    'status'           => ['required', Rule::in(['0', '1'])],
-                    'featured'         => ['required', Rule::in([0, 1])],
-                    'categories'       => 'required|array',
-                    'categories.*'     => 'exists:news_categories,id',
+                    'f_image' => 'required|image|mimes:jpg,jpeg,webp,png,gif|max:2048',
                 ],
                 [
                     'f_image.image' => 'Please upload a valid image file.',
-                    'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
-                    'f_image.max'   => 'That file is too big! Keep it under 2MB.',
-                    'image.file' => 'Please upload a valid file.',
-                    'image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF, MP4, AVI, MOV, WMV.',
-                    'image.max' => 'That file is too large! Keep it under 500MB.',
+                    'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP,and GIF formats.',
+                    'f_image.required' => 'Featured image is required',
+                    'f_image.max'   => 'That file is too big! Keep it under 2MB.'
                 ]
             );
-
-            $validated['updatedBy'] = Auth::id();
-
-            // Handle main image/video replacement
-            if ($request->hasFile('image')) {
-                if ($news->image && Storage::disk('public')->exists($news->image)) {
-                    Storage::disk('public')->delete($news->image);
-                }
-
-                $filename = uniqid('news_image_') . '.' . $request->file('image')->getClientOriginalExtension();
-                $validated['image'] = $request->file('image')
-                    ->storeAs("news/{$news->id}/images/image", $filename, 'public');
-            }
-
-            // Handle featured image replacement
-            if ($request->hasFile('f_image')) {
-                if ($news->f_image && Storage::disk('public')->exists($news->f_image)) {
-                    Storage::disk('public')->delete($news->f_image);
-                }
-
-                $filename = uniqid('news_f_image_') . '.' . $request->file('f_image')->getClientOriginalExtension();
-                $validated['f_image'] = $request->file('f_image')
-                    ->storeAs("news/{$news->id}/images/f-image", $filename, 'public');
-            }
-
-            $news->update($validated);
-
-            if (isset($validated['categories'])) {
-                $news->categories()->sync($validated['categories']);
-            }
-
-            return ApiResponse::success($news, 'News updated successfully');
-        } catch (\Exception $e) {
-            Log::error('News update failed: ' . $e->getMessage(), [
-                'id' => $id,
-                'user_id' => Auth::id(),
-            ]);
-
-            return ApiResponse::error('Failed to update news. Please try again later.', 500);
         }
+
+        $validated['updatedBy'] = Auth::id();
+
+        // Handle main image/video replacement
+        if ($request->hasFile('image')) {
+            if ($news->image && Storage::disk('public')->exists($news->image)) {
+                Storage::disk('public')->delete($news->image);
+            }
+
+            $filename = uniqid('news_image_') . '.' . $request->file('image')->getClientOriginalExtension();
+            $validated['image'] = $request->file('image')
+                ->storeAs("news/{$news->id}/images/image", $filename, 'public');
+        }
+
+        // Handle featured image replacement
+        if ($request->hasFile('f_image')) {
+            if ($news->f_image && Storage::disk('public')->exists($news->f_image)) {
+                Storage::disk('public')->delete($news->f_image);
+            }
+
+            $filename = uniqid('news_f_image_') . '.' . $request->file('f_image')->getClientOriginalExtension();
+            $validated['f_image'] = $request->file('f_image')
+                ->storeAs("news/{$news->id}/images/f-image", $filename, 'public');
+        }
+
+        $news->update($validated);
+
+        if (isset($validated['categories'])) {
+            $news->categories()->sync($validated['categories']);
+        }
+
+        return ApiResponse::success($news, 'News updated successfully');
     }
 
 

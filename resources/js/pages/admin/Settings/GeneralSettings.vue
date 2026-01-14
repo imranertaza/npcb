@@ -4,7 +4,6 @@
     <section class="container py-4">
         <div class="card shadow-sm">
             <div class="card-body">
-
                 <!-- Tabs Navigation -->
                 <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
                     <li class="nav-item">
@@ -471,6 +470,13 @@ const submitSettings = async () => {
     if (ogImageFile.value[0]?.file) payload.append('og_image', ogImageFile.value[0].file);
     if (twitterImageFile.value[0]?.file) payload.append('twitter_image', twitterImageFile.value[0].file);
 
+    // if remove any one
+    if (!logoPreview.value[0]) payload.append('remove_store_logo', 1);
+    if (!footerLogoPreview.value[0]) payload.append('remove_footer_logo', 1);
+    if (!faviconPreview.value[0]) payload.append('remove_store_icon', 1);
+    if (!BreadcrumbFilePreview.value[0]) payload.append('remove_breadcrumb', 1);
+    if (!ogImagePreview.value[0]) payload.append('remove_og_image', 1);
+    if (!twitterImagePreview.value[0]) payload.append('remove_twitter_image', 1);
     try {
         await axios.post('/api/settings/update', payload, {
             headers: { 'Content-Type': 'multipart/form-data' }

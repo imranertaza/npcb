@@ -132,6 +132,7 @@ const fetchResult = async () => {
             previews.value = [getImageUrl(form.file)];
         } else if (form.file && isPdf(form.file)) {
             previewsPdf.value = [getImageUrl(form.file)];
+            previews.value = [getImageUrl(form.file)];
         }
     } catch (err) {
         toast.validationError(err);
@@ -141,6 +142,10 @@ const fetchResult = async () => {
 // Update result
 const updateResult = async () => {
     const payload = new FormData();
+
+    if (!previews.value[0]) {
+        payload.append('remove_file', 1);
+    }
 
     for (const key in form) {
         if (key !== 'file') {

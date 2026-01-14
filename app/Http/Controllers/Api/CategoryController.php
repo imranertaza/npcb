@@ -133,7 +133,15 @@ class CategoryController extends Controller
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
-
+        if ($request->remove_image == 1) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $validated['image'] = null;
+        } else {
+            // Keep existing image if no new file uploaded
+            $validated['image'] = $category->image;
+        }
         if ($request->hasFile('image')) {
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
@@ -146,16 +154,8 @@ class CategoryController extends Controller
                 ->storeAs("posts/category/{$category->id}", $filename, 'public');
 
             $validated['image'] = $path;
-        } else {
-            $validated['image'] = $category->image;
         }
 
-        if (isset($validated['remove_f_image']) && $validated['remove_f_image'] == 1 && ! $request->hasFile('image')) {
-            if ($category->image && Storage::disk('public')->exists($category->image)) {
-                Storage::disk('public')->delete($category->image);
-            }
-            $validated['image'] = null;
-        }
 
         $validated['updatedBy'] = Auth::id();
         $category->update($validated);

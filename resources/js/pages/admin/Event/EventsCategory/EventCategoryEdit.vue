@@ -45,7 +45,7 @@
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label">Category Image</label>
-                                <Vue3Dropzone v-model="imageFile" v-model:previews="previewsImage"
+                                <Vue3Dropzone v-model="imageFile" v-model:previews="previews"
                                     :allowSelectOnPreview="true" />
                                 <small class="text-muted">Recommended: 1140 × 375px</small>
 
@@ -97,7 +97,7 @@ import '@jaxtheprime/vue3-dropzone/dist/style.css';
 import { getImageUrl } from '@/layouts/helpers/helpers';
 import { useToast } from '@/composables/useToast';
 import Multiselect from '@vueform/multiselect';
-const previewsImage = ref([]);
+const previews = ref([]);
 
 // Toast notifications
 const toast = useToast();
@@ -121,7 +121,9 @@ const fetchCategory = async () => {
     try {
         const res = await axios.get(`/api/events-categories/${route.params.id}`);
         form.value = res.data.data;
-        previewsImage.value = [getImageUrl(form.value.image)];
+        if (form.value.image) {
+            previews.value = [getImageUrl(form.value.image)];
+        }
 
     } catch (error) {
         toast.error('Failed to load category');
@@ -173,6 +175,9 @@ const updateCategory = async () => {
     // Append new image if selected
     if (imageFile.value && imageFile.value[0]) {
         payload.append('image', imageFile.value[0].file);
+    }
+    if (!previews.value[0]) {
+        payload.append("remove_image", 1);
     }
 
     try {
