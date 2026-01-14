@@ -109,7 +109,11 @@ class SliderController extends Controller
             'enabled'     => 'required|in:0,1',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
-
+        if ($request->remove_image == 1) {
+            $request->validate([
+                'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            ]);
+        }
         if ($request->hasFile('image')) {
             if ($slider->image && Storage::disk('public')->exists($slider->image)) {
                 Storage::disk('public')->delete($slider->image);

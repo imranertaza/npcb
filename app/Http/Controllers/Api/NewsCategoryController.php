@@ -137,7 +137,16 @@ class NewsCategoryController extends Controller
             'sort_order'       => 'integer',
             'status'           => 'in:0,1',
         ]);
-
+        if ($request->remove_f_image == 1) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $validated['image'] = null;
+        } else {
+            // Keep existing image if no new file uploaded
+            $validated['image'] = $category->image;
+        }
+        // dd($request->all());
         // Handle image upload if present
         if ($request->hasFile('image')) {
             // Delete old image if it exists
@@ -152,9 +161,6 @@ class NewsCategoryController extends Controller
                 ->storeAs("news/category/{$category->id}", $filename, 'public');
 
             $validated['image'] = $path;
-        } else {
-            // Keep existing image if no new file uploaded
-            $validated['image'] = $category->image;
         }
 
         $validated['updatedBy'] = Auth::id();

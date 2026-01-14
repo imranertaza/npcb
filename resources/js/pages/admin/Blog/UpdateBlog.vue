@@ -223,7 +223,12 @@ const fetchNews = async () => {
  */
 const updateBlog = async () => {
     const payload = new FormData();
-
+    if (!f_previews.value[0]) {
+        payload.append("remove_f_image", 1);
+    }
+    if (!previews.value[0]) {
+        payload.append("remove_image", 1);
+    }
     // Append all fields except image placeholders
     for (const key in form) {
         if (key !== 'image' && key !== 'f_image') {

@@ -133,6 +133,7 @@ const fetchNotice = async () => {
             previews.value = [getImageUrl(form.file)];
         } else if (form.file && isPdf(form.file)) {
             previewsPdf.value = [getImageUrl(form.file)];
+            previews.value = [getImageUrl(form.file)];
         }
     } catch (err) {
         toast.error('Failed to load notice');
@@ -142,8 +143,11 @@ const fetchNotice = async () => {
 
 // Update notice
 const updateNotice = async () => {
-    const payload = new FormData();
 
+    const payload = new FormData();
+    if (!previews.value[0]) {
+        payload.append('remove_image', 1);
+    }
     for (const key in form) {
         if (key !== 'file') {
             payload.append(key, form[key]);

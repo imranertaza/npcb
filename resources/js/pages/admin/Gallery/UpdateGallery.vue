@@ -232,6 +232,9 @@ const fetchGallery = async () => {
 const updateGallery = async () => {
     const payload = new FormData();
 
+    if (!previews.value[0]) {
+        payload.append("remove_f_image", 1);
+    }
     for (const key in form) {
         if (key !== 'thumb' && key !== 'details') {
             payload.append(key, form[key] ?? '');

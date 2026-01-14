@@ -96,11 +96,11 @@ class PostController extends Controller
                 'categories.*'     => 'exists:categories,id',
             ],
             [
-                'f_image.required' => 'The Featured image or video is required.',
+                'f_image.required' => 'The Featured image is required.',
                 'f_image.image' => 'Please upload a valid image file.',
                 'f_image.mimes' => 'We only support JPG, JPEG, PNG, WEBP, and GIF formats.',
                 'f_image.max'   => 'That file is too big! Keep it under 2MB.',
-                'image.required' => 'The Banner image or video is required.',
+                'image.required' => 'The Banner image is required.',
                 'image.file' => 'Please upload a valid file.',
                 'image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF.',
                 'image.max' => 'That file is too large! Keep it under 500MB.',
@@ -163,24 +163,41 @@ class PostController extends Controller
                 'meta_title'       => 'nullable|string',
                 'meta_keyword'     => 'nullable|string',
                 'meta_description' => 'nullable|string',
-                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-                'f_image'          => 'sometimes|image|mimes:jpg,jpeg,png,gif|max:2048',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+                'f_image'          => 'sometimes|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
                 'alt_name'         => 'nullable|string|max:255',
                 'status'           => ['required', Rule::in(['0', '1'])],
                 'categories'       => 'required|array',
                 'categories.*'     => 'exists:categories,id',
             ],
             [
-                'f_image.required' => 'The Featured image or video is required.',
+                'f_image.required' => 'The Featured image is required.',
                 'f_image.image' => 'Please upload a valid image file.',
                 'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
                 'f_image.max'   => 'That file is too big! Keep it under 2MB.',
-                'image.required' => 'The Banner image or video is required.',
+                'image.required' => 'The Banner image is required.',
                 'image.file' => 'Please upload a valid file.',
                 'image.mimes' => 'Supported formats: JPG, JPEG, PNG, GIF.',
                 'image.max' => 'That file is too large! Keep it under 500MB.',
             ]
         );
+
+        if ($request->remove_f_image) {
+            $request->validate([
+                'f_image'          => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            ], [
+                'f_image.required' => 'The Featured image is required.',
+                'f_image.image' => 'Please upload a valid image file.',
+                'f_image.mimes' => 'We only support JPG, JPEG, PNG, and GIF formats.',
+                'f_image.max'   => 'That file is too big! Keep it under 2MB.',
+            ]);
+        }
+        if ($request->remove_image == 1) {
+            if ($post->image && Storage::disk('public')->exists($post->image)) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $validated['image']   = null;
+        }
 
         $validated['createdBy'] = Auth::user()->id;
         $validated['updatedBy'] = Auth::user()->id;

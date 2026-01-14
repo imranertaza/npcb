@@ -78,6 +78,9 @@ class MenuItemController extends Controller
             'enabled'       => 'boolean',
             'parent_id'     => 'nullable|exists:menu_items,id',
             'order'         => 'nullable|integer|min:0',
+        ], [
+            'category_id.required' => 'Please select an event category.',
+            'category_id.exists' => 'The selected event category does not exist.'
         ]);
 
         if ($validator->fails()) {
@@ -124,6 +127,9 @@ class MenuItemController extends Controller
             'enabled'       => 'boolean',
             'parent_id'     => 'nullable|exists:menu_items,id',
             'order'         => 'nullable|integer|min:0',
+        ], [
+            'category_id.required' => 'Please select an event category.',
+            'category_id.exists' => 'The selected event category does not exist.'
         ]);
 
         if ($validator->fails()) {

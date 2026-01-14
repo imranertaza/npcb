@@ -100,6 +100,22 @@ class SettingsController extends Controller
             'nocaptcha_secret'    => 'sometimes|string|max:255',
         ]);
 
+        $removableImages = [
+            'remove_store_logo' => 'store_logo',
+            'remove_footer_logo' => 'footer_logo',
+            'remove_store_icon' => 'store_icon',
+            'remove_breadcrumb' => 'breadcrumb',
+            'remove_og_image' => 'og_image',
+            'remove_twitter_image' => 'twitter_image',
+        ]; // Build rules dynamically
+        $rules = [];
+        foreach ($removableImages as $removeKey => $fieldName) {
+            if ($request->$removeKey == 1) {
+                $rules[$fieldName] = 'required|image|mimes:jpeg,jpg,png,gif,svg,webp|max:2048';
+            }
+        }
+        $request->validate($rules);
+
         $updated = [];
         $envKeys = ['use_recaptcha', 'nocaptcha_sitekey', 'nocaptcha_secret'];
 

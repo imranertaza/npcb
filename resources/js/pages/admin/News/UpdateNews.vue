@@ -105,7 +105,8 @@
                                     <div class="form-group">
                                         <label>Upload Banner Image or Video (Max 500MB)</label>
                                         <Vue3Dropzone acceptedFiles="image/*,video/*" :maxFileSize="500"
-                                            v-model="imageFile" mode="edit" :allowSelectOnPreview="true" />
+                                            v-model="imageFile" v-model:previews="previews" mode="edit"
+                                            :allowSelectOnPreview="true" />
                                         <small class="text-muted">Recommended: 1140 × 375px</small>
 
                                         <!-- Banner Preview -->
@@ -113,7 +114,7 @@
                                             <template v-for="(file, index) in previews" :key="index">
                                                 <video v-if="isVideo(file)" :src="file" controls class="rounded mb-2"
                                                     height="100"></video>
-                                                <img v-else :src="file" alt="Preview" class="img-fluid rounded mb-2"
+                                                <img v-else :src="file" alt="Preview" class="rounded mb-2"
                                                     height="100" />
                                             </template>
                                         </div>
@@ -167,7 +168,7 @@
 </template>
 <script setup>
 import axios from "axios";
-import { computed, onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import DashboardHeader from "@/components/DashboardHeader.vue";
 import { useToast } from "@/composables/useToast";
@@ -258,6 +259,12 @@ const fetchNews = async () => {
 const updateNews = async () => {
     const payload = new FormData();
 
+    if (!f_previews.value[0]) {
+        payload.append("remove_f_image", 1);
+    }
+    if (!previews.value[0]) {
+        payload.append("remove_image", 1);
+    }
     // Append all fields except image placeholders
     for (const key in form) {
         if (key !== "image" && key !== "f_image") {

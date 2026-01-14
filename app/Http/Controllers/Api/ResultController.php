@@ -121,6 +121,13 @@ class ResultController extends Controller
             'type'      => 'required|in:0,1',
         ]);
 
+        if ($request->remove_file == 1) {
+            if ($result->file && Storage::disk('public')->exists($result->file)) {
+                Storage::disk('public')->delete($result->file);
+            }
+            $validated['file'] = null;
+        }
+
         $validated['updatedBy'] = Auth::id();
 
         if ($request->hasFile('file')) {

@@ -159,6 +159,12 @@ class PlayerController extends Controller
             $counter++;
         }
 
+        if ($request->remove_image) {
+            $request->validate([
+                'image'=> 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
+            ]);
+        }
+
         $validated['slug'] = $slug;
 
         if ($request->hasFile('image')) {

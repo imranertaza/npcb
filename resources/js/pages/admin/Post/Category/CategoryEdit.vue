@@ -53,10 +53,6 @@
                             <div class="mb-3">
                                 <label class="form-label">Category Image</label>
                                 <!-- Existing image preview -->
-                                <div v-if="form.image" class="mb-2">
-                                    <img :src="getImageUrl(form.image)" alt="Category Image" height="80"
-                                        class="rounded" />
-                                </div>
                                 <Vue3Dropzone v-model="imageFile" v-model:previews="previews" mode="edit"
                                     :allowSelectOnPreview="true" />
                                 <small class="text-muted">Recommended: 1140 × 586px</small>
@@ -122,7 +118,9 @@ const fetchCategory = async () => {
     try {
         const res = await axios.get(`/api/categories/${route.params.id}`);
         form.value = res.data.data;
-        previews.value = [getImageUrl(form.value.image)];
+        if (form.value.image) {
+            previews.value = [getImageUrl(form.value.image)];
+        }
     } catch (error) {
         toast.error("Failed to load category");
     }
@@ -159,7 +157,7 @@ const updateCategory = async () => {
     }
 
     if (!previews.value[0]) {
-        payload.append("remove_f_image", 1);
+        payload.append("remove_image", 1);
     }
 
     try {

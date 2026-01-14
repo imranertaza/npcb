@@ -100,13 +100,31 @@ class GalleryController extends Controller
      */
     public function update(Request $request, Gallery $gallery)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'name'       => 'required|string|max:100',
             'thumb'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
             'alt_name'   => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
+            'remove_f_image' => 'nullable'
+        ], [
+            'thumb.required' => 'Thumbnail is required when uploading.',
+            'thumb.image' => 'Thumbnail must be an image file.',
+            'thumb.mimes' => 'Thumbnail must be a file of type: jpg, jpeg, png, webp, gif.',
+            'thumb.max' => 'Thumbnail size must not exceed 2MB.',
         ]);
-
+        if ($request->remove_f_image == 1) {
+            $request->validate(
+                ['thumb' => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:2048'],
+                [
+                    'thumb.required' => 'Thumbnail is required when uploading.',
+                    'thumb.image' => 'Thumbnail must be an image file.',
+                    'thumb.mimes' => 'Thumbnail must be a file of type: jpg, jpeg, png, webp,
+                gif.',
+                    'thumb.max' => 'Thumbnail size must not exceed 2MB.',
+                ]
+            );
+        }
         if ($request->hasFile('thumb')) {
             if ($gallery->thumb && Storage::disk('public')->exists($gallery->thumb)) {
                 Storage::disk('public')->delete($gallery->thumb);

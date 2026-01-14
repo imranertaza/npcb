@@ -62,6 +62,11 @@ class SectionController extends Controller
             'image' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg,webp|max:2048',
         ]);
 
+        if ($request->remove_image == 1) {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,jpg,png,gif,svg,webp|max:2048',
+            ]);
+        }
         $data = json_decode($request->input('data'), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {

@@ -78,6 +78,14 @@ class EventController extends Controller
             'status'            => 'required|string|in:0,1',
             'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
             'featured_image'    => 'required|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
+        ], [
+            'event_category_id.required' => 'Please select an event category.',
+            'event_category_id.exists' => 'The selected event category does not exist.',
+            'title.required' => 'Event title is required.',
+            'slug.unique' => 'This slug is already taken. Please choose another.',
+            'featured_image.required' => 'A featured image is required.',
+            'featured_image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF.',
+            'featured_image.max' => 'Featured image must not exceed 4MB.',
         ]);
 
         $validated['createdBy'] = Auth::id();
@@ -119,22 +127,43 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        $validated = $request->validate([
-            'event_category_id' => 'required|exists:event_categories,id',
-            'title'             => 'required|string|max:255',
-            'slug'              => [
-                'required',
-                'string',
-                Rule::unique('events', 'slug')->ignore($event->id),
+        $validated = $request->validate(
+            [
+                'event_category_id' => 'required|exists:event_categories,id',
+                'title'             => 'required|string|max:255',
+                'slug'              => [
+                    'required',
+                    'string',
+                    Rule::unique('events', 'slug')->ignore($event->id),
+                ],
+                'type'              => 'required|integer|in:0,1,2',
+                'event_scope'       => 'required|integer|in:0,1',
+                'status'            => 'required|string|in:0,1',
+                'description'       => 'nullable|string',
+                'banner_image'      => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
+                'featured_image'    => 'nullable|image|mimes:jpg,jpeg,png,gif|max:4096',
             ],
-            'type'              => 'required|integer|in:0,1,2',
-            'event_scope'       => 'required|integer|in:0,1',
-            'status'            => 'required|string|in:0,1',
-            'description'       => 'nullable|string',
-            'banner_image'      => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
-            'featured_image'    => 'nullable|file|mimes:jpg,jpeg,png,gif|max:4096',
-        ]);
-
+            [
+                'event_category_id.required' => 'Please select an event category.',
+                'event_category_id.exists' => 'The selected event category does not exist.',
+                'title.required' => 'Event title is required.',
+                'slug.unique' => 'This slug is already taken. Please choose another.',
+                'featured_image.required' => 'A featured image is required.',
+                'featured_image.mimes' => 'Supported formats: JPG, JPEG, PNG, WEBP, GIF.',
+                'featured_image.max' => 'Featured image must not exceed 4MB.',
+            ]
+        );
+        if ($request->remove_f_image) {
+            $request->validate([
+                'featured_image'    => 'required|image|mimes:jpg,jpeg,png,gif|max:4096',
+            ]);
+        }
+        if ($request->remove_image == 1) {
+            if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
+                Storage::disk('public')->delete($event->banner_image);
+            }
+            $validated['banner_image']   = null;
+        }
         $validated['updatedBy'] = Auth::id();
 
         // Handle banner image replacement
