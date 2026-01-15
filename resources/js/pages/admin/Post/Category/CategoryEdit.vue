@@ -13,7 +13,10 @@
                                 <label class="form-label">Category Name</label>
                                 <input v-model="form.category_name" type="text" class="form-control" required />
                             </div>
-
+                            <div class="mb-3">
+                                <label class="form-label">Breadcrumb</label>
+                                <input v-model="form.breadcrumb" type="text" class="form-control" required />
+                            </div>
                             <!-- Description -->
                             <div class="mb-3">
                                 <label class="form-label">Description</label>

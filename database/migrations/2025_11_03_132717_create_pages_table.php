@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('temp', 255)->nullable()->default('default');
             $table->string('page_title', 255);
+            $table->string('breadcrumb', 255);
             $table->string('slug', 300);
             $table->string('short_des', 255)->nullable();
             $table->longText('page_description')->nullable();

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', $page->page_title)
-@section('breadcrumb', $page->page_title)
+@section('breadcrumb', $page->breadcrumb)
 @section('meta_description', $page->meta_description)
 @section('meta_keywords', $page->meta_keywords)
 @section('meta_title', $page->meta_title)
