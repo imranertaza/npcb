@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', $page->page_title)
-@section('breadcrumb', $page->page_title)
+@section('breadcrumb', $page->breadcrumb)
 @section('content')
     <section class="container position-relative profile-section">
         <h2 class="visually-hidden">Executive Committee Profiles</h2>

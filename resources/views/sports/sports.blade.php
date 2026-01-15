@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', $category->category_name)
-@section('breadcrumb', $category->category_name)
+@section('breadcrumb', $category->breadcrumb)
 @section('content')
     {{-- Event Gallery section start  --}}
     <!-- News & Updates section start -->

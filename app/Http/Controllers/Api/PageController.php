@@ -76,6 +76,7 @@ class PageController extends Controller
     {
         $validated = $request->validate([
             'page_title'       => 'required|string|max:255',
+            'breadcrumb'       => 'required|string|max:255',
             'slug'             => 'required|string|unique:pages,slug|max:300',
             'short_des'        => 'nullable|string|max:255',
             'page_description' => 'nullable|string',
@@ -125,6 +126,7 @@ class PageController extends Controller
         $page = Page::findOrFail($id);
         $validated = $request->validate([
             'page_title'       => 'required|string|max:255',
+            'breadcrumb'       => 'required|string|max:255',
             'slug'             => ['required', 'string', 'max:300', Rule::unique('pages', 'slug')->ignore($page->id)],
             'short_des'        => 'nullable|string|max:255',
             'page_description' => 'nullable|string',

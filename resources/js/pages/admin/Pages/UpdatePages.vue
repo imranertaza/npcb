@@ -18,6 +18,10 @@
                                         <label>Page Title</label>
                                         <input v-model="form.page_title" type="text" class="form-control" required />
                                     </div>
+                                    <div class="form-group">
+                                        <label>Breadcrumb</label>
+                                        <input v-model="form.breadcrumb" type="text" class="form-control" required />
+                                    </div>
 
                                     <!-- Short Description -->
                                     <div class="form-group">
@@ -117,6 +121,7 @@ const form = reactive({
     meta_description: '',
     temp: 'default',
     createdBy: 1,
+    breadcrumb: '',
     updatedBy: null
 });
 

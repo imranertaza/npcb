@@ -23,7 +23,10 @@
                                         <label>Slug</label>
                                         <input v-model="form.slug" type="text" class="form-control" required />
                                     </div>
-
+                                    <div class="form-group">
+                                        <label>Breadcrumb</label>
+                                        <input v-model="form.breadcrumb" type="text" class="form-control" required />
+                                    </div>
                                     <!-- Short Description -->
                                     <div class="form-group">
                                         <label>Short Description</label>
@@ -66,7 +69,7 @@
                                         <select v-model="form.temp" class="custom-select" required>
                                             <option class="text-capitalize" v-for="template in templates"
                                                 :key="template" :value="template">{{
-                                                template }}</option>
+                                                    template }}</option>
                                         </select>
                                     </div>
 
@@ -118,6 +121,7 @@ const form = reactive({
     meta_title: '',
     meta_keyword: '',
     meta_description: '',
+    breadcrumb: '',
     temp: 'default'
 });
 
