@@ -28,10 +28,13 @@
                 </div>
             </div>
         </div>
-        <div class="">
-            <img class="img-fluid" src="{{ getImageCacheUrl($event->banner_image, 1140, 375) }}" alt="">
-        </div>
-        <div class="text-start text-dark-emphasis mt-40">
+        @if ($event->banner_image)
+            <div class="">
+                <img class="img-fluid" src="{{ getImageCacheUrl($event->banner_image, 1140, 375) }}" alt="">
+            </div>
+        @endif
+
+        <div class="text-start text-dark-emphasis mt-40 page-description">
             {!! $event->description !!}
         </div>
         <hr class="mt-60">
@@ -41,6 +44,11 @@
     {{-- About section End --}}
     @push('styles')
         <style>
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+
             .upcoming-event-card img {
                 height: 392px;
             }

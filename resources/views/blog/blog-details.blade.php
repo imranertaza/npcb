@@ -36,11 +36,19 @@
                     alt="{{ $blog->alt_name }}">
             </div>
         @endif
-        <div class="text-start text-dark-emphasis mt-40">
+        <div class="text-start text-dark-emphasis mt-40 page-description">
             {!! $blog->description !!}
         </div>
         <hr class="mt-60">
 
         @include('layouts.partial.share')
     </section>
+    @push('styles')
+        <style>
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+        </style>
+    @endpush
 @endsection

@@ -14,7 +14,7 @@
                 </div>
             @endif
             @if ($category->description)
-                <div class="text-dark-emphasis pt-3">
+                <div class="text-dark-emphasis pt-3 page-description">
                     {!! $category->description !!}
                 </div>
             @endif
@@ -41,4 +41,12 @@
     </section>
     <!-- News & Updates contact section End -->
     {{-- Event Gallery section End  --}}
+    @push('styles')
+        <style>
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+        </style>
+    @endpush
 @endsection
