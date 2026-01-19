@@ -5,13 +5,18 @@
                   'menus' => function ($q) {
                       $q->where('enabled', true)->with([
                           'children' => function ($q2) {
-                              $q2->where('enabled', true);
+                              $q2->where('enabled', true)->with([
+                                  'children' => function ($q3) {
+                                      $q3->where('enabled', true);
+                                  },
+                              ]);
                           },
                       ]);
                   },
               ])
               ->first();
           $menuItems = $headerMenu->menus->where('enabled', true);
+
       @endphp
       <nav class="navbar navbar-expand-xl bg-common  z-3 w-100 d-flex flex-column pb-2">
           {{-- Logo  --}}
@@ -76,7 +81,7 @@
                       @foreach ($menuItems as $item)
                           @if ($item->children->count() > 0)
                               <li class="nav-item dropdown">
-                                  <a class="nav-link p-0 gap-1 dropdown-toggle" href="#" id="eventsDropdown"
+                                  <a class="nav-link dropdown-toggle" href="#" id="menu-{{ $item->id }}"
                                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                       <span>{{ $item->name }}</span>
                                       <svg width="13" height="8" viewBox="0 0 13 8" fill="none"
@@ -86,10 +91,37 @@
                                               fill="white" />
                                       </svg>
                                   </a>
-                                  <ul class="dropdown-menu" aria-labelledby="eventsDropdown">
+                                  <ul class="dropdown-menu" aria-labelledby="menu-{{ $item->id }}">
                                       @foreach ($item->children as $child)
-                                          <li><a class="dropdown-item"
-                                                  href="{{ $child->url }}">{{ $child->name }}</a></li>
+                                          @if ($child->children->count() > 0)
+                                              <li class="dropdown-submenu">
+                                                  <a class="dropdown-item dropdown-toggle" href="#">
+                                                      <span>
+                                                          {{ $child->name }}
+                                                      </span>
+                                                      <svg width="13px" height="8px" viewBox="0 0 512 512"
+                                                          xmlns="http://www.w3.org/2000/svg">
+                                                          <polygon
+                                                              points="150.46 478 129.86 456.5 339.11 256 129.86 55.49 150.46 34 382.14 256 150.46 478"
+                                                              fill="currentColor" stroke="currentColor"
+                                                              stroke-width="45" stroke-linejoin="round" />
+                                                      </svg>
+
+
+                                                  </a>
+
+                                                  <ul class="dropdown-menu">
+                                                      @foreach ($child->children as $grandchild)
+                                                          <li><a class="dropdown-item"
+                                                                  href="{{ $grandchild->url }}">{{ $grandchild->name }}</a>
+                                                          </li>
+                                                      @endforeach
+                                                  </ul>
+                                              </li>
+                                          @else
+                                              <li><a class="dropdown-item"
+                                                      href="{{ $child->url }}">{{ $child->name }}</a></li>
+                                          @endif
                                       @endforeach
                                   </ul>
                               </li>

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('title', 'Running Event Details')
-@section('breadcrumb', 'Running Event Details')
+@section('title', 'Event Details')
+@section('breadcrumb', 'Event Details')
 @section('content')
 
     {{-- About section start --}}
