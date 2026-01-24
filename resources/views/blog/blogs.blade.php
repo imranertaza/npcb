@@ -25,7 +25,7 @@
                                     {{ formatDate($item->publish_date) }}
                                 </p>
                                 <h5 class="title-four mb-3">
-                                    <a href="" class="">{{ truncateText($item->title,40) }}</a>
+                                    <a href="" class="">{{ truncateText($item->title,70) }}</a>
                                 </h5>
                                 <a href="{{ route('blogs-details', $item->slug) }}" class="btn-primary btn-common">View
                                     Details</a>

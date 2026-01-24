@@ -30,8 +30,8 @@
               <!-- Center: Search bar with filter -->
               <form action="#" method="GET" class="d-flex mx-xl-3 flex-grow-1 justify-content-xl-center">
                   <div class="input-group my-2 my-xl-0 mb-xl-0" style="max-width:400px;">
-                      <select aria-label="Filter content type" class="form-select rounded-0" name="filter"
-                          style="max-width:95px;">
+                      <select aria-label="Filter content type" class="form-select custom-select-style rounded-0"
+                          name="filter" style="max-width:95px;">
                           <option value="news">News</option>
                           <option value="players">Athletes</option>
                           <option value="posts">Posts</option>

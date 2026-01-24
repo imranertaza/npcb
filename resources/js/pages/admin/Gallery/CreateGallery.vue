@@ -25,6 +25,14 @@
                                         <input v-model="form.alt_name" type="text" class="form-control" />
                                     </div>
 
+                                    <div class="form-group">
+                                        <label>Scope</label>
+                                        <select v-model="form.scope" class="custom-select">
+                                            <option value="0">National</option>
+                                            <option value="1">International</option>
+                                            <option value="2">National Non-Sports</option>
+                                        </select>
+                                    </div>
                                     <!-- Sort Order -->
                                     <div class="form-group">
                                         <label>Sort Order</label>
@@ -82,7 +90,7 @@ const toast = useToast();
 const imageFile = ref(null);
 
 // Reactive form state
-const initialForm = { name: '', alt_name: '', sort_order: 0, thumb: null }
+const initialForm = { name: '', alt_name: '', sort_order: 0, thumb: null, scope: 0 }
 const form = reactive({ ...initialForm })
 /**
  * Submit gallery item creation

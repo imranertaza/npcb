@@ -64,6 +64,7 @@ class GalleryController extends Controller
             'thumb'      => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
             'sort_order' => 'nullable|integer',
             'alt_name'   => 'nullable|string|max:255',
+            'scope'      => 'integer|in:0,1,2',
         ]);
 
         $gallery = Gallery::create($validated);
@@ -106,6 +107,7 @@ class GalleryController extends Controller
             'thumb'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
             'alt_name'   => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer',
+            'scope'      => 'integer|in:0,1,2',
             'remove_f_image' => 'nullable'
         ], [
             'thumb.required' => 'Thumbnail is required when uploading.',

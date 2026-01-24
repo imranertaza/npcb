@@ -12,7 +12,8 @@
                     <div>
                         <div class="latest-blog-card news-card card-smooth">
                             <div class="position-relative">
-                                <img src="{{ getImageCacheUrl($item->f_image,358,226) }}" class="card-img-top" alt="news image">
+                                <img src="{{ getImageCacheUrl($item->f_image, 358, 226) }}" class="card-img-top"
+                                    alt="news image">
                                 <div class="content-text d-inline-flex align-items-center bg-primary published-date">
                                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -40,9 +41,9 @@
                                 <hr class="mt-12">
                                 <h5 class="title-four mb-12">
                                     <a href="{{ route('news-and-updates-details', $item->slug) }}   "
-                                        class="">{{ truncateText($item->news_title,38) }}</a>
+                                        class="">{{ truncateText($item->news_title, 35) }}</a>
                                 </h5>
-                                <p class="content-text mb-3">{{ truncateText($item->short_des, 35) }}
+                                <p class="content-text short-des mb-3">{{ truncateText($item->short_des, 58) }}
                                 </p>
                                 <a href="{{ route('news-and-updates-details', $item->slug) }}"
                                     class="btn-primary btn-common">View Details</a>
@@ -60,6 +61,11 @@
     </section>
     @push('styles')
         <style>
+            .short-des {
+                height: 48px;
+                overflow: hidden;
+            }
+
             .published-date {
                 padding: 8px 10px;
                 gap: 8px;

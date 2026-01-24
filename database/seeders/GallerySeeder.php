@@ -51,6 +51,7 @@ class GallerySeeder extends Seeder
         ];
 
         foreach ($data as $item) {
+            $item['scope'] = rand(0, 2);
             Gallery::create($item);
         }
     }

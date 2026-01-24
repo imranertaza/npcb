@@ -24,8 +24,10 @@
 
             @if ($president)
                 <div class="profile-card top d-inline-block">
-                    <img draggable="false" src="{{ getImageCacheUrl($president->image, 265, 379) }}"
-                        alt="{{ $president->name }}">
+                    <div class="image">
+                        <img draggable="false" src="{{ getImageCacheUrl($president->image, 265, 379) }}"
+                            alt="{{ $president->name }}">
+                    </div>
                     <div class="card-body">
                         <p class="mb-0 name content-text"><a
                                 href="{{ route('committee-members-details', $president->slug) }}">{{ $president->name }}</a>
@@ -40,8 +42,10 @@
                 @forelse ($vicePresidents as $key => $vicePresident)
                     <div>
                         <div class="profile-card mx-auto">
-                            <img draggable="false" src="{{ getImageCacheUrl($vicePresident->image, 265, 379) }}"
-                                alt="{{ $vicePresident->name }}">
+                            <div class="image">
+                                <img draggable="false" src="{{ getImageCacheUrl($vicePresident->image, 265, 379) }}"
+                                    alt="{{ $vicePresident->name }}">
+                            </div>
                             <div class="card-body">
                                 <p class="mb-0 name content-text"><a
                                         href="{{ route('committee-members-details', $vicePresident->slug) }}">{{ $vicePresident->name }}</a>
@@ -107,6 +111,13 @@
             .profile-card {
                 width: 265px;
                 padding: 0px !important;
+            }
+
+            .profile-card .image {
+                height: 379px;
+                width: 265px;
+                overflow: hidden;
+                border: 2px solid #EAEAEA;
             }
 
             .profile-card .card-body {
