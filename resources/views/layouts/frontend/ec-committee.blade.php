@@ -8,42 +8,89 @@
         <div class="text-center">
             @php
                 $members = \App\Models\CommitteeMember::where('status', 1)->orderBy('order')->get();
-                $member1 = count($members) > 0 ? $members[0] : null;
+
+                // first one
+                $president = $members->get(0);
+                // @dd($president);
+                // skip 1, take 2 (this gives members 2 and 3)
+                $vicePresidents = $members->slice(1, 2);
+
+                // skip 3, take 1 (this gives member 4)
+                $secretaryGenerals = $members->slice(3, 3);
+                // skip first 6, take all remaining
+                $remainingMembers = $members->slice(6, $members->count());
+                // @dd($remainingMembers);
             @endphp
-            @if ($member1)
+
+            @if ($president)
                 <div class="profile-card top d-inline-block">
-                    <img draggable="false" src="{{ getImageCacheUrl($member1->image, 265, 379) }}" alt="{{ $member1->name }}">
+                    <div class="image">
+                        <img draggable="false" src="{{ getImageCacheUrl($president->image, 265, 379) }}"
+                            alt="{{ $president->name }}">
+                    </div>
                     <div class="card-body">
                         <p class="mb-0 name content-text"><a
-                                href="{{ route('committee-members-details', $member1->slug) }}">{{ $member1->name }}</a></p>
-                        <p class="profession content-text">{{ $member1->designation }}</p>
+                                href="{{ route('committee-members-details', $president->slug) }}">{{ $president->name }}</a>
+                        </p>
+                        <p class="profession content-text">{{ $president->designation }}</p>
                     </div>
                 </div>
             @endif
         </div>
-
-        <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2 g-4 justify-content-evenly mt-md-5 ">
-            @forelse ($members as $key => $member)
-                @if ($key == 0)
-                    @continue
-                @endif
-                <div>
-                    <div class="profile-card mx-auto">
-                        <img draggable="false" src="{{ getImageCacheUrl($member->image, 265, 379) }}"
-                            alt="{{ $member->name }}">
-                        <div class="card-body">
-                            <p class="mb-0 name content-text"><a
-                                    href="{{ route('committee-members-details', $member->slug) }}">{{ $member->name }}</a>
-                            </p>
-                            <p class="profession content-text">{{ $member->designation }}</p>
+        <div class="mt-md-3">
+            <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2 justify-content-center">
+                @forelse ($vicePresidents as $key => $vicePresident)
+                    <div>
+                        <div class="profile-card mx-auto">
+                            <div class="image">
+                                <img draggable="false" src="{{ getImageCacheUrl($vicePresident->image, 265, 379) }}"
+                                    alt="{{ $vicePresident->name }}">
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0 name content-text"><a
+                                        href="{{ route('committee-members-details', $vicePresident->slug) }}">{{ $vicePresident->name }}</a>
+                                </p>
+                                <p class="profession content-text">{{ $vicePresident->designation }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="col-12">
-                    <p class="text-center content-text">No committee members found.</p>
-                </div>
-            @endforelse
+                @empty
+                @endforelse
+            </div>
+            <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2  justify-content-center">
+                @forelse ($secretaryGenerals as $key => $secretaryGeneral)
+                    <div>
+                        <div class="profile-card mx-auto">
+                            <img draggable="false" src="{{ getImageCacheUrl($secretaryGeneral->image, 265, 379) }}"
+                                alt="{{ $secretaryGeneral->name }}">
+                            <div class="card-body">
+                                <p class="mb-0 name content-text"><a
+                                        href="{{ route('committee-members-details', $secretaryGeneral->slug) }}">{{ $secretaryGeneral->name }}</a>
+                                </p>
+                                <p class="profession content-text">{{ $secretaryGeneral->designation }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                @endforelse
+            </div>
+            <div class="row row-cols-xl-4 row-cols-md-3 row-cols-sm-2  justify-content-center">
+                @forelse ($remainingMembers as $key => $remainingMember)
+                    <div>
+                        <div class="profile-card mx-auto">
+                            <img draggable="false" src="{{ getImageCacheUrl($remainingMember->image, 265, 379) }}"
+                                alt="{{ $remainingMember->name }}">
+                            <div class="card-body">
+                                <p class="mb-0 name content-text"><a
+                                        href="{{ route('committee-members-details', $remainingMember->slug) }}">{{ $remainingMember->name }}</a>
+                                </p>
+                                <p class="profession content-text">{{ $remainingMember->designation }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                @endforelse
+            </div>
         </div>
         <div class="mb-5 pb-3 pb-100 page-content">
             @yield('page-content')
@@ -64,6 +111,13 @@
             .profile-card {
                 width: 265px;
                 padding: 0px !important;
+            }
+
+            .profile-card .image {
+                height: 379px;
+                width: 265px;
+                overflow: hidden;
+                border: 2px solid #EAEAEA;
             }
 
             .profile-card .card-body {

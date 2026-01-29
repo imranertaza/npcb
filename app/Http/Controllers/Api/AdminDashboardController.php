@@ -23,8 +23,8 @@ class AdminDashboardController extends Controller
             'totalFixtures' => Notice::where('type', 1)->count(),
             'totalPlayers' => Player::count(),
             'totalMembers' => CommitteeMember::count(),
-            'totalRunningEvents' => Event::where('type', 1)->count(),
-            'totalUpcomingEvents' => Event::where('type', 0)->count(),
+            'totalRunningEvents' => Event::where('type', 0)->count(),
+            'totalUpcomingEvents' => Event::where('type', 1)->count(),
         ];
 
         return ApiResponse::success($stats, 'Dashboard statistics retrieved successfully');

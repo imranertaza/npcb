@@ -56,7 +56,7 @@ class EventSeeder extends Seeder
                     'start_date'        => Carbon::parse("2025-02-{$i} 09:00:00"),
                     'status'            => 1,
                     'type'              => 1,
-                    'event_scope'       => rand(0, 1),
+                    'event_scope'       => rand(0, 2),
                     'createdBy'         => 1,
                     'updatedBy'         => 1,
                     'created_at'        => $now,

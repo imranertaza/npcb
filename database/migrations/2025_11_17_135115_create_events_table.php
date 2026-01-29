@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('banner_image')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
-            $table->tinyInteger('type')->default('0')->comment('2=Past,1=Running, 0=Upcoming')->in_array([0, 1]);
-            $table->tinyInteger('event_scope')->default(0)->comment('0 = National, 1 = International');
+            $table->tinyInteger('type')->default('0')->comment('2=Past,0=Running, 1=Upcoming')->in_array([0, 1]);
+            $table->tinyInteger('event_scope')->default(0)->comment('0 = National, 1 = International, 2 = Non Sports');
             $table->enum('status', ['1', '0'])->default('1');
             $table->foreignId('createdBy')->constrained('users');
             $table->foreignId('updatedBy')->nullable()->constrained('users');

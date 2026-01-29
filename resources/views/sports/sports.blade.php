@@ -14,7 +14,7 @@
                 </div>
             @endif
             @if ($category->description)
-                <div class="text-dark-emphasis pt-3">
+                <div class="text-dark-emphasis pt-3 page-description">
                     {!! $category->description !!}
                 </div>
             @endif
@@ -24,10 +24,11 @@
                 <div class="">
                     <a href="{{ route('sports-details', $post->slug) }}" class="">
                         <div class="gaming-news-card running-event-card card-smooth">
-                            <img src="{{ getImageCacheUrl($post->f_image, 262, 230) }}" class="card-img-top" alt="news image">
+                            <img src="{{ getImageCacheUrl($post->f_image, 262, 230) }}" class="card-img-top"
+                                alt="news image">
                             <div class="card-body">
                                 <h5 class="title-five">
-                                    {{ truncateText($post->post_title, 20) }}
+                                    {{ truncateText($post->post_title, 48) }}
                                 </h5>
                             </div>
                         </div>
@@ -41,4 +42,15 @@
     </section>
     <!-- News & Updates contact section End -->
     {{-- Event Gallery section End  --}}
+    @push('styles')
+        <style>
+            h5.title-five {
+                min-height: 38.45px;
+            }
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+        </style>
+    @endpush
 @endsection

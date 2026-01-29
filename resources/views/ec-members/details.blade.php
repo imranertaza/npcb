@@ -19,13 +19,17 @@
         </div>
 
         <div class="">
-            <div class="mb-5 pb-3">
+            <div class="mb-5 pb-3 page-description">
                 {!! $member->description !!}
             </div>
         </div>
     </section>
     @push('styles')
         <style>
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
             .profile-card.top {
                 margin-top: -8%;
             }

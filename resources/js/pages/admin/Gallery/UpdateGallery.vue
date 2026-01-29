@@ -26,6 +26,15 @@
                                         <input v-model="form.alt_name" type="text" class="form-control" />
                                     </div>
 
+                                    <!-- Scope -->
+                                    <div class="form-group">
+                                        <label>Scope</label>
+                                        <select v-model="form.scope" class="custom-select">
+                                            <option value="0">National</option>
+                                            <option value="1">International</option>
+                                            <option value="2">National Non-Sports</option>
+                                        </select>
+                                    </div>
                                     <!-- Sort Order -->
                                     <div class="form-group">
                                         <label>Sort Order</label>
@@ -75,7 +84,7 @@
                                     <div class="card-body pt-0">
                                         <div class="d-flex justify-content-between mt-2">
                                             <small class="d-block text-muted">{{ detail.alt_name || 'No alt text'
-                                            }}</small>
+                                                }}</small>
                                             <div class="btn-group" role="group">
                                                 <button class="btn btn-sm btn-outline-info"
                                                     @click="openEditModal(detail)">
@@ -205,7 +214,8 @@ const form = reactive({
     thumb: '',
     details: [],      // Array of gallery detail images
     createdBy: 1,
-    updatedBy: null
+    updatedBy: null,
+    scope: 0
 });
 
 /**

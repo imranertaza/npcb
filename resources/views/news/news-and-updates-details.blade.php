@@ -64,7 +64,7 @@
                 @endif
             </div>
         @endif
-        <div class="text-start text-dark-emphasis mt-40">
+        <div class="text-start text-dark-emphasis mt-40 page-description">
             {!! $news->description !!}
         </div>
         <hr class="mt-60">
@@ -73,6 +73,11 @@
     </section>
     @push('styles')
         <style>
+            .page-description img {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+
             video {
                 box-shadow:
                     -1px 6px 12px 0px #00000033,

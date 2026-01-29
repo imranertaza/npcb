@@ -69,7 +69,6 @@
                             </div>
                             <p class="fm-name">{{ file.name }}</p>
                             <div class="fm-actions">
-                                <button @click.stop="promptRename(file)" title="Rename">✏️</button>
                                 <button @click.stop="deleteFile(file.path)" title="Delete">🗑️</button>
                             </div>
                         </div>
@@ -209,18 +208,6 @@ const handleUpload = async (event) => {
 // Delete file
 const deleteFile = async (path) => {
     await axios.delete('/api/media/file', { data: { path } });
-    await loadFiles();
-};
-
-const promptRename = async (file) => {
-    const newName = prompt("Enter new name:", file.name);
-    if (!newName) return;
-
-    await axios.put('/api/media/file/rename', {
-        old_path: file.path,
-        new_name: newName
-    });
-
     await loadFiles();
 };
 

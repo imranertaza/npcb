@@ -66,19 +66,20 @@
                                     <div class="form-group">
                                         <label>Event Type</label>
                                         <select v-model="form.type" class="custom-select">
-                                            <option value="1">Running</option>
-                                            <option value="0">Upcoming</option>
-                                            <option value="2">Past</option>
+                                            <option value="0">Running</option>
+                                            <option value="1">Upcoming</option>
+                                            <option value="2">Previous</option>
                                         </select>
                                     </div>
                                     <!-- Scope -->
-                                    <!-- <div class="form-group">
+                                    <div class="form-group">
                                         <label>Event Scope</label>
                                         <select v-model="form.event_scope" class="custom-select">
                                             <option value="0">National</option>
                                             <option value="1">International</option>
+                                            <option value="2">National Non-Sports</option>
                                         </select>
-                                    </div> -->
+                                    </div>
                                     <!-- Status -->
                                     <div class="form-group">
                                         <label>Status</label>

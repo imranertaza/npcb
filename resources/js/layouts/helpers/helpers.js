@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import {computed} from "vue";
 
 /**
  * Truncate text to a maximum length and add suffix if needed
@@ -16,9 +16,9 @@ export function getImageUrl(path) {
         return "/assets/images/default.svg"; // fallback image
     }
 
-    return path.startsWith("http://") || path.startsWith("https://")
-        ? path
-        : `/storage/${path.replace(/^\/+/, "")}`;
+    return path.startsWith("http://") || path.startsWith("https://") ?
+        path :
+        `/public/storage/${path.replace(/^\/+/, "")}`;
 }
 
 /**
@@ -28,18 +28,33 @@ export const generateSlug = (title) => {
     return title
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9\s-]/g, "")     // remove special chars
-        .replace(/\s+/g, "-")             // spaces to dashes
-        .replace(/-+/g, "-")              // collapse multiple dashes
-        .replace(/^-+|-+$/g, "");         // trim dashes from start/end
+        .replace(/[^a-z0-9\s-]/g, "") // remove special chars
+        .replace(/\s+/g, "-") // spaces to dashes
+        .replace(/-+/g, "-") // collapse multiple dashes
+        .replace(/^-+|-+$/g, ""); // trim dashes from start/end
 };
+
+const getImagePath = (path) => {
+    if (!path) {
+        return '/assets/images/default.svg'; // fallback image
+    }
+
+    // Check if path starts with http:// or https://
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
+    }
+
+    // Otherwise prepend /storage/
+    return '/storage/' + path.replace(/^\/+/, '');
+}
 
 /**
  * Get cached/resized image URL via image endpoint
  */
 export const getImageCacheUrl = (filePath, width = 200, height = 200, format = "webp") => {
-    const baseUrl = import.meta.env.VITE_APP_URL;
-    const relativePath = getImageUrl(filePath);
+    const baseUrl =
+        import.meta.env.VITE_APP_URL;
+    const relativePath = getImagePath(filePath);
 
     // Return external URLs unchanged
     if (relativePath.startsWith("http://") || relativePath.startsWith("https://")) {
